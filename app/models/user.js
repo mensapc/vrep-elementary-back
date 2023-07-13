@@ -4,11 +4,12 @@ const pool = require('../../config/db');
 class User {
 	// Method to create a new user
 	createUser = async (userData) => {
-		const { name, email, password } = userData;
+		const { name, email, password, role = 'student' } = userData;
 
 		try {
-			const query = 'INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING *';
-			const values = [name, email, password];
+			const query =
+				'INSERT INTO users (name, email, password, role) VALUES ($1, $2, $3, $4) RETURNING *';
+			const values = [name, email, password, role];
 
 			const result = await pool.query(query, values);
 			return result.rows[0];
