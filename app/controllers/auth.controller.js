@@ -16,6 +16,18 @@ class AuthController {
 			next(error);
 		}
 	};
+
+	// Method to handle user login
+	login = async (req, res, next) => {
+		try {
+			const data = req.body;
+			const result = await this.authService.login(data);
+			res.status(200).json(result);
+		} catch (error) {
+			console.error('Error logging in user:', error);
+			next(error);
+		}
+	};
 }
 
 module.exports = AuthController;

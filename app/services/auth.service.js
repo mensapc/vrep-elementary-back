@@ -60,6 +60,33 @@ class AuthService {
 		}
 	};
 
+	// Method to login a user
+
+	login = async (data) => {
+		const { email, password } = data;
+		try {
+			const user = await this.user.findUserByEmail(email);
+
+			// Check if user exists
+			if (!user) {
+				throw new CustomError('User not found', 404);
+			}
+
+			// Check if password matches
+			const passwordMatch = await bcrypt.compare(password, user.password);
+			if (!passwordMatch) {
+				throw new CustomError('Invalid credentials', 401);
+			}
+
+			const token = this.generateToken(user);
+			delete user.password;
+			return { user, token };
+		} catch (error) {
+			if (error instanceof CustomError) throw error;
+			throw new Error('Login failed');
+		}
+	};
+
 	// Method to generate a JWT token
 	generateToken = (user) => {
 		const token = jwt.sign(
