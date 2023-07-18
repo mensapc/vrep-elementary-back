@@ -1,0 +1,184 @@
+*{
+    margin: 0;
+    padding: 0;
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif, poppins 
+}
+html{
+    scroll-behavior: smooth;
+}
+body{
+    background-color: rgb(253, 248, 249);
+}
+
+#header{
+    width:100%;
+    height:100vh ;
+    background-image: url(images/) ;
+    background-position: center;
+}
+
+.container{
+    padding: 10px 3.5%;
+}
+nav{
+    display: flex;
+    align-items:center;
+    justify-content: center;
+    flex-wrap: wrap;
+    flex-shrink:0;
+    
+}
+
+.logo{
+    width: 140px;
+}
+
+nav ul li{
+display:inline-block;
+list-style: none;
+margin: 10px 20px;
+}
+nav ul li a{
+    color: #003963;
+    text-decoration: none;
+    font-size: 18px;
+    position: relative;
+}
+
+nav ul li a select a{
+    color: #003963;
+    text-decoration:#003963 ;
+    font-size: 18px;
+    position: relative;
+}
+ 
+nav li select a{
+    color: #003963;
+}
+
+
+nav ul li a::after{
+    content: "";
+    width: 0%;
+    height: 3px;
+    background: #0064AE;
+    position: absolute;
+    left: 0;
+    bottom: -6px;
+    transition: 0.5s
+}
+
+nav ul li a:hover::after{
+    width: 100%;
+    color: #0071C5;
+}
+
+.text{
+    margin-top: 20%;
+    font-size: 30px;
+
+}
+
+.text h1{
+    font-size: 60px;
+    margin-top: 20px;
+    color: #003963;
+
+}
+
+.text p{
+    font-size: 27px;
+    margin-top: 2px;
+    color:#0064AE;
+
+}
+
+.picture {
+    width: 100%;
+    height: 100vh;
+    display: wrap;
+    align-items:center;
+    justify-content: center;
+    flex-wrap:wrap ;
+    flex-shrink:0;
+    margin: -40% 70% 0;
+    padding: -100%;
+    flex-direction: row;
+}
+
+.picture img{
+    height: 250px;
+    align-items:center;
+    justify-content: center;
+    size: 5cm;
+}
+
+/*--------------program----*/
+#programs{
+    margin-top: 20%;
+}
+.container2 h1{
+    color: #003963;
+    text-align: center;
+    margin-top: 20%;
+}
+.container2  p{
+    color: #003963;
+    text-align: center;
+    margin-top: 0;
+}
+
+
+.services-list{
+
+    color: #003963;
+    margin-top: 5%;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px,1fr));
+    grid-gap: 40px;
+    margin-top: 50px;
+}
+
+.services-list img{
+    width: 100%;
+    border-radius: 10px;
+    display: block;
+    transition: transform 0.5s;
+}
+.work{
+    border-radius: 10px;
+    position: relative;
+    overflow: hidden;
+}
+.work img{
+    width: 100%;
+    border-radius: 10px;
+    display: block;
+    transition: transform 0.5s;
+}
+
+.layer{
+    display:block;
+    text-align: center;
+    font: 1em sans-serif;
+    
+}
+
+.layer h3{
+    font-weight: 500;
+    margin-bottom: 20px;
+    
+}
+.layer a{
+    margin-top: 20px;
+    color:#fff;
+    text-decoration: none;
+    font-size: 18px;
+    line-height: 70px;
+    background:#003963 ;
+    width: 60px;
+    height: 60px;
+    border-radius: 4px;
+    border: 5px;
+    text-align: center;
+}
