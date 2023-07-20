@@ -347,6 +347,7 @@ button.fchild{
     grid-gap: -10px;
     margin-left: -65%;
     margin-bottom: -20%;
+    
 }
 
 .news h3{
@@ -374,21 +375,28 @@ button.fchild{
 
 
 .news-list{
+    width: 100%;
+    height: 100%;
     padding-top: 10%;
     border-radius: 0px;
-    position: relative;
+    position: absolute;
     display: flex;
-    
-
+    align-items:flex-start;
+    padding-left: 35%;
+    padding-bottom: 0%;
+    margin-top: 10%;
+    grid-template-columns: repeat(auto-fit, minmax(250px,1fr));
+    grid-gap: 20px;
 }
 
 
 .news-list img{
-    width: 70%;
+    width: 100%;
     height: 90%;
     border-radius: 2px;
     display: grid;
     background-color:antiquewhite;
+    grid-gap: 20px;
     
 }
 .event1{
@@ -420,7 +428,7 @@ button.fchild{
 /*-----------------*/
 
 #display{
-    margin-top: 15%;
+    margin-top: 40%;
 }
 .container5{
 
@@ -463,6 +471,7 @@ button.fchild{
     display: block;
     padding-left: 0px;
     margin-top: 20px;
+    align-items: stretch;
 }
 .ev a{
     margin-top: 20px;
@@ -518,13 +527,83 @@ button.fstay{
 /*--------------mission and core----*/
 .mission{
 margin-top: 20%;
+color: #003963;
+margin-left: 20px;
+margin-right: 60%;
+}
+
+button.fmission{
+    border: 10px;
+    padding: 8px 12px;
+    background-color:#003963;
+    color: #fff;
+    border-radius: 4px;
+    border-right: 2px;
 }
 
 
 .core {
     width: 100%;
-    display: grid;
-    position: relative;
+    display: flex;
+    position:absolute;
     margin-top: -20%;
-    
+    margin-left: 50%;
+    align-items: flex-start;
+    grid-template-columns: repeat(auto-fit, minmax(250px,1fr));
+    grid-gap: 20px;
+}
+.mission1{
+    width: 100%;
+    display: flex;
+    position:absolute;
+    margin-top: 0%;
+    margin-left: 50%;
+    align-items: flex-start;
+    grid-template-columns: repeat(auto-fit, minmax(250px,1fr));
+    grid-gap: 20px;
+}
+
+
+/*--------------connect with us-----*/
+#map{
+    margin-top: 30%;
+    width: 100%;
+    height: 100%;
+    background-image: url(www.googlemap.com);
+    color: #003963;
+    text-align: center;
+    padding-right: -80%;
+}
+
+.us{
+    display: block;
+}
+
+button.fmap{
+    border: 10px;
+    padding: 8px 12px;
+    background-color:#003963;
+    color: #fff;
+    border-radius: 4px;
+    border-right: 2px;
+}
+
+/*--------------footer----*/
+.footer{
+    margin-top: 10%;
+    padding-top: 10%;
+    height: 50vh;
+    color: #fff;
+    align-items: center;
+    align-content: center;
+    text-align: center;
+    background-color: #003963;
+}
+
+.fdown{
+    width: 80%;
+    text-align: left;
+    margin-top: 5%;
+    margin-bottom: 4%;
+    padding-left: 30%;
 }
