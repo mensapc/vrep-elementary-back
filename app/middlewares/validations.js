@@ -1,5 +1,9 @@
 const jwt = require('jsonwebtoken');
 const CustomError = require('../../utils/CustomError');
+const User = require('../models/user');
+
+
+NewUser = new User();
 
 // Middleware to validate a JWT token
 
@@ -18,4 +22,17 @@ const validateToken = (req, res, next) => {
     }
 }
 
-module.exports = { validateToken };
+const validateAdmin = async(req, res, next) => {
+    try {
+        // Validate if user is admin
+        const user = req.user;
+        const admin = await NewUser.findUserByEmail(user.email);
+        if (admin.role !== 'admin') throw new CustomError('Unauthorized', 401);
+        next();
+    } catch (error) {
+        console.error('Error creating student:', error);
+        next(error);
+    }
+}
+
+module.exports = { validateToken, validateAdmin };

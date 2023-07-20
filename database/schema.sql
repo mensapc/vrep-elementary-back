@@ -5,3 +5,11 @@ CREATE TABLE IF NOT EXISTS users (
   password VARCHAR(255),
   role VARCHAR(255)
 );
+
+CREATE TABLE IF NOT EXISTS students (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id VARCHAR(255),
+  grade_level VARCHAR(255),
+  contact_number VARCHAR(50),
+  address VARCHAR(255)
+);
