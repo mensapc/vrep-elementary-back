@@ -6,5 +6,6 @@ const router = express.Router();
 const studentController = new StudentController();
 
 router.post('/student/new', validateToken, validateAdmin, studentController.createStudent);
+router.get('/students', validateToken, validateAdmin, studentController.getAllStudents);
 
 module.exports = router;

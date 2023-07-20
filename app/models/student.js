@@ -15,6 +15,18 @@ class Student {
             throw new Error('Failed to create student.');
         }
     }
+
+    getAllStudents = async() => {
+        try {
+            const query = `SELECT u.name, u.email, s.* FROM users u JOIN students s ON u.id = s.user_id`;
+            const result = await pool.query(query);
+            return result.rows;
+
+        } catch (error) {
+            console.error('Error getting all students:', error);
+            next(error);
+        }
+    }
 }
 
 module.exports = Student;
