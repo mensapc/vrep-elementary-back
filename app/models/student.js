@@ -27,6 +27,19 @@ class Student {
             next(error);
         }
     }
+
+    getStudentById = async(student_id) => {
+        try {
+            const query = `SELECT u.name, u.email, s.* FROM users u JOIN students s ON u.id = s.user_id WHERE s.id = $1`;
+            console.log(student_id)
+            const values = [student_id];
+            const result = await pool.query(query, values);
+            return result.rows[0];
+        } catch (error) {
+            console.error('Error getting student by id:', error);
+            next(error);
+        }
+    }
 }
 
 module.exports = Student;

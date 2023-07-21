@@ -36,6 +36,18 @@ class StudentController {
             next(error);
         }
     }
+
+    // Method to get student by id
+    getStudentById = async(req, res, next) => {
+        const { id } = req.params;
+        try {
+            const result = await this.student.getStudentById(id);
+            res.status(200).json({ student: {...result } });
+        } catch (error) {
+            console.error('Error getting student by id:', error);
+            next(error);
+        }
+    }
 }
 
 module.exports = StudentController;

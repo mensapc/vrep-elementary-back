@@ -7,5 +7,6 @@ const studentController = new StudentController();
 
 router.post('/student/new', validateToken, validateAdmin, studentController.createStudent);
 router.get('/students', validateToken, validateAdmin, studentController.getAllStudents);
+router.get('/students/:id', validateToken, studentController.getStudentById);
 
 module.exports = router;
