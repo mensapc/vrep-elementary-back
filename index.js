@@ -4,6 +4,7 @@ const errorMiddleware = require('./app/middlewares/error.middleware');
 require('dotenv').config();
 const authRoutes = require('./app/routes/auth.routes');
 const studentRoutes = require('./app/routes/student.routes');
+const teacherRoutes = require('./app/routes/teacher.routes');
 
 const app = express();
 const port = process.env.SERVER_PORT || 8080;
@@ -12,6 +13,7 @@ app.use(cors());
 app.use(express.json());
 app.use('/', authRoutes);
 app.use('/api/v1', studentRoutes)
+app.use('/api/v1', teacherRoutes)
 
 app.use(errorMiddleware);
 

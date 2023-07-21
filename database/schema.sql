@@ -15,3 +15,12 @@ CREATE TABLE IF NOT EXISTS students (
 );
 
 ALTER TABLE students ALTER COLUMN user_id TYPE UUID USING user_id::UUID;
+
+CREATE TABLE IF NOT EXISTS teachers (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id VARCHAR(255),
+  contact_number VARCHAR(50),
+  address VARCHAR(255)
+);
+
+ALTER TABLE teachers ALTER COLUMN user_id TYPE UUID USING user_id::UUID;
