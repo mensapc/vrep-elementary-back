@@ -8,5 +8,6 @@ const studentController = new StudentController();
 router.post('/student/new', validateToken, validateAdmin, studentController.createStudent);
 router.get('/students', validateToken, validateAdmin, studentController.getAllStudents);
 router.get('/students/:id', validateToken, studentController.getStudentById);
+router.put('/students/:id', validateToken, validateAdmin, studentController.updateStudentById);
 
 module.exports = router;

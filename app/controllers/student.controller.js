@@ -48,6 +48,22 @@ class StudentController {
             next(error);
         }
     }
+
+    // Method to update student by id
+    updateStudentById = async(req, res, next) => {
+        const { id } = req.params;
+        const data = req.body;
+
+        try {
+            if (data.user_id) throw new CustomError('User id cannot be updated', 400);
+            const result = await this.student.updateStudentById(id, data);
+            res.status(200).json({ student: {...result } });
+        } catch (error) {
+            console.error('Error updating student by id:', error);
+            next(error);
+        }
+    }
+
 }
 
 module.exports = StudentController;

@@ -1,8 +1,12 @@
 const pool = require('../../config/db');
+const UtilsQueries = require('../../utils/utils.queries');
 
 // Class to represent a student
 
 class Student {
+    constructor() {
+        this.utilsQueries = new UtilsQueries();
+    }
     createStudent = async(studentData) => {
         const { user_id, grade_level, contact_number, address = null } = studentData;
         try {
@@ -37,6 +41,19 @@ class Student {
             return result.rows[0];
         } catch (error) {
             console.error('Error getting student by id:', error);
+            next(error);
+        }
+    }
+
+    updateStudentById = async(student_id, studentData) => {
+        try {
+            const { queryParams, setClauseString } = this.utilsQueries.studentUpdate(studentData);
+            const query = `UPDATE students SET ${setClauseString} WHERE id = $${queryParams.length + 1} RETURNING *`;
+            const values = [...queryParams, student_id];
+            const result = await pool.query(query, values);
+            return this.getStudentById(result.rows[0].id);
+        } catch (error) {
+            console.error('Error updating student by id:', error);
             next(error);
         }
     }
