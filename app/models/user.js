@@ -4,7 +4,7 @@ const pool = require('../../config/db');
 class User {
     // Method to create a new user
     createUser = async(userData) => {
-        const { name, email, password, role = 'student' } = userData;
+        const { name, email, password, role } = userData;
 
         try {
             const query =

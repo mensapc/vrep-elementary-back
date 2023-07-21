@@ -22,7 +22,7 @@ class Student {
 
     getAllStudents = async() => {
         try {
-            const query = `SELECT u.name, u.email, s.* FROM users u JOIN students s ON u.id = s.user_id`;
+            const query = `SELECT u.name, u.email, role, s.* FROM users u JOIN students s ON u.id = s.user_id`;
             const result = await pool.query(query);
             return result.rows;
 
@@ -35,7 +35,6 @@ class Student {
     getStudentById = async(student_id) => {
         try {
             const query = `SELECT u.name, u.email, s.* FROM users u JOIN students s ON u.id = s.user_id WHERE s.id = $1`;
-            console.log(student_id)
             const values = [student_id];
             const result = await pool.query(query, values);
             return result.rows[0];
@@ -47,7 +46,7 @@ class Student {
 
     updateStudentById = async(student_id, studentData) => {
         try {
-            const { queryParams, setClauseString } = this.utilsQueries.studentUpdate(studentData);
+            const { queryParams, setClauseString } = this.utilsQueries.filterUpdates(studentData);
             const query = `UPDATE students SET ${setClauseString} WHERE id = $${queryParams.length + 1} RETURNING *`;
             const values = [...queryParams, student_id];
             const result = await pool.query(query, values);

@@ -8,9 +8,9 @@ class Teacher {
         this.utilsQueries = new UtilsQueries();
     }
     createTeacher = async(teacherData) => {
-        const { user_id, contact_number, address = null } = teacherData;
+        const { user_id, contact_number, address } = teacherData;
         try {
-            const query = 'INSERT INTO teachers (user_id, contact_number, address) VALUES ($1, $2, $3, $4) RETURNING *';
+            const query = 'INSERT INTO teachers (user_id, contact_number, address) VALUES ($1, $2, $3) RETURNING *';
             const values = [user_id, contact_number, address];
             const result = await pool.query(query, values);
             return result.rows[0];
@@ -22,7 +22,7 @@ class Teacher {
 
     getAllTeachers = async() => {
         try {
-            const query = `SELECT u.name, u.email, t.* FROM users u JOIN teachers t ON u.id = t.user_id`;
+            const query = `SELECT u.name, u.email, u.role, t.* FROM users u JOIN teachers t ON u.id = t.user_id`;
             const result = await pool.query(query);
             return result.rows;
 
@@ -34,10 +34,10 @@ class Teacher {
 
     getTeacherById = async(teacher_id) => {
         try {
-            const query = `SELECT u.name, u.email, s.* FROM users u JOIN teachers s ON u.id = s.user_id WHERE s.id = $1`;
-            console.log(teacher_id)
+            const query = `SELECT u.name, u.email, u.role, t.* FROM users u JOIN teachers t ON u.id = t.user_id WHERE t.id = $1`;
             const values = [teacher_id];
             const result = await pool.query(query, values);
+            console.log(result.rows, 'result.....')
             return result.rows[0];
         } catch (error) {
             console.error('Error getting teacher by id:', error);
@@ -47,7 +47,7 @@ class Teacher {
 
     updateTeacherById = async(teacher_id, teacherData) => {
         try {
-            const { queryParams, setClauseString } = this.utilsQueries.teacherUpdate(teacherData);
+            const { queryParams, setClauseString } = this.utilsQueries.filterUpdates(teacherData);
             const query = `UPDATE teachers SET ${setClauseString} WHERE id = $${queryParams.length + 1} RETURNING *`;
             const values = [...queryParams, teacher_id];
             const result = await pool.query(query, values);
