@@ -7,6 +7,7 @@ const serviceAccount = require('./config/serviceAccountKey.json');
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
+const authRoutes = require('./routes/auth.routes');
 const app = express();
 
 app.use(express.json());
@@ -14,6 +15,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
 const PORT = process.env.PORT || 8080;
+
+app.use('/', authRoutes);
 
 app.use(errorMiddleware);
 
