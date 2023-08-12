@@ -1,4 +1,5 @@
 const admin = require('firebase-admin');
+const CustomError = require('../utils/CustomError');
 
 class Staff {
   createStaff = async (data) => {
