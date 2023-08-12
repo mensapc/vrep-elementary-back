@@ -1,13 +1,16 @@
 const bcrypt = require('bcryptjs');
 const Admin = require('../models/admin');
 const Staff = require('../models/staff');
+const Student = require('../models/student');
 const CustomError = require('../utils/CustomError');
 const generateToken = require('../utils/utils.token');
+const generateRegNumber = require('../utils/utils.registration_number');
 
 class AuthController {
   constructor() {
     this.admin = new Admin();
     this.staff = new Staff();
+    this.student = new Student();
   }
 
   register = async (req, res, next) => {
@@ -25,6 +28,16 @@ class AuthController {
           break;
         case 'staff':
           newUser = await this.staff.createStaff({ ...userData, email, password, role });
+          break;
+        case 'student':
+          const regNumber = generateRegNumber();
+          newUser = await this.student.createStudent({
+            ...userData,
+            reg_number: regNumber,
+            email,
+            password,
+            role,
+          });
           break;
         default:
           throw new CustomError(`Route: register/${userType} not found`, 404);
