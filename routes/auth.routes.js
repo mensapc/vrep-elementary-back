@@ -12,4 +12,6 @@ router.post(
   authorize(['createStudent', 'createAdmin', 'createStaff']),
   authController.register
 );
+
+router.post('/login/:userType', authController.login);
 module.exports = router;
