@@ -1,6 +1,8 @@
 const admin = require('firebase-admin');
 const CustomError = require('../utils/CustomError');
 
+const db = admin.firestore();
+
 class Staff {
   createStaff = async (data) => {
     try {
@@ -21,6 +23,18 @@ class Staff {
       if (error.code === 'auth/email-already-exists')
         throw new CustomError('The email address is already in use by another account.', 409);
       throw new Error('Failed to register staff.');
+    }
+  };
+
+  findStaffByEmail = async (email) => {
+    try {
+      const querySnapshot = await db.collection('staff').where('email', '==', email).get();
+      const staffDoc = querySnapshot.docs[0];
+      const staff = staffDoc ? staffDoc.data() : null;
+      return staff;
+    } catch (error) {
+      console.error('Error finding staff by email:', error);
+      throw new Error('Failed to find staff.');
     }
   };
 }

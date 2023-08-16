@@ -1,16 +1,21 @@
-const bcrypt = require('bcryptjs');
 const Admin = require('../models/admin');
+const User = require('../models/user');
 const Staff = require('../models/staff');
 const Student = require('../models/student');
 const CustomError = require('../utils/CustomError');
 const generateToken = require('../utils/utils.token');
 const generateRegNumber = require('../utils/utils.registration_number');
+const BcryptPassword = require('../utils/utils.bcrypt.password');
+const RegistrationUtils = require('../utils/utils.registration');
 
 class AuthController {
   constructor() {
+    this.user = new User();
     this.admin = new Admin();
     this.staff = new Staff();
     this.student = new Student();
+    this.bcryptPassword = new BcryptPassword();
+    this.registrationUtils = new RegistrationUtils();
   }
 
   register = async (req, res, next) => {
@@ -20,8 +25,8 @@ class AuthController {
     let newUser;
 
     try {
-      await this.validateRegisterData(userData);
-      const { email, password, role } = this.prepareRegistrationData(userData);
+      this.registrationUtils.validateData(userData, userType);
+      const { email, password, role } = await this.registrationUtils.prepareData(userData);
       switch (userType) {
         case 'admin':
           newUser = await this.admin.createAdmin({ ...userData, email, password, role });
@@ -52,44 +57,47 @@ class AuthController {
     }
   };
 
-  validateRegisterData = async (data) => {
-    const { email, password, role, first_name, last_name } = data;
+  login = async (req, res, next) => {
+    const userType = req.params.userType;
+    const userData = req.body;
+
     try {
-      if (!email || !password || !role || !first_name || !last_name) {
-        throw new CustomError('Name, email, role, and password are required', 400);
+      let credentials, userInfo, token;
+
+      switch (userType) {
+        case 'student':
+          credentials = await this.user.findUserByRegNumber(userData.reg_number);
+          userInfo = await this.student.findStudentByRegNumber(credentials.id);
+          break;
+
+        case 'staff':
+        case 'admin':
+          credentials = await this.user.findUserByEmail(userData.email);
+          userInfo =
+            userType === 'staff'
+              ? await this.staff.findStaffByEmail(credentials.email)
+              : await this.admin.findAdminByEmail(credentials.email);
+
+          await this.bcryptPassword.PasswordCompare(userData.password, userInfo.password);
+
+          break;
+
+        default:
+          throw new CustomError(`Route: login/${userType} not found`, 404);
       }
 
-      // Email format validation
-      const emailRegex = /^\S+@\S+\.\S+$/;
-      if (!emailRegex.test(email)) {
-        throw new CustomError('Invalid email format', 400);
+      if (!credentials || !userInfo) {
+        throw new CustomError(`${userType} not found`, 404);
       }
 
-      // Password length validation
-      if (password.length < 8) {
-        throw new CustomError('Password must be at least 8 characters', 400);
-      }
+      delete userInfo.password;
+      token = generateToken(userInfo);
+
+      res.status(200).json({ user: userInfo, token });
     } catch (error) {
-      if (error instanceof CustomError) throw error;
-      throw new Error('Registration failed');
+      console.error('Error logging in user:', error);
+      next(error);
     }
-  };
-
-  prepareRegistrationData = (data) => {
-    // Sanitize and normalize inputs
-    const { email, password, role } = data;
-    const sanitizedEmail = email.trim().toLowerCase();
-    const sanitizedRole = role.trim().toLowerCase();
-
-    // Hash password
-    const salt = bcrypt.genSaltSync(10);
-    const hashedPassword = bcrypt.hashSync(password, salt);
-
-    return {
-      email: sanitizedEmail,
-      password: hashedPassword,
-      role: sanitizedRole,
-    };
   };
 }
 
