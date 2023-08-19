@@ -1,6 +1,7 @@
 const userRoles = {
   admin: [
     'createStudent',
+    'createStudent1',
     'createStaff',
     'createAdmin',
     'readStudent',

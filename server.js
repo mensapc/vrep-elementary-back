@@ -8,6 +8,7 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
 const authRoutes = require('./routes/auth.routes');
+const studentRoutes = require('./routes/students.authroutes')
 const app = express();
 
 app.use(express.json());
@@ -17,6 +18,7 @@ app.use(cors());
 const PORT = process.env.PORT || 8080;
 
 app.use('/', authRoutes);
+app.use('/', studentRoutes)
 
 app.use(errorMiddleware);
 

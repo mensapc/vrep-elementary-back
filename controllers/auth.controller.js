@@ -91,6 +91,7 @@ class AuthController {
       }
 
       delete userInfo.password;
+      console.log(userInfo);
       token = generateToken(userInfo);
 
       res.status(200).json({ user: userInfo, token });
