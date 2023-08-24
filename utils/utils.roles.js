@@ -8,6 +8,8 @@ const userRoles = {
     'updateStudent',
     'deleteStudent',
     'readStudents',
+    'readStaff',
+    'deleteStaff'
   ],
   staff: ['readStudent', 'readStudents'],
   pupil: ['readStudent'],

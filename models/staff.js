@@ -25,7 +25,7 @@ class Staff {
       throw new Error('Failed to register staff.');
     }
   };
-
+  // find staff by email
   findStaffByEmail = async (email) => {
     try {
       const querySnapshot = await db.collection('staff').where('email', '==', email).get();
@@ -37,6 +37,48 @@ class Staff {
       throw new Error('Failed to find staff.');
     }
   };
+
+  //Get all Staff
+  getAllStaff = async () => {
+    try {
+      const querySnapshot = await db.collection('staff').get();
+      const staff = [];
+      querySnapshot.forEach((doc) => {
+        const staffData = doc.data();
+        staff.push(staffData);
+      });
+
+      return staff;
+    } catch (error) {
+      console.error('Error finding all staff:', error);
+      throw new Error('Failed to retrieve staff.', 404);
+    }
+  };
+  // get single staff 
+  getStaffById = async (staffId) => {
+    try {
+      const staffSnapshot = await db.collection('staff').doc(staffId).get();
+      if (!staffSnapshot.exists) {
+        throw new Error(`Staff with ID ${staffId} not found.`);
+      }
+
+      return staffSnapshot.data();
+    } catch (error) {
+      console.error('Error getting staff by ID:', error);
+      throw new Error('Failed to retrieve staff by ID.', 404);
+    }
+  }
+  // delete staff by id
+  deleteStaffById = async (staffId) => {
+    try {
+      const staffRef = db.collection('staff').doc(staffId);
+      await staffRef.delete();
+    } catch (error) {
+      console.error('Error deleting staff:', error);
+      throw new CustomError('Failed to delete staff.', 500);
+    }
+  }
+
 }
 
 module.exports = Staff;

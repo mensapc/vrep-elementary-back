@@ -9,6 +9,7 @@ admin.initializeApp({
 });
 const authRoutes = require('./routes/auth.routes');
 const studentRoutes = require('./routes/students.authroutes')
+const staffRoutes = require('./routes/staff.routes')
 const app = express();
 
 app.use(express.json());
@@ -19,6 +20,7 @@ const PORT = process.env.PORT || 8080;
 
 app.use('/', authRoutes);
 app.use('/', studentRoutes)
+app.use('/', staffRoutes)
 
 app.use(errorMiddleware);
 
