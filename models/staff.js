@@ -59,13 +59,13 @@ class Staff {
     try {
       const staffSnapshot = await db.collection('staff').doc(staffId).get();
       if (!staffSnapshot.exists) {
-        throw new Error(`Staff with ID ${staffId} not found.`);
+        throw CustomError(`Staff with ID ${staffId} not found.`);
       }
 
       return staffSnapshot.data();
     } catch (error) {
       console.error('Error getting staff by ID:', error);
-      throw new Error('Failed to retrieve staff by ID.', 404);
+      throw CustomError('Failed to retrieve staff by ID.', 404);
     }
   }
   // delete staff by id
@@ -74,8 +74,9 @@ class Staff {
       const staffRef = db.collection('staff').doc(staffId);
       await staffRef.delete();
     } catch (error) {
-      console.error('Error deleting staff:', error);
-      throw new CustomError('Failed to delete staff.', 500);
+      if (error.code === 'staff/uid-deleted')
+        throw new CustomError('staff ID deleted', 404);
+      throw new Error('Failed to delete staff.');
     }
   }
 
