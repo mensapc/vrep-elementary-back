@@ -1,14 +1,13 @@
 const Staff = require('../models/staff');
 const CustomError = require('../utils/CustomError.js');
 const RegistrationUtils = require('../utils/utils.addStudent');
-const generateRegNumber = require('../utils/utils.registration_number');
-const generateToken = require('../utils/utils.token')
 
 
 class StaffController {
     constructor() {
         this.staff = new Staff()
     }
+    //get all staff 
     findAllStaff = async (req, res, next) => {
         try {
             const staff = await this.staff.getAllStaff();
@@ -22,7 +21,7 @@ class StaffController {
             next(error);
         }
     };
-
+    // get satff by id 
     getStaffById = async (req, res, next) => {
         const staffId = req.body.staff_id; // Use staff_id from req.body
 
@@ -34,6 +33,7 @@ class StaffController {
             res.status(error.statusCode || 500).json({ error: error.message });
         }
     }
+    // deleting staff by id 
     deleteStaffById = async (req, res, next) => {
         const staffId = req.body.staff_id; // Extract staff ID from req.body
 
@@ -43,6 +43,28 @@ class StaffController {
         } catch (error) {
             console.error('Error in deleteStaffById controller:', error);
             res.status(error.statusCode || 500).json({ error: error.message });
+        }
+    }
+    // updating staff details by id
+    updateStaffById = async (req, res, next) => {
+        try {
+            const { staff_id } = req.body;
+            const updatedData = req.body; // Assuming you send the entire updated data in the request body
+
+            if (!staff_id) {
+                throw new CustomError('Staff ID is required', 400);
+            }
+
+            const updatedStaff = await this.staff.updateStaffById(staff_id, updatedData);
+
+            if (updatedStaff) {
+                res.status(201).json({ staff: updatedStaff });
+            } else {
+                throw new CustomError(`Staff with ID ${staff_id} not found`, 400);
+            }
+        } catch (error) {
+            console.error(`Error updating staff with ID ${req.body.staff_id}: ${error}`);
+            throw new Error('Failed to update staff.');
         }
     }
 

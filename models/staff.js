@@ -68,6 +68,24 @@ class Staff {
       throw CustomError('Failed to retrieve staff by ID.', 404);
     }
   }
+
+  // updating staff details 
+  updateStaffById = async (staff_id, newData) => {
+    try {
+      const docRef = db.collection('staff').doc(staff_id);
+      const docSnapshot = await docRef.get();
+
+      if (docSnapshot.exists) {
+        await docRef.update(newData);
+        return newData; // Returns the updated data
+      } else {
+        return null;
+      }
+    } catch (error) {
+      console.error('Error updating staff by ID:', error);
+      throw new Error('Failed to update staff.', 500);
+    }
+  }
   // delete staff by id
   deleteStaffById = async (staffId) => {
     try {
