@@ -1,6 +1,5 @@
 const Staff = require('../models/staff');
 const CustomError = require('../utils/CustomError.js');
-const RegistrationUtils = require('../utils/utils.addStudent');
 
 
 class StaffController {
