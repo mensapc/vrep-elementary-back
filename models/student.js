@@ -1,5 +1,6 @@
 const admin = require('firebase-admin');
 const CustomError = require('../utils/CustomError');
+const generateRegNumber = require('../utils/utils.registration_number');
 const db = admin.firestore();
 
 class Student {

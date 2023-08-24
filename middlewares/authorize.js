@@ -4,8 +4,6 @@ const CustomError = require('../utils/CustomError.js');
 const authorize = (permissions) => {
   return (req, res, next) => {
     const userRole = req && req.user && req.user.role;
-    console.log(userRole);
-    console.log(permissions);
     if (!userRole || !userRoles[userRole]) throw new CustomError('Unauthorized', 401);
     const userPermissions = userRoles[userRole];
     const hasPermission = permissions.some((permission) => userPermissions.includes(permission));

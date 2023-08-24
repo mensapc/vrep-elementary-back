@@ -9,7 +9,7 @@ const authController = new AuthController();
 router.post(
   '/register/:userType',
   validateToken,
-  authorize(['createStudent', 'createAdmin', 'createStaff']),
+  authorize(['createStudent', 'createAdmin', 'createStaff', 'createCourse']),
   authController.register
 );
 

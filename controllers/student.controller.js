@@ -23,7 +23,7 @@ class StudentAuthController {
             const { email, role, } = await this.registrationUtils.prepareData(userData);
             switch (userType) {
                 case 'student':
-                    regNumber = generateRegNumber();
+                    regNumber = generateRegNumber()
                     newUser = await this.student.AddSingleStudent({
                         ...userData,
                         email,
