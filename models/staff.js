@@ -87,9 +87,9 @@ class Staff {
     }
   }
   // delete staff by id
-  deleteStaffById = async (staffId) => {
+  deleteStaffById = async (staff_id) => {
     try {
-      const staffRef = db.collection('staff').doc(staffId);
+      const staffRef = db.collection('staff').doc(staff_id);
       await staffRef.delete();
     } catch (error) {
       if (error.code === 'staff/uid-deleted')

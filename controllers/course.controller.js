@@ -62,6 +62,7 @@ class CourseController {
             next(error);
         }
     };
+
 }
 
 module.exports = CourseController;

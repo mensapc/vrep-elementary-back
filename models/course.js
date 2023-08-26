@@ -73,6 +73,28 @@ class Course {
         }
     };
 
+    updateCourseByID = async (courseID, updatedData) => {
+        try {
+            const courseRef = db.collection('courses').doc(courseID);
+
+            const courseSnapshot = await courseRef.get();
+            if (!courseSnapshot.exists) {
+                throw new Error('Course not found.');
+            }
+
+            await courseRef.update(updatedData);
+
+            return {
+                ...courseSnapshot.data(),
+                ...updatedData
+            };
+        } catch (error) {
+            console.error('Error updating course by courseID:', error);
+            throw new Error('Failed to update course.', 500);
+        }
+    }
+
+
 }
 
 module.exports = Course;
