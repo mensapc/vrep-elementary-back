@@ -1,7 +1,6 @@
 const Student = require('../models/student');
 const CustomError = require('../utils/CustomError.js');
 const RegistrationUtils = require('../utils/utils.addStudent');
-const generateRegNumber = require('../utils/utils.registration_number');
 const generateToken = require('../utils/utils.token')
 
 class StudentAuthController {
@@ -23,11 +22,9 @@ class StudentAuthController {
             const { email, role, } = await this.registrationUtils.prepareData(userData);
             switch (userType) {
                 case 'student':
-                    regNumber = generateRegNumber()
                     newUser = await this.student.AddSingleStudent({
                         ...userData,
                         email,
-                        reg_number: regNumber,
                         role,
                     });
 
@@ -48,33 +45,18 @@ class StudentAuthController {
 
     // Get Single student controller
     getSingleStudent = async (req, res, next) => {
-        const userType = req.params.userType;
-        const userData = req.body;
+        const reg_number = req.params.reg_number;
 
         try {
-            const { reg_number } = userData;
+            const studentData = await this.student.findStudentByRegNumber(reg_number);
 
-            if (!reg_number) {
-                throw new CustomError('Registration number is required', 400);
+            if (!studentData) {
+                throw new CustomError(`Student with registration number ${reg_number} not found`, 404);
             }
 
-            let studentData;
-
-            switch (userType) {
-                case 'regnum':
-                    studentData = await this.student.findStudentByRegNumber(reg_number);
-
-                    if (!studentData) {
-                        throw new CustomError(`Student with registration number ${reg_number} not found`, 404);
-                    }
-                    break;
-
-                default:
-                    throw new Error(`Invalid userType: ${userType}`, 400);
-            }
             res.status(200).json({ student: studentData, });
         } catch (error) {
-            console.error(`Error retrieving student with registration number ${userData.reg_number}: ${error}`);
+            console.error(`Error retrieving student with registration number ${reg_number}: ${error}`);
             next(error);
         }
     };

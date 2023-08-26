@@ -1,6 +1,7 @@
 const admin = require('firebase-admin');
 const CustomError = require('../utils/CustomError');
 const generateRegNumber = require('../utils/utils.registration_number');
+const generateUniqueRegNumber = require('../utils/utils.registration_number')
 const db = admin.firestore();
 
 class Student {
@@ -44,19 +45,28 @@ class Student {
       throw new Error('Failed to find student.', 500);
     }
   };
-  // adding a single student 
+
+  // Adding a single student 
+
+  // validating before registering
+
   AddSingleStudent = async (data) => {
     try {
+      const regNumber = generateUniqueRegNumber(); //Generates a unique reg_number if there's a duplicate
+
       const userRecord = await admin.auth().createUser({
-        uid: data.reg_number,
+        uid: regNumber,
         email: data.email,
         password: data.password,
       })
       await db
         .collection('students')
         .doc(userRecord.uid)
-        .set(data)
-      return data;
+        .set({
+          ...data,
+          reg_number: regNumber,
+        })
+      return { ...data, reg_number: regNumber, };
     } catch (error) {
       console.error('Error registering student failed:', error);
       if (error.code === 'auth/credentials-exists')

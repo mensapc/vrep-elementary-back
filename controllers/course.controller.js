@@ -35,36 +35,17 @@ class CourseController {
     }
     // Get Single Course
     getSingleCourse = async (req, res, next) => {
-        const userType = req.params.userType;
-        const userData = req.body;
-
+        const courseId = req.params.courseId;
+        console.log(courseId);
         try {
-            const { courseID } = userData;
-
-            if (!courseID) {
-                throw new CustomError('CourseID is required', 400);
-            }
-
-            let courseData;
-
-            switch (userType) {
-                case 'coursenum':
-                    courseData = await this.course.getCourseById(courseID);
-
-                    if (!courseData) {
-                        throw new CustomError(`Course ID  ${courseID} not found`, 404);
-                    }
-                    break;
-
-                default:
-                    throw new Error(`Invalid userType: ${userType}`, 400);
-            }
+            const courseData = await this.course.getCourseById(courseId);
             res.status(200).json({ course: courseData, });
         } catch (error) {
-            console.error(`Error CourseID number ${userData.courseID}: ${error}`);
+            console.error(`Error CourseID number ${courseId}: ${error}`);
             next(error);
         }
     };
+
     // Delete course by ID
     deleteCourseByID = async (req, res, next) => {
         try {

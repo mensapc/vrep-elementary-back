@@ -7,7 +7,7 @@ const StudentController = new StudentAuthController();
 
 
 router.post('/register-student/:userType', validateToken, authorize(['createStudent1']), StudentController.addStudent);
-router.post('/single/student/:userType', validateToken, authorize(['readStudent']), StudentController.getSingleStudent);
+router.get('/single/student/:reg_number', validateToken, authorize(['readStudent']), StudentController.getSingleStudent);
 router.get('/students', validateToken, authorize(['readStudents']), StudentController.getAllStudents)
 router.delete('/delete/student', validateToken, authorize(['deleteStudent']), StudentController.deleteStudent);
 router.put('/update', validateToken, authorize(['updateStudent']), StudentController.updateStudent)
