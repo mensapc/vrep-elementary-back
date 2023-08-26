@@ -16,7 +16,7 @@ class StaffController {
             }
             res.status(200).json({ Allstaff: staff })
         } catch (error) {
-            console.error(`Error retrieving all students `, error);
+            console.error(`Error retrieving all staff's `, error);
             next(error);
         }
     };
