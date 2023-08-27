@@ -36,7 +36,7 @@ class CourseController {
     // Get Single Course
     getSingleCourse = async (req, res, next) => {
         const courseId = req.params.courseId;
-        console.log(courseId);
+
         try {
             const courseData = await this.course.getCourseById(courseId);
             res.status(200).json({ course: courseData, });
@@ -63,6 +63,24 @@ class CourseController {
         }
     };
 
+    // Controller function to update a course by ID
+    updateCourseByID = async (req, res, next) => {
+        try {
+            const courseID = req.params.courseID; // Get the course ID from the request params
+            const updatedData = req.body; // Updated data from the request body
+
+            const updatedCourse = await this.course.updateCourseByID(courseID, updatedData);
+
+            if (!updatedCourse) {
+                throw new CustomError('Course not found.', 404);
+            }
+
+            res.status(200).json(updatedCourse);
+        } catch (error) {
+            console.error(`Error updating course: ${error}`);
+            next(error);
+        }
+    };
 }
 
 module.exports = CourseController;

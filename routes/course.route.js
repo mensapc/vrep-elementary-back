@@ -11,5 +11,6 @@ router.post('/create/course', validateToken, authorize(['createCourse']), course
 router.get('/courses', validateToken, authorize(['readCourse']), courseController.getAllCourses);
 router.get('/course/:courseId', validateToken, authorize(['readCourses']), courseController.getSingleCourse)
 router.delete('/delete/course', validateToken, authorize(['deletecourse']), courseController.deleteCourseByID)
+router.put('/update/course/:courseID', validateToken, authorize(['updateCourse']), courseController.updateCourseByID)
 
 module.exports = router;

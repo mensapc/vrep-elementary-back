@@ -15,8 +15,12 @@ const userRoles = {
     'readCourse',
     'readCourses',
     'deletecourse',
+    'updateCourse',
+    'createClass',
+    'readClass',
+    'readSingleClass'
   ],
-  staff: ['readStudent', 'readStudents'],
+  staff: ['readStudent', 'readStudents', 'updateCourse', 'createClass', 'readClass', 'readSingleClass'],
   pupil: ['readStudent'],
 };
 

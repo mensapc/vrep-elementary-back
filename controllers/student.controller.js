@@ -14,7 +14,7 @@ class StudentAuthController {
         const userData = req.body;
 
         let newUser;
-        let regNumber;
+
 
         try {
 
