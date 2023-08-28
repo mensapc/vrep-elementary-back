@@ -1,7 +1,7 @@
 const { Schema } = require("firefose");
 const { Model } = require("firefose");
 const { SchemaTypes } = require("firefose");
-const { String } = SchemaTypes;
+const { String, Number } = SchemaTypes;
 
 const examSchema = new Schema(
   {
@@ -13,12 +13,12 @@ const examSchema = new Schema(
       type: String,
       required: true,
     },
-    teacher_id: {
+    staff_id: {
       type: String,
       required: true,
     },
     max_score: {
-      type: String,
+      type: Number,
       required: true,
     },
     time_limit: {
