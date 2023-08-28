@@ -6,6 +6,6 @@ const ExamController = require("../controllers/exam.controller");
 const router = express.Router();
 const examController = new ExamController();
 
-router.post("/exams/new", validateToken, authorize(["createExam"]), examController.createExam);
+router.post("/exams", validateToken, authorize(["createExam"]), examController.createExam);
 
 module.exports = router;

@@ -7,7 +7,7 @@ const router = express.Router();
 const questionController = new QuestionController();
 
 router.post(
-  "/questions/new",
+  "/questions",
   validateToken,
   authorize(["createQuestion"]),
   questionController.createQuestion
