@@ -9,7 +9,7 @@ const userRoles = {
     "readStudents",
   ],
   staff: ["readStudent", "readStudents", "createExam", "createQuestion", "createOption"],
-  pupil: ["readStudent"],
+  pupil: ["readStudent", "createAnswer"],
 };
 
 module.exports = userRoles;

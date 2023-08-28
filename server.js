@@ -11,6 +11,7 @@ const authRoutes = require("./routes/auth.routes");
 const examRoutes = require("./routes/exam.routes");
 const questionRoutes = require("./routes/question.routes");
 const optionRoutes = require("./routes/option.routes");
+const answerRoutes = require("./routes/answer.routes");
 
 const app = express();
 
@@ -24,6 +25,7 @@ app.use("/", authRoutes);
 app.use("/api/v1", examRoutes);
 app.use("/api/v1", questionRoutes);
 app.use("/api/v1", optionRoutes);
+app.use("/api/v1", answerRoutes);
 
 app.use(errorMiddleware);
 
