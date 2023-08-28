@@ -10,6 +10,8 @@ admin.initializeApp({
 const authRoutes = require("./routes/auth.routes");
 const examRoutes = require("./routes/exam.routes");
 const questionRoutes = require("./routes/question.routes");
+const optionRoutes = require("./routes/option.routes");
+
 const app = express();
 
 app.use(express.json());
@@ -21,6 +23,7 @@ const PORT = process.env.PORT || 8080;
 app.use("/", authRoutes);
 app.use("/api/v1", examRoutes);
 app.use("/api/v1", questionRoutes);
+app.use("/api/v1", optionRoutes);
 
 app.use(errorMiddleware);
 

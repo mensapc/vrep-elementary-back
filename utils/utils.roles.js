@@ -8,7 +8,7 @@ const userRoles = {
     "deleteStudent",
     "readStudents",
   ],
-  staff: ["readStudent", "readStudents", "createExam", "createQuestion"],
+  staff: ["readStudent", "readStudents", "createExam", "createQuestion", "createOption"],
   pupil: ["readStudent"],
 };
 
