@@ -1,6 +1,4 @@
-const { Schema } = require("firefose");
-const { Model } = require("firefose");
-const { SchemaTypes } = require("firefose");
+const { Schema, Model, SchemaTypes } = require("firefose");
 const { String, Number } = SchemaTypes;
 
 const examSchema = new Schema(
