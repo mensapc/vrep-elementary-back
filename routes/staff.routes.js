@@ -9,7 +9,7 @@ const router = express.Router();
 
 
 router.get('/all/staff', validateToken, authorize(['readStaff']), staffController.findAllStaff);
-router.delete('/no/staff/:staff_id', validateToken, authorize(['deleteStaff']), staffController.deleteStaffById);
+router.delete('/delete/staff/:staff_id', validateToken, authorize(['deleteStaff']), staffController.deleteStaffById);
 router.post('/Single/staff', validateToken, authorize(['readStaff']), staffController.getStaffById);
 router.put('/update/staff', validateToken, authorize(['updateStaff']), staffController.updateStaffById)
 module.exports = router;

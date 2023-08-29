@@ -71,9 +71,7 @@ class CourseController {
 
             const updatedCourse = await this.course.updateCourseByID(courseID, updatedData);
 
-            if (!updatedCourse) {
-                throw new CustomError('Course not found.', 404);
-            }
+
 
             res.status(200).json(updatedCourse);
         } catch (error) {

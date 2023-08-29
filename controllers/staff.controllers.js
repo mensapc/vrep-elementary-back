@@ -35,7 +35,6 @@ class StaffController {
     // deleting staff by id 
     deleteStaffById = async (req, res, next) => {
         const staff_id = req.params.staff_id; // Extract staff ID from req.body
-        console.log(staff_id);
         try {
             await this.staff.deleteStaffById(staff_id);
             res.status(204).send(); // Successful deletion, no content to send

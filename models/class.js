@@ -58,6 +58,44 @@ class Class {
         }
     }
 
+
+    deleteClass = async (classID) => {
+        try {
+            const docSnapshot = await this.collectionRef.doc(classID).delete();
+            if (docSnapshot.exists) {
+                const courseData = docSnapshot.data();
+                return courseData;
+            } else {
+                return null;
+            }
+        } catch (error) {
+            console.error('Error deleting course by classID number:', error);
+            throw new Error('Failed to delete course.', 500);
+        }
+    };
+
+
+    updateClass = async (classID, updatedData) => {
+        try {
+            const classRef = this.collectionRef.doc(classID);
+
+            const classSnapshot = await classRef.get();
+            if (!classSnapshot.exists) {
+                throw new Error('Class not found.');
+            }
+
+            await classRef.update(updatedData);
+
+            return {
+                ...classSnapshot.data(),
+                ...updatedData
+            };
+        } catch (error) {
+            console.error('Error updating class by classID:', error);
+            throw new Error('Failed to update class.', 500);
+        }
+    }
+
 }
 
 module.exports = Class;

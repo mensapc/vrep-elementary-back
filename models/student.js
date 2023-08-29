@@ -52,21 +52,17 @@ class Student {
 
   AddSingleStudent = async (data) => {
     try {
-      const regNumber = generateUniqueRegNumber(); //Generates a unique reg_number if there's a duplicate
 
       const userRecord = await admin.auth().createUser({
-        uid: regNumber,
+        uid: data.reg_Number,
         email: data.email,
         password: data.password,
       })
       await db
         .collection('students')
         .doc(userRecord.uid)
-        .set({
-          ...data,
-          reg_number: regNumber,
-        })
-      return { ...data, reg_number: regNumber, };
+        .set(data)
+      return data
     } catch (error) {
       console.error('Error registering student failed:', error);
       if (error.code === 'auth/credentials-exists')

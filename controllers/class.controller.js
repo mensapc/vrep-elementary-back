@@ -54,6 +54,46 @@ class ClassController {
         }
     };
 
+
+    // Delete class by ID
+    deleteClassByID = async (req, res, next) => {
+        try {
+            const classID = req.params.classID;
+            console.log(classID);
+
+            if (!classID) {
+                throw new CustomError(`Route: not able to get /${classID}`, 400);
+            }
+
+            const deletedClass = await this.class.deleteClass(classID);
+
+            res.status(204).json({ deletedClass: 'class has been terminated' })
+
+        } catch (error) {
+            console.error(`Error deleting student with registration number ${req.body.classID}: ${error}`);
+            next(error);
+        }
+    };
+
+    updateClassByID = async (req, res, next) => {
+        try {
+            const classID = req.params.classID; // Get the class ID from the request params
+            const updatedData = req.body; // Updated data from the request body
+
+            const updatedClass = await this.class.updateClass(classID, updatedData);
+
+            if (!updatedClass) {
+                throw new CustomError('Class not found.', 404);
+            }
+
+            res.status(200).json(updatedClass);
+        } catch (error) {
+            console.error(`Error updating class: ${error}`);
+            next(error);
+        }
+    };
+
+
 }
 
 module.exports = ClassController;

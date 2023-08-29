@@ -2,6 +2,9 @@ const Student = require('../models/student');
 const CustomError = require('../utils/CustomError.js');
 const RegistrationUtils = require('../utils/utils.addStudent');
 const generateToken = require('../utils/utils.token')
+const generateRegNumber = require('../utils/utils.registration_number');
+const admin = require('firebase-admin');
+
 
 class StudentAuthController {
     constructor() {
@@ -14,7 +17,7 @@ class StudentAuthController {
         const userData = req.body;
 
         let newUser;
-
+        let regNumber;
 
         try {
 
@@ -22,10 +25,12 @@ class StudentAuthController {
             const { email, role, } = await this.registrationUtils.prepareData(userData);
             switch (userType) {
                 case 'student':
+                    regNumber = await this.generateUniqueRegNumber();
                     newUser = await this.student.AddSingleStudent({
                         ...userData,
                         email,
                         role,
+                        reg_number: regNumber,
                     });
 
                     break;
@@ -114,6 +119,21 @@ class StudentAuthController {
             next(error);
         }
     };
+
+    generateUniqueRegNumber = () => {
+        const regNumber = generateRegNumber();
+        return this.checkStudentRegNumber(regNumber);
+    };
+
+    checkStudentRegNumber = async (reg_number) => {
+        try {
+            const userRecord = await admin.auth().getUser(reg_number);
+            return userRecord.uid ? this.generateUniqueRegNumber() : reg_number;
+        } catch (error) {
+            if (error.code === "auth/user-not-found") return reg_number;
+            throw new Error("Failed to find user by reg number.");
+        }
+    }
 }
 
 

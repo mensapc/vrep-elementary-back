@@ -76,7 +76,9 @@ class Course {
     updateCourseByID = async (courseID, updatedData) => {
         try {
             const courseRef = db.collection('courses').doc(courseID);
-
+            if (!courseRef) {
+                throw new CustomError('Course not found.', 404);
+            }
             const courseSnapshot = await courseRef.get();
             if (!courseSnapshot.exists) {
                 throw new Error('Course not found.');
