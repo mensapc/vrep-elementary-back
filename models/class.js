@@ -5,6 +5,8 @@ const CustomError = require('../utils/CustomError');
 class Class {
     constructor() {
         this.collectionRef = db.collection('class');
+        this.collectionRefStaff = db.collection('staff')
+
     }
 
     // Create a class while referencing staff_id
@@ -34,9 +36,31 @@ class Class {
         try {
             const snapshot = await this.collectionRef.get();
             const classes = [];
-            snapshot.forEach(doc => {
-                classes.push(doc.data());
-            });
+
+            for (const doc of snapshot.docs) {
+                const classData = doc.data();
+
+                // Retrieve staff details based on staffID
+                const staff_id = classData.staff_id;
+                const staffDoc = await this.collectionRefStaff.doc(staff_id).get();
+                const staffData = staffDoc.exists
+                    ? {
+                        first_name: staffDoc.get('first_name'),
+                        role: staffDoc.get('role'),
+                        last_name: staffDoc.get('last_name'),
+                        email: staffDoc.get('email'),
+                    }
+                    : null;
+
+                // Combine class data with staff details
+                const combinedData = {
+                    ...classData,
+                    staffDetails: staffData, // Add staff details to the class data
+                };
+
+                classes.push(combinedData);
+            }
+
             return classes;
         } catch (error) {
             console.error('Error getting all classes:', error);
@@ -44,6 +68,8 @@ class Class {
         }
     }
 
+
+    // get class by id 
     getClassById = async (classID) => {
         try {
             const classDoc = await this.collectionRef.doc(classID).get();
@@ -54,27 +80,23 @@ class Class {
             }
         } catch (error) {
             console.error(`Error getting class by ID ${classID}:`, error);
-            throw new Error('Failed to get a class.');
+            throw new Error('Failed to get a class by id +.', 500);
         }
     }
 
 
+    // delete class by id
     deleteClass = async (classID) => {
         try {
-            const docSnapshot = await this.collectionRef.doc(classID).delete();
-            if (docSnapshot.exists) {
-                const courseData = docSnapshot.data();
-                return courseData;
-            } else {
-                return null;
-            }
+            await this.collectionRef.doc(classID).delete();
+            return { message: 'Deleted successfully' };
         } catch (error) {
-            console.error('Error deleting course by classID number:', error);
-            throw new Error('Failed to delete course.', 500);
+            console.error('Error deleting course by classID:', error);
+            throw new Error('Failed to delete class.', 500);
         }
     };
 
-
+    // update class by id 
     updateClass = async (classID, updatedData) => {
         try {
             const classRef = this.collectionRef.doc(classID);

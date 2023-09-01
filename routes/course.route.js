@@ -10,7 +10,7 @@ const router = express.Router();
 router.post('/create/course', validateToken, authorize(['createCourse']), courseController.createCourse);
 router.get('/courses', validateToken, authorize(['readCourse']), courseController.getAllCourses);
 router.get('/course/:courseId', validateToken, authorize(['readCourses']), courseController.getSingleCourse)
-router.delete('/delete/course', validateToken, authorize(['deletecourse']), courseController.deleteCourseByID)
+router.delete('/delete/course/:courseID', validateToken, authorize(['deletecourse']), courseController.deleteCourseByID)
 router.put('/update/course/:courseID', validateToken, authorize(['updateCourse']), courseController.updateCourseByID)
 
 module.exports = router;

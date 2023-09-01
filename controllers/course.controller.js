@@ -1,28 +1,49 @@
 const Course = require('../models/course'); // Import the Course model
+const Class = require('../models/class')
 const CustomError = require('../utils/CustomError');
 
 class CourseController {
     constructor() {
         this.course = new Course();
+        this.class = new Class()
     }
-    //Creates s course
+    // Controller function to create a new course and reference a class by ID
     createCourse = async (req, res, next) => {
         try {
-            const { courseData } = req.body; // Assuming you send the course data in the request body
+            const courseData = req.body;
+            const classID = courseData.classID;
 
-            // Validate if required course data is provided
-            if (!courseData) {
-                throw new CustomError('subject name and description are required fields', 400);
+            // Ensure the class with the provided classID exists
+            const classExists = await this.class.getClassById(classID);
+
+            if (!classExists) {
+                throw new CustomError('Class with the provided class ID not found.', 404);
             }
 
-            const createdCourse = await this.course.createCourse(courseData); // Use this.course
+            // Create the course and reference the classID
+            const createdCourse = await this.course.createCourse(courseData, classID);
 
-            res.status(201).json({ course: createdCourse });
+            // Construct the response
+            const response = {
+                course: {
+                    courseID: createdCourse.courseID, // Adjusted  this to match your actual property name
+                    description: createdCourse.description,
+                    course_name: createdCourse.course_name,
+                    subject_name: createdCourse.subject_name,
+                },
+                class: {
+                    classID: classExists.classID,
+                    class_name: classExists.class_name,
+                    description: classExists.description,
+                },
+            };
+
+            res.status(201).json(response);
         } catch (error) {
             console.error('Error in creating course:', error);
             res.status(error.statusCode || 500).json({ error: error.message });
         }
-    }
+    };
     // Get All Courses
     getAllCourses = async (req, res, next) => {
         try {
@@ -32,7 +53,8 @@ class CourseController {
             console.error('Error getting all courses:', error);
             res.status(error.statusCode || 500).json({ error: error.message });
         }
-    }
+    };
+
     // Get Single Course
     getSingleCourse = async (req, res, next) => {
         const courseId = req.params.courseId;
@@ -49,19 +71,28 @@ class CourseController {
     // Delete course by ID
     deleteCourseByID = async (req, res, next) => {
         try {
-            const { courseID } = req.body;
+            const courseID = req.params.courseID;
 
             if (!courseID) {
-                throw new CustomError(`Route: not able to get /${courseID}`, 400);
+                throw new CustomError('Invalid course ID provided in the request.', 400);
             }
 
             const deletedCourse = await this.course.deleteCourse(courseID);
 
+            if (deletedCourse) {
+                // Course deletion was successful
+                return res.status(200).json({ message: 'Deleted successfully' });
+            } else {
+                // Course not found or not deleted
+                return res.status(404).json({ message: 'Course not found' });
+            }
+
         } catch (error) {
-            console.error(`Error deleting student with registration number ${req.body.courseID}: ${error}`);
+            console.error(`Error deleting course with ID ${req.params.courseID}: ${error}`);
             next(error);
         }
     };
+
 
     // Controller function to update a course by ID
     updateCourseByID = async (req, res, next) => {

@@ -1,14 +1,15 @@
 const admin = require('firebase-admin');
 const db = admin.firestore();
 const CustomError = require('../utils/CustomError');
-
+const Class = require('../models/class')
 
 class Course {
     constructor() {
         this.collectionRef = db.collection('courses');
+        this.collectionClassRef = db.collection('class')
     }
     // Create Courses
-    async createCourse(courseData) {
+    async createCourse(courseData, classID) {
         try {
             // Add the courseData to the collection and get the reference
             const courseRef = await this.collectionRef.add(courseData);
@@ -17,7 +18,7 @@ class Course {
             const courseID = courseRef.id;
 
             // Update the course with the assigned courseID
-            await courseRef.update({ courseID });
+            await courseRef.update({ courseID, classID: classID });
 
             // Get the created course document
             const createdCourse = await courseRef.get();
@@ -34,13 +35,32 @@ class Course {
     async getAllCourses() {
         try {
             const snapshot = await this.collectionRef.get();
-            const courses = snapshot.docs.map(doc => doc.data());
+            const courses = [];
+
+            for (const doc of snapshot.docs) {
+                const courseData = doc.data();
+                const classID = courseData.classID;
+
+                // Retrieve class details based on classID
+                const classDoc = await this.collectionClassRef.doc(classID).get();
+                const classDetails = classDoc.exists ? classDoc.data() : null;
+
+                // Combine course data with class details
+                const combinedData = {
+                    ...courseData,
+                    classDetails, // Add class details to the course data
+                };
+
+                courses.push(combinedData);
+            }
+
             return courses;
         } catch (error) {
             console.error('Error getting all courses:', error);
             throw new Error('Failed to get courses.');
         }
     }
+
     // Get course By ID
     getCourseById = async (courseID) => {
         try {
@@ -57,21 +77,18 @@ class Course {
     }
 
 
-
+    // Delete course by id 
     deleteCourse = async (courseID) => {
         try {
-            const docSnapshot = await db.collection('courses').doc(courseID).delete();
-            if (docSnapshot.exists) {
-                const courseData = docSnapshot.data();
-                return courseData;
-            } else {
-                return null;
-            }
+            await db.collection('courses').doc(courseID).delete();
+            return { message: 'Deleted successfully' };
         } catch (error) {
-            console.error('Error deleting course by courseID number:', error);
+            console.error('Error deleting course by courseID:', error);
             throw new Error('Failed to delete course.', 500);
         }
     };
+
+    // update course by Id
 
     updateCourseByID = async (courseID, updatedData) => {
         try {

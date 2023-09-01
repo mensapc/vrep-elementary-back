@@ -23,7 +23,25 @@ class ClassController {
             // Create the class and reference the staff_id
             const createdClass = await this.class.createClass(classData, staffID);
 
-            res.status(201).json(createdClass);
+            const response = {
+                class: {
+                    // staff_id: createdClass.staff_id,
+                    description: createdClass.description,
+                    class_name: createdClass.class_name,
+                    classID: createdClass.classID
+                },
+                staff: {
+                    staff_id: staffExists.staff_id,
+                    last_name: staffExists.last_name,
+                    first_name: staffExists.first_name,
+                    age: staffExists.age,
+                    email: staffExists.email
+                }
+            };
+
+
+
+            res.status(201).json(response);
         } catch (error) {
             console.error(`Error creating class and referencing staff: ${error}`);
             next(error);
@@ -59,7 +77,7 @@ class ClassController {
     deleteClassByID = async (req, res, next) => {
         try {
             const classID = req.params.classID;
-            console.log(classID);
+
 
             if (!classID) {
                 throw new CustomError(`Route: not able to get /${classID}`, 400);
