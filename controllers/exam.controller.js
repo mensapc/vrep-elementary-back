@@ -33,8 +33,21 @@ class ExamController {
     const { exam_id } = req.params;
     try {
       const exam = await Exam.findById(exam_id);
-      const questionsWithOptions = await this.questionController.getExamQuestionsWithOptions(
-        exam.id
+      const questionsWithOptions = await this.questionController.examQuestionsWithOptions(exam.id);
+      res.status(200).json({ exam: { ...exam, questions: questionsWithOptions } });
+    } catch (error) {
+      console.error(`Error getting exam: ${error}`);
+      next(error);
+    }
+  };
+
+  getExamResults = async (req, res, next) => {
+    const { student_id, exam_id } = req.params;
+    try {
+      const exam = await Exam.findById(exam_id);
+      const questionsWithOptions = await this.questionController.QuestionsWithOptionsAndAnswers(
+        exam.id,
+        student_id
       );
       res.status(200).json({ exam: { ...exam, questions: questionsWithOptions } });
     } catch (error) {

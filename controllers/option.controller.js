@@ -14,7 +14,7 @@ class OptionController {
     }
   };
 
-  getQuestionOptions = async (question_id) => {
+  questionwithOptionsAndAnswer = async (question_id) => {
     try {
       const query = new Query().where("question_id", "==", question_id);
       const options = await Option.find(query);
