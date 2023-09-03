@@ -1,3 +1,4 @@
+const { Query } = require("firefose");
 const Exam = require("../models/exam");
 
 class ExamController {
@@ -9,6 +10,17 @@ class ExamController {
       res.status(200).json({ exam: newExam });
     } catch (error) {
       console.error(`Error creating exam: ${error}`);
+      next(error);
+    }
+  };
+
+  getExams = async (req, res, next) => {
+    try {
+      const query = new Query();
+      const exams = await Exam.find(query);
+      res.status(200).json({ exams });
+    } catch (error) {
+      console.error(`Error getting exams: ${error}`);
       next(error);
     }
   };

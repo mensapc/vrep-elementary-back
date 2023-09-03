@@ -7,5 +7,6 @@ const router = express.Router();
 const examController = new ExamController();
 
 router.post("/exams", validateToken, authorize(["createExam"]), examController.createExam);
+router.get("/exams", validateToken, authorize(["getExams"]), examController.getExams);
 
 module.exports = router;
