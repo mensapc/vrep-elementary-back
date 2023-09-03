@@ -1,6 +1,7 @@
 const { Query } = require("firefose");
 const Exam = require("../models/exam");
 const QuestionController = require("./question.controller");
+const { calculateMarks } = require("../utils/utils.exam");
 
 class ExamController {
   constructor() {
@@ -45,11 +46,14 @@ class ExamController {
     const { student_id, exam_id } = req.params;
     try {
       const exam = await Exam.findById(exam_id);
-      const questionsWithOptions = await this.questionController.QuestionsWithOptionsAndAnswers(
+      const questionsWithAnswers = await this.questionController.QuestionsWithOptionsAndAnswers(
         exam.id,
         student_id
       );
-      res.status(200).json({ exam: { ...exam, questions: questionsWithOptions } });
+      const studentMarks = calculateMarks(exam, questionsWithAnswers);
+      res
+        .status(200)
+        .json({ exam: { ...exam, questions: questionsWithAnswers }, student_marks: studentMarks });
     } catch (error) {
       console.error(`Error getting exam: ${error}`);
       next(error);
