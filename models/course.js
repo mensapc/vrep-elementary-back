@@ -129,6 +129,7 @@ class Course {
         }
     }
 
+    // Create a course scheme
     async createCourseSchem(classSchemData, staffID) {
         try {
             // Create a new courseSchem document
