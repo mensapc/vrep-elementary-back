@@ -115,38 +115,46 @@ class CourseController {
 
     createCourseSchemData = async (req, res, next) => {
         try {
-            const classSchemeData = req.body; // Class data from request body
+            const classSchemeData = req.body; // Class data from the request body
 
             const staffID = classSchemeData.staff_id; // Get staff_id from class data scheme
 
-            // Ensure staff with provided staff_id exists
+            // Ensure staff with the provided staff_id exists
             const staffExists = await this.staff.getStaffById(staffID);
             if (!staffExists) {
                 throw new CustomError('Staff with the provided staff_id not found.', 404);
             }
 
+            // Create a new date object
+            const currentDate = new Date();
+
+            // Format the date as "4 September 2023 at 20:12:07 UTC"
+            const formattedDate = currentDate.toLocaleString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: 'numeric',
+                minute: 'numeric',
+                second: 'numeric',
+                timeZoneName: 'short',
+            });
+
+            // Added the "created_At" field to classSchemeData
+            classSchemeData.created_At = formattedDate;
+
             // Create the class scheme and reference the staff_id
             const createdScheme = await this.course.createCourseSchem(classSchemeData, staffID);
 
-
-            // A validation check to ensure required entities 
+            // A validation check to ensure required entities
             if (!createdScheme) {
-                throw new CustomError('Course Scheme details and staff_id not found.', 404)
+                throw new CustomError('Course Scheme details and staff_id not found.', 404);
             }
-
-            // date format to get the "created_At" key in the "CourseSchema" object
-            const currentDate = new Date();
-            const formattedDate = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1)
-                .toString().padStart(2, '0')}-${currentDate.getDate().toString()
-                    .padStart(2, '0')} ${currentDate.getHours().toString().padStart(2, '0')}:${currentDate
-                        .getMinutes().toString().padStart(2, '0')}:${currentDate.getSeconds().toString()
-                            .padStart(2, '0')}`;
 
             const response = {
                 CourseSchema: {
                     name: createdScheme.name,
                     term_limit: createdScheme.term_limit,
-                    created_At: formattedDate,
+                    created_At: formattedDate, // Include the "created_At" in the response
                     end_of_term: createdScheme.end_of_term,
                     courseSchemID: createdScheme.courseSchemID
                 },
@@ -161,10 +169,12 @@ class CourseController {
             };
             res.status(201).json(response);
         } catch (error) {
-            console.error(`Error creating coure schem and referencing staff: ${error}`);
+            console.error(`Error creating course scheme and referencing staff: ${error}`);
             next(error);
         }
     };
+
+
     // controller to get all courses scheme
     getCourseSchemes = async (req, res, next) => {
         try {

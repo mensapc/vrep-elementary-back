@@ -132,26 +132,32 @@ class Course {
     // Create a course scheme
     async createCourseSchem(classSchemData, staffID) {
         try {
-            // Create a new courseSchem document
+            // Convert created_At to a Firestore timestamp
+            const currentDate = new Date();
+            const firestoreTimestamp = admin.firestore.Timestamp.fromDate(currentDate);
+
+            // Add the created_At field to classSchemData
+            classSchemData.created_At = firestoreTimestamp;
+
+            // Create a new courseScheme document
             const courseScheme = await this.collectionRefScheme.add(classSchemData);
 
-            // Get the generated UID (classID) from the c reference
+            // Get the generated UID (classID) from the reference
             const courseSchemID = courseScheme.id;
 
-            // Update the course with the assigned classID and staff_id
+            // Update the course scheme with the assigned classID and staff_id
             await courseScheme.update({ courseSchemID, staff_id: staffID });
 
-            // Get the created class document
+            // Get the created class scheme document
             const createdScheme = await courseScheme.get();
 
-            // Return the class data with the assigned classID
+            // Return the class scheme data with the assigned classID
             return createdScheme.data();
         } catch (error) {
-            console.error('Error creating class:', error);
-            throw new Error('Failed to create class.');
+            console.error('Error creating class scheme:', error);
+            throw new Error('Failed to create class scheme.');
         }
     }
-
 
     // Get all course schemes with staff details
     async getAllCourseSchemes() {
@@ -176,7 +182,14 @@ class Course {
 
                 // Combine course scheme data with staff details
                 const combinedData = {
-                    ...courseSchemeData,
+                    name: courseSchemeData.name,
+                    course_name: courseSchemeData.course_name,
+                    staff_id: courseSchemeData.staff_id,
+                    term_duration: courseSchemeData.term_duration,
+                    end_of_term: courseSchemeData.end_of_term,
+                    term_limit: courseSchemeData.term_limit,
+                    description: courseSchemeData.description,
+                    created_At: courseSchemeData.created_At,
                     staffDetails, // Add staff details to the course scheme data
                 };
 
