@@ -1,7 +1,13 @@
 const { Query } = require("firefose");
 const Exam = require("../models/exam");
 const QuestionController = require("./question.controller");
-const { calculateMarks } = require("../utils/utils.exam");
+const {
+  calculateMarks,
+  checkExamAvailability,
+  examDuration,
+  validateExamDuration,
+} = require("../utils/utils.exam");
+const CustomError = require("../utils/CustomError");
 
 class ExamController {
   constructor() {
@@ -11,6 +17,15 @@ class ExamController {
     const examData = req.body;
 
     try {
+      // validate exam duration
+      const durationValidate = validateExamDuration(examData);
+      if (!durationValidate.is_valid) throw new CustomError(durationValidate.message, 400);
+
+      // calculate exam duration
+      const duration = examDuration(examData);
+      if (!duration.is_valid) throw new CustomError(duration.message, 400);
+      examData.time_limit = duration.duration;
+
       const newExam = await Exam.create({ ...examData, staff_id: req.user.staff_id });
       res.status(200).json({ exam: newExam });
     } catch (error) {
@@ -34,6 +49,10 @@ class ExamController {
     const { exam_id } = req.params;
     try {
       const exam = await Exam.findById(exam_id);
+      // check if exam is available
+      const examAvailability = checkExamAvailability(exam);
+      if (!examAvailability.is_available) throw new CustomError(examAvailability.message, 403);
+
       const questionsWithOptions = await this.questionController.examQuestionsWithOptions(exam.id);
       res.status(200).json({ exam: { ...exam, questions: questionsWithOptions } });
     } catch (error) {
