@@ -165,6 +165,16 @@ class CourseController {
             next(error);
         }
     };
+    // controller to get all courses scheme
+    getCourseSchemes = async (req, res, next) => {
+        try {
+            const courses = await this.course.getAllCourseSchemes();
+            res.status(200).json({ courses });
+        } catch (error) {
+            console.error('Error getting all courses:', error);
+            res.status(error.statusCode || 500).json({ error: error.message });
+        }
+    };
 }
 
 module.exports = CourseController;

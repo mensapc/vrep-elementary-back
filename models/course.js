@@ -1,14 +1,14 @@
 const admin = require('firebase-admin');
 const db = admin.firestore();
 const CustomError = require('../utils/CustomError');
-const Class = require('../models/class')
 
 
 class Course {
     constructor() {
         this.collectionRef = db.collection('courses');
         this.collectionClassRef = db.collection('class')
-        this.collectionRefSchem = db.collection('courseSchema')
+        this.collectionRefScheme = db.collection('courseSchema')
+        this.collectionRefStaff = db.collection('staff')
     }
     // Create Courses
     async createCourse(courseData, classID) {
@@ -132,22 +132,60 @@ class Course {
     async createCourseSchem(classSchemData, staffID) {
         try {
             // Create a new courseSchem document
-            const courseSchem = await this.collectionRefSchem.add(classSchemData);
+            const courseScheme = await this.collectionRefScheme.add(classSchemData);
 
             // Get the generated UID (classID) from the c reference
-            const courseSchemID = courseSchem.id;
+            const courseSchemID = courseScheme.id;
 
             // Update the course with the assigned classID and staff_id
-            await courseSchem.update({ courseSchemID, staff_id: staffID });
+            await courseScheme.update({ courseSchemID, staff_id: staffID });
 
             // Get the created class document
-            const createdSchem = await courseSchem.get();
+            const createdScheme = await courseScheme.get();
 
             // Return the class data with the assigned classID
-            return createdSchem.data();
+            return createdScheme.data();
         } catch (error) {
             console.error('Error creating class:', error);
             throw new Error('Failed to create class.');
+        }
+    }
+
+
+    // Get all course schemes with staff details
+    async getAllCourseSchemes() {
+        try {
+            const snapshot = await this.collectionRefScheme.get();
+            const courseSchemes = [];
+
+            for (const doc of snapshot.docs) {
+                const courseSchemeData = doc.data();
+                const staffID = courseSchemeData.staff_id;
+
+                // Retrieve staff details based on staffID
+                const staffDoc = await this.collectionRefStaff.doc(staffID).get();
+                const staffDetails = staffDoc.exists
+                    ? {
+                        first_name: staffDoc.get('first_name'),
+                        role: staffDoc.get('role'),
+                        last_name: staffDoc.get('last_name'),
+                        email: staffDoc.get('email'),
+                    }
+                    : null;
+
+                // Combine course scheme data with staff details
+                const combinedData = {
+                    ...courseSchemeData,
+                    staffDetails, // Add staff details to the course scheme data
+                };
+
+                courseSchemes.push(combinedData);
+            }
+
+            return courseSchemes;
+        } catch (error) {
+            console.error('Error getting all course schemes:', error);
+            throw new Error('Failed to get course schemes.');
         }
     }
 
