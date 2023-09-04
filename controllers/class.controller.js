@@ -1,5 +1,5 @@
 const Class = require('../models/class');
-const Staff = require('../models/staff'); // Import the Staff model
+const Staff = require('../models/staff'); // Import the Staff model;
 const CustomError = require('../utils/CustomError');
 
 class ClassController {
@@ -25,7 +25,6 @@ class ClassController {
 
             const response = {
                 class: {
-                    // staff_id: createdClass.staff_id,
                     description: createdClass.description,
                     class_name: createdClass.class_name,
                     classID: createdClass.classID
@@ -38,9 +37,6 @@ class ClassController {
                     email: staffExists.email
                 }
             };
-
-
-
             res.status(201).json(response);
         } catch (error) {
             console.error(`Error creating class and referencing staff: ${error}`);
@@ -62,7 +58,6 @@ class ClassController {
     // Get single class
     getSingleClass = async (req, res, next) => {
         const classID = req.params.classID;
-        console.log(classID);
         try {
             const classData = await this.class.getClassById(classID);
             res.status(200).json({ class: classData, });
@@ -110,6 +105,7 @@ class ClassController {
             next(error);
         }
     };
+
 
 
 }

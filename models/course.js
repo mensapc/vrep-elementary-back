@@ -3,10 +3,12 @@ const db = admin.firestore();
 const CustomError = require('../utils/CustomError');
 const Class = require('../models/class')
 
+
 class Course {
     constructor() {
         this.collectionRef = db.collection('courses');
         this.collectionClassRef = db.collection('class')
+        this.collectionRefSchem = db.collection('courseSchema')
     }
     // Create Courses
     async createCourse(courseData, classID) {
@@ -61,12 +63,25 @@ class Course {
         }
     }
 
-    // Get course By ID
+    // Get course By ID with class details
     getCourseById = async (courseID) => {
         try {
-            const courseDoc = await db.collection('courses').doc(courseID).get();
+            const courseDoc = await this.collectionRef.doc(courseID).get();
             if (courseDoc.exists) {
-                return courseDoc.data();
+                const courseData = courseDoc.data();
+                const classID = courseData.classID;
+
+                // Retrieve class details based on classID
+                const classDoc = await this.collectionClassRef.doc(classID).get();
+                const classDetails = classDoc.exists ? classDoc.data() : null;
+
+                // Combine course data with class details
+                const combinedData = {
+                    ...courseData,
+                    classDetails, // Add class details to the course data
+                };
+
+                return combinedData;
             } else {
                 throw new CustomError('Course not found', 404);
             }
@@ -75,6 +90,7 @@ class Course {
             throw new Error('Failed to get a course.');
         }
     }
+
 
 
     // Delete course by id 
@@ -110,6 +126,28 @@ class Course {
         } catch (error) {
             console.error('Error updating course by courseID:', error);
             throw new Error('Failed to update course.', 500);
+        }
+    }
+
+    async createCourseSchem(classSchemData, staffID) {
+        try {
+            // Create a new courseSchem document
+            const courseSchem = await this.collectionRefSchem.add(classSchemData);
+
+            // Get the generated UID (classID) from the c reference
+            const courseSchemID = courseSchem.id;
+
+            // Update the course with the assigned classID and staff_id
+            await courseSchem.update({ courseSchemID, staff_id: staffID });
+
+            // Get the created class document
+            const createdSchem = await courseSchem.get();
+
+            // Return the class data with the assigned classID
+            return createdSchem.data();
+        } catch (error) {
+            console.error('Error creating class:', error);
+            throw new Error('Failed to create class.');
         }
     }
 

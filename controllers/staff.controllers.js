@@ -22,7 +22,7 @@ class StaffController {
     };
     // get satff by id 
     getStaffById = async (req, res, next) => {
-        const staffId = req.body.staff_id; // Use staff_id from req.body
+        const staffId = req.params.staff_id; // Use staff_id from req.params
 
         try {
             const staff = await this.staff.getStaffById(staffId);

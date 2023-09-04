@@ -50,7 +50,7 @@ class StudentAuthController {
 
     // Get Single student controller
     getSingleStudent = async (req, res, next) => {
-        const reg_number = req.params.reg_number;
+        const reg_number = req.body.reg_number;
 
         try {
             const studentData = await this.student.findStudentByRegNumber(reg_number);
@@ -83,7 +83,7 @@ class StudentAuthController {
     // Delete student controller
     deleteStudent = async (req, res, next) => {
         try {
-            const { reg_number } = req.body;
+            const reg_number = req.params.reg_number;
 
             if (!reg_number) {
                 throw new CustomError(`Route: not able to get /${reg_number}`, 400);

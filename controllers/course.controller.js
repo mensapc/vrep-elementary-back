@@ -1,10 +1,12 @@
 const Course = require('../models/course'); // Import the Course model
 const Class = require('../models/class')
+const Staff = require('../models/staff')
 const CustomError = require('../utils/CustomError');
 
 class CourseController {
     constructor() {
         this.course = new Course();
+        this.staff = new Staff()
         this.class = new Class()
     }
     // Controller function to create a new course and reference a class by ID
@@ -107,6 +109,59 @@ class CourseController {
             res.status(200).json(updatedCourse);
         } catch (error) {
             console.error(`Error updating course: ${error}`);
+            next(error);
+        }
+    };
+
+    createCourseSchemData = async (req, res, next) => {
+        try {
+            const classSchemeData = req.body; // Class data from request body
+
+            const staffID = classSchemeData.staff_id; // Get staff_id from class data scheme
+
+            // Ensure staff with provided staff_id exists
+            const staffExists = await this.staff.getStaffById(staffID);
+            if (!staffExists) {
+                throw new CustomError('Staff with the provided staff_id not found.', 404);
+            }
+
+            // Create the class scheme and reference the staff_id
+            const createdScheme = await this.course.createCourseSchem(classSchemeData, staffID);
+
+
+            // A validation check to ensure required entities 
+            if (!createdScheme) {
+                throw new CustomError('Course Scheme details and staff_id not found.', 404)
+            }
+
+            // date format to get the "created_At" key in the "CourseSchema" object
+            const currentDate = new Date();
+            const formattedDate = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1)
+                .toString().padStart(2, '0')}-${currentDate.getDate().toString()
+                    .padStart(2, '0')} ${currentDate.getHours().toString().padStart(2, '0')}:${currentDate
+                        .getMinutes().toString().padStart(2, '0')}:${currentDate.getSeconds().toString()
+                            .padStart(2, '0')}`;
+
+            const response = {
+                CourseSchema: {
+                    name: createdScheme.name,
+                    term_limit: createdScheme.term_limit,
+                    created_At: formattedDate,
+                    end_of_term: createdScheme.end_of_term,
+                    courseSchemID: createdScheme.courseSchemID
+                },
+
+                staff: {
+                    staff_id: staffExists.staff_id,
+                    last_name: staffExists.last_name,
+                    first_name: staffExists.first_name,
+                    age: staffExists.age,
+                    email: staffExists.email
+                }
+            };
+            res.status(201).json(response);
+        } catch (error) {
+            console.error(`Error creating coure schem and referencing staff: ${error}`);
             next(error);
         }
     };

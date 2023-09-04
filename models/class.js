@@ -6,6 +6,7 @@ class Class {
     constructor() {
         this.collectionRef = db.collection('class');
         this.collectionRefStaff = db.collection('staff')
+        this.collectionRefSchem = db.collection('courseSchema')
 
     }
 
@@ -69,12 +70,32 @@ class Class {
     }
 
 
-    // get class by id 
+    // Get class By ID with staff details ( single)
     getClassById = async (classID) => {
         try {
             const classDoc = await this.collectionRef.doc(classID).get();
             if (classDoc.exists) {
-                return classDoc.data();
+                const classData = classDoc.data();
+
+                // Retrieve staff details based on staff_id
+                const staff_id = classData.staff_id;
+                const staffDoc = await this.collectionRefStaff.doc(staff_id).get();
+                const staffData = staffDoc.exists
+                    ? {
+                        first_name: staffDoc.get('first_name'),
+                        role: staffDoc.get('role'),
+                        last_name: staffDoc.get('last_name'),
+                        email: staffDoc.get('email'),
+                    }
+                    : null;
+
+                // Combine class data with staff details
+                const combinedData = {
+                    ...classData,
+                    staffDetails: staffData, // Add staff details to the class data
+                };
+
+                return combinedData;
             } else {
                 throw new CustomError('Class not found', 404);
             }
@@ -83,7 +104,6 @@ class Class {
             throw new Error('Failed to get a class by id +.', 500);
         }
     }
-
 
     // delete class by id
     deleteClass = async (classID) => {
