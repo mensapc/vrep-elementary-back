@@ -120,6 +120,7 @@ class StudentAuthController {
         }
     };
 
+    // *** validation check of reg_Number on firestore ***
     generateUniqueRegNumber = () => {
         const regNumber = generateRegNumber();
         return this.checkStudentRegNumber(regNumber);

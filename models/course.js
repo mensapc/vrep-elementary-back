@@ -143,10 +143,10 @@ class Course {
             const courseScheme = await this.collectionRefScheme.add(classSchemData);
 
             // Get the generated UID (classID) from the reference
-            const courseSchemID = courseScheme.id;
+            const courseScheme_ID = courseScheme.id;
 
             // Update the course scheme with the assigned classID and staff_id
-            await courseScheme.update({ courseSchemID, staff_id: staffID });
+            await courseScheme.update({ courseScheme_ID, staff_id: staffID });
 
             // Get the created class scheme document
             const createdScheme = await courseScheme.get();
@@ -190,6 +190,7 @@ class Course {
                     term_limit: courseSchemeData.term_limit,
                     description: courseSchemeData.description,
                     created_At: courseSchemeData.created_At,
+                    courseScheme_ID: courseSchemeData.courseScheme_ID,
                     staffDetails, // Add staff details to the course scheme data
                 };
 
@@ -202,6 +203,38 @@ class Course {
             throw new Error('Failed to get course schemes.');
         }
     }
+
+    // Update Course Schema  by courseScheme_ID
+
+    updateCourseSchemeByID = async (courseScheme_ID, updatedData) => {
+        try {
+            const courseRef = this.collectionRefScheme.doc(courseScheme_ID);
+
+            if (!courseRef) {
+                throw new CustomError('Course not found.', 404);
+            }
+            const courseSnapshot = await courseRef.get();
+            if (!courseSnapshot.exists) {
+                throw new Error('Course not found.');
+            }
+
+            // Convert created_At to a Firestore timestamp
+            const currentDate = new Date();
+            const firestoreTimestamp = admin.firestore.Timestamp.fromDate(currentDate);
+
+            await courseRef.update(updatedData);
+
+            return {
+                ...courseSnapshot.data(),
+                ...updatedData,
+                created_At: firestoreTimestamp
+            };
+        } catch (error) {
+            console.error('Error updating course by courseID:', error);
+            throw new Error('Failed to update course.', 500);
+        }
+    }
+
 
 
 }

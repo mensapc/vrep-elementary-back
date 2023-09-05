@@ -1,4 +1,4 @@
-const Course = require('../models/course'); // Import the Course model
+const Course = require('../models/course');
 const Class = require('../models/class')
 const Staff = require('../models/staff')
 const CustomError = require('../utils/CustomError');
@@ -105,7 +105,6 @@ class CourseController {
             const updatedCourse = await this.course.updateCourseByID(courseID, updatedData);
 
 
-
             res.status(200).json(updatedCourse);
         } catch (error) {
             console.error(`Error updating course: ${error}`);
@@ -113,11 +112,13 @@ class CourseController {
         }
     };
 
+
+    // Create course Scheme
     createCourseSchemData = async (req, res, next) => {
         try {
-            const classSchemeData = req.body; // Class data from the request body
+            const courseSchemeData = req.body; // Class data from the request body
 
-            const staffID = classSchemeData.staff_id; // Get staff_id from class data scheme
+            const staffID = courseSchemeData.staff_id; // Get staff_id from class data scheme
 
             // Ensure staff with the provided staff_id exists
             const staffExists = await this.staff.getStaffById(staffID);
@@ -140,10 +141,10 @@ class CourseController {
             });
 
             // Added the "created_At" field to classSchemeData
-            classSchemeData.created_At = formattedDate;
+            courseSchemeData.created_At = formattedDate;
 
             // Create the class scheme and reference the staff_id
-            const createdScheme = await this.course.createCourseSchem(classSchemeData, staffID);
+            const createdScheme = await this.course.createCourseSchem(courseSchemeData, staffID);
 
             // A validation check to ensure required entities
             if (!createdScheme) {
@@ -183,6 +184,21 @@ class CourseController {
         } catch (error) {
             console.error('Error getting all courses:', error);
             res.status(error.statusCode || 500).json({ error: error.message });
+        }
+    };
+
+    //  controller to update a course scheme
+    updateCourseScheme = async (req, res, next) => {
+        try {
+            const courseScheme_ID = req.params.courseScheme_ID; // Get the course ID from the request params
+            const updatedData = req.body; // Updated data from the request body
+
+            const updatedCourse = await this.course.updateCourseSchemeByID(courseScheme_ID, updatedData);
+
+            res.status(200).json(updatedCourse);
+        } catch (error) {
+            console.error(`Error updating course: ${error}`);
+            next(error);
         }
     };
 }
