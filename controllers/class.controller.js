@@ -16,6 +16,9 @@ class ClassController {
 
             // Ensure staff with provided staff_id exists
             const staffExists = await this.staff.getStaffById(staffID);
+
+            delete staffExists.password
+
             if (!staffExists) {
                 throw new CustomError('Staff with the provided staff_id not found.', 404);
             }
@@ -24,18 +27,8 @@ class ClassController {
             const createdClass = await this.class.createClass(classData, staffID);
 
             const response = {
-                class: {
-                    description: createdClass.description,
-                    class_name: createdClass.class_name,
-                    classID: createdClass.classID
-                },
-                staff: {
-                    staff_id: staffExists.staff_id,
-                    last_name: staffExists.last_name,
-                    first_name: staffExists.first_name,
-                    age: staffExists.age,
-                    email: staffExists.email
-                }
+                class: createdClass,
+                staff: staffExists,
             };
             res.status(201).json(response);
         } catch (error) {
@@ -72,15 +65,13 @@ class ClassController {
     deleteClassByID = async (req, res, next) => {
         try {
             const classID = req.params.classID;
-
-
             if (!classID) {
                 throw new CustomError(`Route: not able to get /${classID}`, 400);
             }
 
             const deletedClass = await this.class.deleteClass(classID);
 
-            res.status(204).json({ deletedClass: 'class has been terminated' })
+            res.status(204).json({ message: 'Deleted successfully' })
 
         } catch (error) {
             console.error(`Error deleting student with registration number ${req.body.classID}: ${error}`);

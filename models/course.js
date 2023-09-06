@@ -11,7 +11,7 @@ class Course {
         this.collectionRefStaff = db.collection('staff')
     }
     // Create Courses
-    async createCourse(courseData, classID) {
+    async createCourse(courseData) {
         try {
             // Add the courseData to the collection and get the reference
             const courseRef = await this.collectionRef.add(courseData);
@@ -20,7 +20,7 @@ class Course {
             const courseID = courseRef.id;
 
             // Update the course with the assigned courseID
-            await courseRef.update({ courseID, classID: classID });
+            await courseRef.update({ courseID, classID: courseData.classID });
 
             // Get the created course document
             const createdCourse = await courseRef.get();

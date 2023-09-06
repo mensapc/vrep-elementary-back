@@ -2,9 +2,14 @@ const admin = require('firebase-admin');
 const CustomError = require('../utils/CustomError');
 const generateRegNumber = require('../utils/utils.registration_number');
 const generateUniqueRegNumber = require('../utils/utils.registration_number')
+const Class = require('../models/class');
 const db = admin.firestore();
 
 class Student {
+  constructor() {
+    this.class = new Class()
+  }
+
   // For Authentication
   createStudent = async (data) => {
     try {
@@ -47,9 +52,6 @@ class Student {
   };
 
   // Adding a single student 
-
-  // validating before registering
-
   AddSingleStudent = async (data) => {
     try {
 
@@ -57,11 +59,14 @@ class Student {
         uid: data.reg_Number,
         email: data.email,
         password: data.password,
+
+
       })
       await db
         .collection('students')
         .doc(userRecord.uid)
         .set(data)
+
       return data
     } catch (error) {
       console.error('Error registering student failed:', error);

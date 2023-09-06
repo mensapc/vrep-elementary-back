@@ -1,6 +1,7 @@
 const Course = require('../models/course');
 const Class = require('../models/class')
 const Staff = require('../models/staff')
+const formatCurrentDate = require('../utils/utils.createdAt')
 const CustomError = require('../utils/CustomError');
 
 class CourseController {
@@ -13,32 +14,20 @@ class CourseController {
     createCourse = async (req, res, next) => {
         try {
             const courseData = req.body;
-            const classID = courseData.classID;
+            //const classID = courseData.classID;
 
             // Ensure the class with the provided classID exists
-            const classExists = await this.class.getClassById(classID);
+            const classExists = await this.class.getClassById(courseData.classID);
 
             if (!classExists) {
                 throw new CustomError('Class with the provided class ID not found.', 404);
             }
 
             // Create the course and reference the classID
-            const createdCourse = await this.course.createCourse(courseData, classID);
+            const createdCourse = await this.course.createCourse(courseData);
 
             // Construct the response
-            const response = {
-                course: {
-                    courseID: createdCourse.courseID, // Adjusted  this to match your actual property name
-                    description: createdCourse.description,
-                    course_name: createdCourse.course_name,
-                    subject_name: createdCourse.subject_name,
-                },
-                class: {
-                    classID: classExists.classID,
-                    class_name: classExists.class_name,
-                    description: classExists.description,
-                },
-            };
+            const response = { course: createdCourse, class: classExists, };
 
             res.status(201).json(response);
         } catch (error) {
@@ -125,23 +114,10 @@ class CourseController {
             if (!staffExists) {
                 throw new CustomError('Staff with the provided staff_id not found.', 404);
             }
-
-            // Create a new date object
-            const currentDate = new Date();
-
-            // Format the date as "4 September 2023 at 20:12:07 UTC"
-            const formattedDate = currentDate.toLocaleString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-                hour: 'numeric',
-                minute: 'numeric',
-                second: 'numeric',
-                timeZoneName: 'short',
-            });
+            delete staffExists.password
 
             // Added the "created_At" field to classSchemeData
-            courseSchemeData.created_At = formattedDate;
+            courseSchemeData.created_At = formatCurrentDate();
 
             // Create the class scheme and reference the staff_id
             const createdScheme = await this.course.createCourseSchem(courseSchemeData, staffID);
@@ -151,23 +127,11 @@ class CourseController {
                 throw new CustomError('Course Scheme details and staff_id not found.', 404);
             }
 
-            const response = {
-                CourseSchema: {
-                    name: createdScheme.name,
-                    term_limit: createdScheme.term_limit,
-                    created_At: formattedDate, // Include the "created_At" in the response
-                    end_of_term: createdScheme.end_of_term,
-                    courseSchemID: createdScheme.courseSchemID
-                },
 
-                staff: {
-                    staff_id: staffExists.staff_id,
-                    last_name: staffExists.last_name,
-                    first_name: staffExists.first_name,
-                    age: staffExists.age,
-                    email: staffExists.email
-                }
-            };
+            const response = {
+                CourseSchema: createdScheme,
+                staff: staffExists,
+            }
             res.status(201).json(response);
         } catch (error) {
             console.error(`Error creating course scheme and referencing staff: ${error}`);

@@ -123,7 +123,8 @@ class Class {
 
             const classSnapshot = await classRef.get();
             if (!classSnapshot.exists) {
-                throw new Error('Class not found.');
+
+                throw new CustomError('Class not found', 404);
             }
 
             await classRef.update(updatedData);
@@ -133,8 +134,9 @@ class Class {
                 ...updatedData
             };
         } catch (error) {
-            console.error('Error updating class by classID:', error);
-            throw new Error('Failed to update class.', 500);
+            if (error.code === 'auth/cannot-update')
+                throw new CustomError('Failed to update class.', 500);
+            throw new Error('Failed to update class.');
         }
     }
 

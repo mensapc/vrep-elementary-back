@@ -11,6 +11,9 @@ class StudentAuthController {
         this.student = new Student();
         this.registrationUtils = new RegistrationUtils();
     }
+
+
+
     // Registering Student controller
     addStudent = async (req, res, next) => {
         const userType = req.params.userType;
@@ -25,12 +28,13 @@ class StudentAuthController {
             const { email, role, } = await this.registrationUtils.prepareData(userData);
             switch (userType) {
                 case 'student':
+
                     regNumber = await this.generateUniqueRegNumber();
                     newUser = await this.student.AddSingleStudent({
                         ...userData,
                         email,
                         role,
-                        reg_number: regNumber,
+                        reg_number: regNumber
                     });
 
                     break;
@@ -119,6 +123,8 @@ class StudentAuthController {
             next(error);
         }
     };
+
+
 
     // *** validation check of reg_Number on firestore ***
     generateUniqueRegNumber = () => {

@@ -25,8 +25,8 @@ const userRoles = {
     'getCoursesScheme',
     'updateScheme'
   ],
-  staff: ['readStudent', 'readStudents', 'updateCourse', 'createClass', 'readClass', 'createCourse', 'readSingleClass', 'createCourseData', 'updateScheme', 'getCoursesScheme'],
-  pupil: ['readStudent'],
+  staff: ['readStudent', 'readStudents', 'updateCourse', 'createClass', 'readClass', 'readCourses', 'createCourse', 'readSingleClass', 'createCourseData', 'updateScheme', 'getCoursesScheme'],
+  pupil: ['readStudent', 'readCourses', 'readClass',],
 };
 
 module.exports = userRoles;
