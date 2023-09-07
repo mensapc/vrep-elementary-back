@@ -14,5 +14,11 @@ router.put(
   authorize(["updateOption"]),
   optionController.updateOption
 );
+router.delete(
+  "/options/:option_id",
+  validateToken,
+  authorize(["deleteOption"]),
+  optionController.deleteOption
+);
 
 module.exports = router;

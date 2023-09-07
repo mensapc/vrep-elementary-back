@@ -36,6 +36,28 @@ class OptionController {
       next(error);
     }
   };
+
+  deleteOption = async (req, res, next) => {
+    const { option_id } = req.params;
+    try {
+      await Option.deleteById(option_id);
+      res.status(200).json({ message: "Option deleted successfully" });
+    } catch (error) {
+      console.error(`Error deleting option: ${error}`);
+      next(error);
+    }
+  };
+
+  deleteQuestionOptions = async (question_id) => {
+    try {
+      const query = new Query().where("question_id", "==", question_id);
+      const options = await Option.delete(query);
+      return options;
+    } catch (error) {
+      console.error(`Error deleting options: ${error}`);
+      throw new Error(error);
+    }
+  };
 }
 
 module.exports = OptionController;

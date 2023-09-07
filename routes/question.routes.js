@@ -13,4 +13,11 @@ router.post(
   questionController.createQuestion
 );
 
+router.delete(
+  "/questions/:question_id",
+  validateToken,
+  authorize(["deleteQuestion"]),
+  questionController.deleteQuestionById
+);
+
 module.exports = router;

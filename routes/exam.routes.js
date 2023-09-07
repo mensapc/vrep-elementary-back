@@ -11,5 +11,11 @@ router.get("/exams", validateToken, authorize(["getExams"]), examController.getE
 router.get("/exams/:exam_id", validateToken, examController.getExam);
 router.get("/exams/:exam_id/results/:student_id", validateToken, examController.getExamResults);
 router.put("/exams/:exam_id", validateToken, authorize(["updateExam"]), examController.updateExam);
+router.delete(
+  "/exams/:exam_id",
+  validateToken,
+  authorize(["deleteExam"]),
+  examController.deleteExam
+);
 
 module.exports = router;

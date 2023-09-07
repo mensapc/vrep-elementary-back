@@ -32,6 +32,17 @@ class AnswerController {
       throw new Error(error);
     }
   };
+
+  deleteQuestionAnswers = async (question_id) => {
+    try {
+      const query = new Query().where("question_id", "==", question_id);
+      const answers = await Answer.delete(query);
+      return answers;
+    } catch (error) {
+      console.error(`Error deleting answers: ${error}`);
+      throw new Error(error);
+    }
+  };
 }
 
 module.exports = AnswerController;

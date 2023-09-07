@@ -88,6 +88,18 @@ class ExamController {
     }
   };
 
+  deleteExam = async (req, res, next) => {
+    const { exam_id } = req.params;
+    try {
+      await this.questionController.deleteExamQuestions(exam_id);
+      await Exam.deleteById(exam_id);
+      res.status(200).json({ message: "Exam deleted successfully" });
+    } catch (error) {
+      console.error(`Error deleting exam: ${error}`);
+      next(error);
+    }
+  };
+
   getExamResults = async (req, res, next) => {
     const { student_id, exam_id } = req.params;
     try {

@@ -54,6 +54,45 @@ class QuestionController {
       throw new Error(error);
     }
   };
+
+  deleteQuestion = async (question_id) => {
+    try {
+      await this.optionController.deleteQuestionOptions(question_id);
+      await this.answerController.deleteQuestionAnswers(question_id);
+      await Question.deleteById(question_id);
+      return;
+    } catch (error) {
+      console.error(`Error deleting question: ${error}`);
+      throw new Error(error);
+    }
+  };
+
+  deleteQuestionById = async (req, res, next) => {
+    const { question_id } = req.params;
+    try {
+      await this.deleteQuestion(question_id);
+      res.status(200).json({ message: "Question deleted successfully" });
+    } catch (error) {
+      console.error(`Error deleting question: ${error}`);
+      next(error);
+    }
+  };
+
+  deleteExamQuestions = async (exam_id) => {
+    try {
+      const query = new Query().where("exam_id", "==", exam_id);
+      const questions = await Question.find(query);
+      await Promise.all(
+        questions.map(async (question) => {
+          await this.deleteQuestion(question.id);
+        })
+      );
+      return;
+    } catch (error) {
+      console.error(`Error deleting questions: ${error}`);
+      throw new Error(error);
+    }
+  };
 }
 
 module.exports = QuestionController;
