@@ -16,6 +16,7 @@ const userRoles = {
     "createQuestion",
     "createOption",
     "updateExam",
+    "updateOption",
   ],
   pupil: ["readStudent", "createAnswer"],
 };

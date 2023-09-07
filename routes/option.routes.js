@@ -8,5 +8,11 @@ const router = express.Router();
 const optionController = new OptionController();
 
 router.post("/options", validateToken, authorize(["createOption"]), optionController.createOption);
+router.put(
+  "/options/:option_id",
+  validateToken,
+  authorize(["updateOption"]),
+  optionController.updateOption
+);
 
 module.exports = router;

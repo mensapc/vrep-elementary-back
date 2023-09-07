@@ -24,6 +24,18 @@ class OptionController {
       throw new Error(error);
     }
   };
+
+  updateOption = async (req, res, next) => {
+    const { option_id } = req.params;
+    const optionData = req.body;
+    try {
+      const updatedOption = await Option.updateById(option_id, optionData);
+      res.status(200).json({ option: updatedOption });
+    } catch (error) {
+      console.error(`Error updating option: ${error}`);
+      next(error);
+    }
+  };
 }
 
 module.exports = OptionController;
