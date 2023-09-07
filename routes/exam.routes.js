@@ -10,5 +10,6 @@ router.post("/exams", validateToken, authorize(["createExam"]), examController.c
 router.get("/exams", validateToken, authorize(["getExams"]), examController.getExams);
 router.get("/exams/:exam_id", validateToken, examController.getExam);
 router.get("/exams/:exam_id/results/:student_id", validateToken, examController.getExamResults);
+router.put("/exams/:exam_id", validateToken, authorize(["updateExam"]), examController.updateExam);
 
 module.exports = router;

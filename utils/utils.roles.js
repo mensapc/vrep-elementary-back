@@ -9,7 +9,14 @@ const userRoles = {
     "readStudents",
     "getExams",
   ],
-  staff: ["readStudent", "readStudents", "createExam", "createQuestion", "createOption"],
+  staff: [
+    "readStudent",
+    "readStudents",
+    "createExam",
+    "createQuestion",
+    "createOption",
+    "updateExam",
+  ],
   pupil: ["readStudent", "createAnswer"],
 };
 

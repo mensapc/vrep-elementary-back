@@ -23,6 +23,14 @@ const examSchema = new Schema(
       type: String,
       required: true,
     },
+    start_date: {
+      type: String,
+      required: true,
+    },
+    end_date: {
+      type: String,
+      required: true,
+    },
   },
   { timestamp: true }
 );

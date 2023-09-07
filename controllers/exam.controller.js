@@ -49,14 +49,41 @@ class ExamController {
     const { exam_id } = req.params;
     try {
       const exam = await Exam.findById(exam_id);
-      // check if exam is available
-      const examAvailability = checkExamAvailability(exam);
-      if (!examAvailability.is_available) throw new CustomError(examAvailability.message, 403);
-
+      if (req.user.role === "pupil") {
+        // check if exam is available
+        const examAvailability = checkExamAvailability(exam);
+        if (!examAvailability.is_available) throw new CustomError(examAvailability.message, 403);
+      }
       const questionsWithOptions = await this.questionController.examQuestionsWithOptions(exam.id);
       res.status(200).json({ exam: { ...exam, questions: questionsWithOptions } });
     } catch (error) {
       console.error(`Error getting exam: ${error}`);
+      next(error);
+    }
+  };
+
+  updateExam = async (req, res, next) => {
+    const { exam_id } = req.params;
+    const examData = req.body;
+    try {
+      if (examData.time_limit) {
+        throw new CustomError("Exam duration can be updated via start date and end date", 400);
+      }
+      console.log(examData);
+      if (examData.start_date || examData.end_date) {
+        // validate exam duration
+        const durationValidate = validateExamDuration(examData);
+        if (!durationValidate.is_valid) throw new CustomError(durationValidate.message, 400);
+
+        // calculate exam duration
+        const duration = examDuration(examData);
+        if (!duration.is_valid) throw new CustomError(duration.message, 400);
+        examData.time_limit = duration.duration;
+      }
+      const updatedExam = await Exam.updateById(exam_id, examData);
+      res.status(200).json({ exam: updatedExam });
+    } catch (error) {
+      console.error(`Error updating exam: ${error}`);
       next(error);
     }
   };
