@@ -12,4 +12,4 @@ const authorize = (permissions) => {
   };
 };
 
-module.exports = { authorize, };
+module.exports = { authorize};
