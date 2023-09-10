@@ -46,7 +46,7 @@ class StaffController {
     // updating staff details by id
     updateStaffById = async (req, res, next) => {
         try {
-            const { staff_id } = req.body;
+            const staff_id = req.params.staff_id;
             const updatedData = req.body; // Assuming you send the entire updated data in the request body
 
             if (!staff_id) {
@@ -61,7 +61,7 @@ class StaffController {
                 throw new CustomError(`Staff with ID ${staff_id} not found`, 400);
             }
         } catch (error) {
-            console.error(`Error updating staff with ID ${req.body.staff_id}: ${error}`);
+            console.error(`Error updating staff with ID ${req.params.staff_id}: ${error}`);
             throw new Error('Failed to update staff.');
         }
     }

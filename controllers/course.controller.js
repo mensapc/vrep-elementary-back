@@ -144,6 +144,9 @@ class CourseController {
     getCourseSchemes = async (req, res, next) => {
         try {
             const courses = await this.course.getAllCourseSchemes();
+            if (!courses) {
+                throw new CustomError('No Course Scheme found .', 404);
+            }
             res.status(200).json({ courses });
         } catch (error) {
             console.error('Error getting all courses:', error);
@@ -158,7 +161,9 @@ class CourseController {
             const updatedData = req.body; // Updated data from the request body
 
             const updatedCourse = await this.course.updateCourseSchemeByID(courseScheme_ID, updatedData);
-
+            if (!updatedCourse) {
+                throw new CustomError(`Course scheme with this ID ${courseScheme_ID} not found .`, 404);
+            }
             res.status(200).json(updatedCourse);
         } catch (error) {
             console.error(`Error updating course: ${error}`);
