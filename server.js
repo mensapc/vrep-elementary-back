@@ -11,7 +11,7 @@ const authRoutes = require('./routes/auth.routes');
 const studentRoutes = require('./routes/students.authroutes')
 const staffRoutes = require('./routes/staff.routes')
 const courseRoutes = require('./routes/course.route')
-const classRoutes = require('./routes/calss.route');
+const classRoutes = require('./routes/class.route');
 const app = express();
 
 app.use(express.json());

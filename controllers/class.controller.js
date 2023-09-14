@@ -5,7 +5,7 @@ const CustomError = require('../utils/CustomError');
 class ClassController {
     constructor() {
         this.class = new Class();
-        this.staff = new Staff(); // Create an instance of the Staff model
+        this.staff = new Staff();
     }
 
     // Controller function to create a new class and reference staff_id
@@ -33,7 +33,7 @@ class ClassController {
             res.status(201).json(response);
         } catch (error) {
             console.error(`Error creating class and referencing staff: ${error}`);
-            next(error);
+            throw new CustomError('Cannot create a class.', 500);
         }
     };
 
@@ -41,10 +41,13 @@ class ClassController {
     getAllClasses = async (req, res, next) => {
         try {
             const classes = await this.class.getAllClasses();
+            if (!classes) {
+                throw new CustomError('Cannot find  classes.', 404);
+            }
             res.status(200).json(classes);
         } catch (error) {
             console.error('Error getting all classes:', error);
-            throw new CustomError('Classes not found.', 404);
+
         }
     };
 
@@ -53,6 +56,9 @@ class ClassController {
         const classID = req.params.classID;
         try {
             const classData = await this.class.getClassById(classID);
+            if (classData) {
+                throw new CustomError('Class not found.', 404);
+            }
             res.status(200).json({ class: classData, });
         } catch (error) {
             console.error(`Error CourseID number ${classID}: ${error}`);
@@ -66,7 +72,7 @@ class ClassController {
         try {
             const classID = req.params.classID;
             if (!classID) {
-                throw new CustomError(`Route: not able to get /${classID}`, 400);
+                throw new CustomError("This class with this id doesn't exist.", 404);
             }
 
             const deletedClass = await this.class.deleteClass(classID);
