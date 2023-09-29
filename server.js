@@ -3,11 +3,15 @@ const cors = require("cors");
 const errorMiddleware = require("./middlewares/error.middleware");
 require("dotenv").config();
 const admin = require("firebase-admin");
-const serviceAccount = require("./config/serviceAccountKey.json");
+const serviceAccount = require("./config/serviceAccountkey.json");
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
 const authRoutes = require("./routes/auth.routes");
+const studentRoutes = require("./routes/students.authroutes");
+const staffRoutes = require("./routes/staff.routes");
+const courseRoutes = require("./routes/course.route");
+const classRoutes = require("./routes/class.route");
 const examRoutes = require("./routes/exam.routes");
 const questionRoutes = require("./routes/question.routes");
 const optionRoutes = require("./routes/option.routes");
@@ -24,6 +28,10 @@ app.use(cors());
 const PORT = process.env.PORT || 8080;
 
 app.use("/", authRoutes);
+app.use("/", studentRoutes);
+app.use("/", staffRoutes);
+app.use("/", courseRoutes);
+app.use("/", classRoutes);
 app.use("/api/v1", examRoutes);
 app.use("/api/v1", questionRoutes);
 app.use("/api/v1", optionRoutes);

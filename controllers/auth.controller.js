@@ -1,6 +1,7 @@
 const Admin = require('../models/admin');
 const User = require('../models/user');
 const Staff = require('../models/staff');
+const Class = require('../models/class');
 const Student = require('../models/student');
 const CustomError = require('../utils/CustomError');
 const generateToken = require('../utils/utils.token');
@@ -42,6 +43,7 @@ class AuthController {
             email,
             password,
             role,
+
           });
           break;
         default:
