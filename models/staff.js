@@ -45,6 +45,7 @@ class Staff {
       const staff = [];
       querySnapshot.forEach((doc) => {
         const staffData = doc.data();
+        delete staffData.password;
         staff.push(staffData);
       });
 
