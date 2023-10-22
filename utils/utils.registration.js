@@ -6,30 +6,16 @@ class RegistrationUtils {
     this.bcryptPassword = new BcryptPassword();
   }
   validateData = (data, userType) => {
-    const {
-      email,
-      role,
-      first_name,
-      last_name,
-      age,
-      dob,
-      address,
-      health_condition,
-      parent_name,
-      parent_phone,
-      parent_occupation,
-    } = data;
+    const { email, first_name, last_name, age, password } = data;
 
     try {
-      // Validate data presence
-
       // Email format validation
       const emailRegex = /^\S+@\S+\.\S+$/;
       if (!emailRegex.test(email)) {
         throw new CustomError("Invalid email format", 400);
       }
 
-      if (first_name.length < 3 || last_name.length < 3) {
+      if (!first_name || !last_name || first_name.length < 3 || last_name.length < 3) {
         throw new CustomError("firt name or last name should be at least 3 characters");
       }
 
@@ -42,20 +28,9 @@ class RegistrationUtils {
       }
     } catch (error) {
       if (error instanceof CustomError) throw error;
+      console.error(`Error validating ${userType} data: ${error}`);
       throw new Error("Registration failed");
     }
-  };
-
-  sanitizeData = async (data) => {
-    // Sanitize and normalize inputs
-    const { email, role } = data;
-    const sanitizedEmail = email.trim().toLowerCase();
-    const sanitizedRole = role.trim().toLowerCase();
-
-    return {
-      email: sanitizedEmail,
-      role: sanitizedRole,
-    };
   };
 }
 

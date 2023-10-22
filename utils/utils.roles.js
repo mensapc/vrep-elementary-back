@@ -25,6 +25,10 @@ const userRoles = {
     "getCoursesScheme",
     "updateScheme",
     "getExams",
+    "createRole",
+    "readRoles",
+    "createUserRole",
+    "createAdmin",
   ],
   staff: [
     "searchStudent",
@@ -49,6 +53,7 @@ const userRoles = {
     "deleteOption",
     "createGrade",
     "createAttendance",
+    "createUserRole",
   ],
   pupil: ["readStudent", "readCourses", "readClass", "createAnswer"],
 };

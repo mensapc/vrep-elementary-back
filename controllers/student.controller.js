@@ -5,10 +5,12 @@ const RegistrationUtils = require("../utils/utils.registration");
 const generateToken = require("../utils/utils.token");
 const generateRegNumber = require("../utils/utils.registration_number");
 const admin = require("firebase-admin");
+const UserRoleController = require("./user_role.controller");
 
 class StudentController {
   constructor() {
     this.registrationUtils = new RegistrationUtils();
+    this.userRoleController = new UserRoleController();
   }
 
   // Registering Student controller
@@ -16,10 +18,10 @@ class StudentController {
     const userData = req.body;
     try {
       this.registrationUtils.validateData(userData, "student");
-      const { email, role } = await this.registrationUtils.sanitizeData(userData);
       const regNumber = await this.generateUniqueRegNumber();
-      const newStudent = await Student.create({ ...userData, reg_number: regNumber, email, role });
-      const token = generateToken({ email, role });
+      const newStudent = await Student.create({ ...userData, reg_number: regNumber });
+      await this.userRoleController.create({ role_id: userData.role_id, user_id: newStudent.id });
+      const token = generateToken({ user_id: newStudent.id, email: newStudent.email });
       res.status(201).json({ student: newStudent, token });
     } catch (error) {
       console.error(`Error registering Student: ${error}`);
@@ -36,7 +38,7 @@ class StudentController {
       let student = await Student.find(query);
       student = student[0];
       if (!student) throw new CustomError("Student not found", 404);
-      const token = generateToken({ email: student.email, role: student.role });
+      const token = generateToken({ user_id: student.id, email: student.email });
       res.status(200).json({ student, token });
     } catch (error) {
       console.error("Error logging in student:", error);

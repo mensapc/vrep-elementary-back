@@ -8,6 +8,8 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
 // const authRoutes = require("./routes/auth.routes");
+const roleRoutes = require("./routes/role.routes");
+const adminRoutes = require("./routes/admin.routes");
 const studentRoutes = require("./routes/students.routes");
 const staffRoutes = require("./routes/staff.routes");
 const courseRoutes = require("./routes/course.route");
@@ -28,6 +30,8 @@ app.use(cors());
 const PORT = process.env.PORT || 8080;
 
 // app.use("/", authRoutes);
+app.use("/", roleRoutes);
+app.use("/", adminRoutes);
 app.use("/", studentRoutes);
 app.use("/", staffRoutes);
 app.use("/", courseRoutes);

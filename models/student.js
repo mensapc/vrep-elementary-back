@@ -13,12 +13,6 @@ const studentSchema = new Schema({
     required: true,
   },
 
-  role: {
-    type: String,
-    required: true,
-    trim: true,
-  },
-
   first_name: {
     type: String,
     required: true,
