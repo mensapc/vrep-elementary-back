@@ -8,7 +8,7 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
 // const authRoutes = require("./routes/auth.routes");
-const studentRoutes = require("./routes/students.authroutes");
+const studentRoutes = require("./routes/students.routes");
 const staffRoutes = require("./routes/staff.routes");
 const courseRoutes = require("./routes/course.route");
 const classRoutes = require("./routes/class.route");

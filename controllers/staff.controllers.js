@@ -5,6 +5,12 @@ class StaffController {
   constructor() {
     this.staff = new Staff();
   }
+
+  // Login Staff controller
+  login = async (req, res, next) => {
+    try {
+    } catch (error) {}
+  };
   //get all staff
   findAllStaff = async (req, res, next) => {
     try {

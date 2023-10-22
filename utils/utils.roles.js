@@ -1,7 +1,7 @@
 const userRoles = {
   admin: [
+    "searchStudent",
     "createStudent",
-    "createStudent1",
     "createStaff",
     "createAdmin",
     "readStudent",
@@ -27,6 +27,7 @@ const userRoles = {
     "getExams",
   ],
   staff: [
+    "searchStudent",
     "readStudent",
     "readStudents",
     "updateCourse",

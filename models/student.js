@@ -1,138 +1,78 @@
-const admin = require('firebase-admin');
-const CustomError = require('../utils/CustomError');
-const generateRegNumber = require('../utils/utils.registration_number');
-const generateUniqueRegNumber = require('../utils/utils.registration_number')
-const Class = require('../models/class');
-const db = admin.firestore();
+const { Schema, Model, SchemaTypes } = require("firefose");
+const { String, Number } = SchemaTypes;
 
-class Student {
-  constructor() {
-    this.class = new Class()
-  }
+const studentSchema = new Schema({
+  reg_number: {
+    type: String,
+    required: true,
+    unique: true,
+  },
 
-  // For Authentication
-  createStudent = async (data) => {
-    try {
-      console.log(data)
-      const userRecord = await admin.auth().createUser({
-        uid: data.reg_number,
-        email: data.email,
-        password: data.password,
-      });
-      await admin
-        .firestore()
-        .collection('students')
-        .doc(userRecord.uid)
-        .set({ student_id: userRecord.uid, ...data });
-      return data;
-    } catch (error) {
-      console.error('Error register student:', error);
-      if (error.code === 'auth/uid-already-exists')
-        throw new CustomError('Student with registration number already exists.', 409);
-      if (error.code === 'auth/email-already-exists')
-        throw new CustomError('The email address is already in use by another account.', 409);
-      throw new Error('Failed to register student.');
-    }
-  };
+  email: {
+    type: String,
+    required: true,
+  },
 
-  // Finding student by regnumber
-  findStudentByRegNumber = async (reg_number) => {
-    try {
-      const docSnapshot = await db.collection('students').doc(reg_number).get();
-      if (docSnapshot.exists) {
-        const studentData = docSnapshot.data();
-        return studentData;
-      } else {
-        return null;
-      }
-    } catch (error) {
-      console.error('Error finding student by registration number:', error);
-      throw new Error('Failed to find student.', 500);
-    }
-  };
+  role: {
+    type: String,
+    required: true,
+    trim: true,
+  },
 
-  // Adding a single student 
-  AddSingleStudent = async (data) => {
-    try {
+  first_name: {
+    type: String,
+    required: true,
+    trim: true,
+  },
 
-      const userRecord = await admin.auth().createUser({
-        uid: data.reg_Number,
-        email: data.email,
-        password: data.password,
+  last_name: {
+    type: String,
+    required: true,
+    trim: true,
+  },
 
+  age: {
+    type: Number,
+    required: true,
+    trim: true,
+  },
 
-      })
-      await db
-        .collection('students')
-        .doc(userRecord.uid)
-        .set(data)
+  dob: {
+    type: String,
+    required: true,
+    trim: true,
+  },
 
-      return data
-    } catch (error) {
-      console.error('Error registering student failed:', error);
-      if (error.code === 'auth/credentials-exists')
-        throw new CustomError('Student with registration number already exists.', 409);
-      if (error.code === 'auth/email-already-exists')
-        throw new CustomError('The email address is already in use by another account.', 409);
-      throw new Error('Failed to register student.');
-    }
-  }
+  address: {
+    type: String,
+    required: true,
+    trim: true,
+  },
 
+  health_condition: {
+    type: String,
+    required: true,
+    trim: true,
+  },
 
-  //Finding all students
-  findAllStudents = async () => {
-    try {
-      const querySnapshot = await db.collection('students').get();
-      const students = [];
-      querySnapshot.forEach((doc) => {
-        const studentData = doc.data();
-        students.push(studentData);
-      });
+  parent_name: {
+    type: String,
+    required: true,
+    trim: true,
+  },
 
-      return students;
-    } catch (error) {
-      console.error('Error finding all students:', error);
-      throw new Error('Failed to retrieve students.', 404);
-    }
-  };
+  parent_phone: {
+    type: String,
+    required: true,
+    trim: true,
+  },
 
-  // Updating student details
+  parent_occupation: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+});
 
-  updateStudentByRegNumber = async (reg_number, newData) => {
-    try {
-      const docRef = db.collection('students').doc(reg_number);
-      const docSnapshot = await docRef.get();
-
-      if (docSnapshot.exists) {
-        await docRef.update(newData);
-        return newData; // Returns the updated data
-      } else {
-        return null;
-      }
-    } catch (error) {
-      console.error('Error updating student by registration number:', error);
-      throw new Error('Failed to update student.', 500);
-    }
-  };
-
-
-
-  // deleting student details 
-  deleteStudentByRegNumber = async (reg_number) => {
-    try {
-      const docSnapshot = await db.collection('students').doc(reg_number).delete();
-      if (docSnapshot.exists) {
-        const studentData = docSnapshot.data();
-        return studentData;
-      } else {
-        return null;
-      }
-    } catch (error) {
-      console.error('Error deleting student by registration number:', error);
-      throw new Error('Failed to delete student.', 500);
-    }
-  };
-
-}
-
-module.exports = Student
+const Student = new Model("students", studentSchema);
+module.exports = Student;
