@@ -47,7 +47,7 @@ class Student {
       }
     } catch (error) {
       console.error('Error finding student by registration number:', error);
-      throw new Error('Failed to find student.', 500);
+      throw new Error('Failed to find student.', 404);
     }
   };
 
@@ -124,6 +124,8 @@ class Student {
       if (docSnapshot.exists) {
         const studentData = docSnapshot.data();
         return studentData;
+
+        console.log(studentData);
       } else {
         return null;
       }

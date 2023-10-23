@@ -95,7 +95,7 @@ class AuthController {
       delete userInfo.password;
       token = generateToken(userInfo);
 
-      res.status(200).json({ user: userInfo, token });
+      res.status(201).json({ user: userInfo, token });
     } catch (error) {
       console.error('Error logging in user:', error);
       next(error);

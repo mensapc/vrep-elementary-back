@@ -19,7 +19,7 @@ class User {
       return userRecord.email ? { id: userRecord.uid, email: userRecord.email } : null;
     } catch (error) {
       console.error('Error finding user by email:', error);
-      throw new Error('Failed to find user.');
+      throw new Error('Failed to find student.', 401);
     }
   };
 }

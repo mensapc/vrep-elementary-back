@@ -40,7 +40,7 @@ class StudentAuthController {
                     break;
 
                 default:
-                    throw new CustomError(`Route: register/${userType} not found`, 404);
+                    throw new CustomError(` register/${userType} not found`, 404);
 
 
             }
@@ -54,7 +54,7 @@ class StudentAuthController {
 
     // Get Single student controller
     getSingleStudent = async (req, res, next) => {
-        const reg_number = req.body.reg_number;
+        const reg_number = req.params.reg_number;
 
         try {
             const studentData = await this.student.findStudentByRegNumber(reg_number);
@@ -90,13 +90,15 @@ class StudentAuthController {
             const reg_number = req.params.reg_number;
 
             if (!reg_number) {
-                throw new CustomError(`Route: not able to get /${reg_number}`, 400);
+                throw new CustomError(` Not able to get delete by this registration /${reg_number}`, 400);
             }
 
             const deletedStudent = await this.student.deleteStudentByRegNumber(reg_number);
 
-            if (!deletedStudent) {
-                res.status(204).json({ message: `Student with registration number /${reg_number} deleted` });
+            if (deletedStudent) {
+                res.status(204).send();
+            } else {
+                res.status(204).send('Student deleted successfully'); // Send a response for cases where student was not found
             }
         } catch (error) {
             console.error(`Error deleting student with registration number ${req.body.reg_number}: ${error}`);

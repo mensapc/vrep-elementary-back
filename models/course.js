@@ -110,11 +110,11 @@ class Course {
         try {
             const courseRef = db.collection('courses').doc(courseID);
             if (!courseRef) {
-                throw new CustomError('Course not found.', 404);
+                throw new CustomError('Error Upadating course.', 401);
             }
             const courseSnapshot = await courseRef.get();
             if (!courseSnapshot.exists) {
-                throw new Error('Course not found.');
+                throw new Error('Cannot find and update course');
             }
 
             await courseRef.update(updatedData);
@@ -211,7 +211,7 @@ class Course {
             const courseRef = this.collectionRefScheme.doc(courseScheme_ID);
 
             if (!courseRef) {
-                throw new CustomError('Course not found.', 404);
+                throw new CustomError('Course id not found.', 404);
             }
             const courseSnapshot = await courseRef.get();
             if (!courseSnapshot.exists) {
