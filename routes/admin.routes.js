@@ -8,5 +8,6 @@ const adminController = new AdminController();
 
 router.post("/register/admin", validateToken, authorize(["createAdmin"]), adminController.register);
 router.post("/login/admin", adminController.login);
+router.post('/refresh/Token', adminController.refreshToken)
 
 module.exports = router;

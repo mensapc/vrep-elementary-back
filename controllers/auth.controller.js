@@ -64,7 +64,7 @@ class AuthController {
     const userData = req.body;
 
     try {
-      let credentials, userInfo, token;
+      let credentials, userInfo
 
       switch (userType) {
         case 'student':
@@ -93,9 +93,9 @@ class AuthController {
       }
 
       delete userInfo.password;
-      token = generateToken(userInfo);
+      const { token, refreshToken } = generateToken(userInfo);
 
-      res.status(200).json({ user: userInfo, token });
+      res.status(200).json({ user: userInfo, token, refreshToken });
     } catch (error) {
       console.error('Error logging in user:', error);
       next(error);
