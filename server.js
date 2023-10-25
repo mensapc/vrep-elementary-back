@@ -30,12 +30,12 @@ app.use(cors());
 const PORT = process.env.PORT || 8080;
 
 // app.use("/", authRoutes);
-app.use("/", roleRoutes);
-app.use("/", adminRoutes);
-app.use("/", studentRoutes);
-app.use("/", staffRoutes);
-app.use("/", courseRoutes);
-app.use("/", classRoutes);
+app.use("/api/v1", roleRoutes);
+app.use("/api/v1", adminRoutes);
+app.use("/api/v1", studentRoutes);
+app.use("/api/v1", staffRoutes);
+app.use("/api/v1", courseRoutes);
+app.use("/api/v1", classRoutes);
 app.use("/api/v1", examRoutes);
 app.use("/api/v1", questionRoutes);
 app.use("/api/v1", optionRoutes);

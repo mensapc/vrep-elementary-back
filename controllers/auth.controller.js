@@ -101,6 +101,22 @@ class AuthController {
       next(error);
     }
   };
+
+  refreshToken = async (req, res, next) => {
+    const refreshToken = req.body.refreshToken;
+
+    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
+      if (err) {
+        return res.sendStatus(403);
+      }
+
+      const accessToken = jwt.sign(user, process.env.JWT_SECRET, {
+        expiresIn: process.env.ACCESS_TOKEN_EXPIRATION,
+      });
+
+      res.json({ accessToken });
+    });
+  };
 }
 
 module.exports = AuthController;
