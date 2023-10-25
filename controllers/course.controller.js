@@ -124,7 +124,7 @@ class CourseController {
 
             // A validation check to ensure required entities
             if (!createdScheme) {
-                throw new CustomError('Course Scheme details and staff_id not found.', 404);
+                throw new CustomError('Course Scheme details cannot be created and staff id not found.', 404);
             }
 
 
