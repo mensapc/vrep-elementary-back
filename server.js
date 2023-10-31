@@ -3,7 +3,7 @@ const cors = require("cors");
 const errorMiddleware = require("./middlewares/error.middleware");
 require("dotenv").config();
 const admin = require("firebase-admin");
-const serviceAccount = require("./serviceAccountkey.json");
+const serviceAccount = require("./config/serviceAccountkey.json");
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
