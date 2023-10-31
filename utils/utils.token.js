@@ -6,10 +6,5 @@ module.exports = function generateToken(user) {
     expiresIn: process.env.JWT_EXPIRATION,
   }
   );
-
-  const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET, {
-    expiresIn: process.env.REFRESH_TOKEN_EXPIRATION,
-  });
-
-  return { token, refreshToken };
+  return token;
 }

@@ -41,8 +41,8 @@ class AdminController {
       const comparedPassword = await this.bcryptPassword.PasswordCompare(password, admin.password);
       if (!comparedPassword) throw new CustomError("Invalid credentials", 400);
 
-      const { token, refreshToken } = generateToken({ user_id: admin.id, email: admin.email });
-      res.status(200).json({ admin, token, refreshToken });
+      const token = generateToken({ user_id: admin.id, email: admin.email });
+      res.status(200).json({ admin, token });
     } catch (error) {
       console.error("Error logging in admin:", error);
       next(error);
@@ -60,23 +60,6 @@ class AdminController {
       throw new Error(error);
     }
   };
-
-  refreshToken = async (req, res, next) => {
-    const refreshToken = req.body.refreshToken;
-
-    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
-      if (err) {
-        return res.sendStatus(403);
-      }
-
-      const accessToken = jwt.sign(user, process.env.JWT_SECRET, {
-        expiresIn: process.env.ACCESS_TOKEN_EXPIRATION,
-      });
-
-      res.json({ accessToken });
-    });
-  };
-
 }
 
 module.exports = AdminController;
