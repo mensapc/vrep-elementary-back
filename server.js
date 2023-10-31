@@ -3,11 +3,11 @@ const cors = require("cors");
 const errorMiddleware = require("./middlewares/error.middleware");
 require("dotenv").config();
 const admin = require("firebase-admin");
-const serviceAccount = require("./config/serviceAccountkey.json");
+const serviceAccount = require("./serviceAccountkey.json");
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
-// const authRoutes = require("./routes/auth.routes");
+
 const roleRoutes = require("./routes/role.routes");
 const adminRoutes = require("./routes/admin.routes");
 const studentRoutes = require("./routes/students.routes");
@@ -29,7 +29,6 @@ app.use(cors());
 
 const PORT = process.env.PORT || 8080;
 
-// app.use("/", authRoutes);
 app.use("/api/v1", roleRoutes);
 app.use("/api/v1", adminRoutes);
 app.use("/api/v1", studentRoutes);
