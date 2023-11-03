@@ -130,7 +130,7 @@ class Course {
     }
 
     // Create a course scheme
-    async createCourseSchem(classSchemData, staffID) {
+    async createCourseSchem(classSchemData, email) {
         try {
             // Convert created_At to a Firestore timestamp
             const currentDate = new Date();
@@ -146,7 +146,7 @@ class Course {
             const courseScheme_ID = courseScheme.id;
 
             // Update the course scheme with the assigned classID and staff_id
-            await courseScheme.update({ courseScheme_ID, staff_id: staffID });
+            await courseScheme.update({ courseScheme_ID, staff_email: email });
 
             // Get the created class scheme document
             const createdScheme = await courseScheme.get();

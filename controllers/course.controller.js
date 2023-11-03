@@ -107,12 +107,12 @@ class CourseController {
         try {
             const courseSchemeData = req.body; // Class data from the request body
 
-            const staffID = courseSchemeData.staff_id; // Get staff_id from class data scheme
+            const staffEmail = courseSchemeData.staff_email; // Get staff_email from class data scheme
 
-            // Ensure staff with the provided staff_id exists
-            const staffExists = await this.staff.getStaffById(staffID);
+            // Ensure staff with the provided staff_email exists
+            const staffExists = await this.staff.populateStaff(staffEmail);
             if (!staffExists) {
-                throw new CustomError('Staff with the provided staff_id not found.', 404);
+                throw new CustomError('Staff with the provided staff_email not found.', 404);
             }
             delete staffExists.password
 
@@ -124,7 +124,7 @@ class CourseController {
 
             // A validation check to ensure required entities
             if (!createdScheme) {
-                throw new CustomError('Course Scheme details and staff_id not found.', 404);
+                throw new CustomError('Course Scheme details cannot be created and staff id not found.', 404);
             }
 
 

@@ -86,6 +86,24 @@ class Staff {
       throw new Error('Failed to update staff.', 500);
     }
   }
+
+  //Populate based on email to get additional details of the satff
+  populateStaff(email) {
+    try {
+      const staffQuery = db.collection('staff').where('email', '==', email).get();
+
+      if (!staffQuery) {
+        throw new Error('Staff with the provided email not found.');
+      }
+
+      const staffData = staffQuery.docs[0].data();
+
+      return staffData;
+    } catch (error) {
+      console.error('Error populating staff:', error);
+      throw new Error('Failed to populate staff.');
+    }
+  }
   // delete staff by id
   deleteStaffById = async (staff_id) => {
     try {
