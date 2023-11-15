@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const errorMiddleware = require("./middlewares/error.middleware");
+const limitter = require('express-rate-limit')
 require("dotenv").config();
 const admin = require("firebase-admin");
 const serviceAccount = require("./config/serviceAccountkey.json");
@@ -8,7 +9,9 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
 const authRoutes = require("./routes/auth.routes");
-const studentRoutes = require("./routes/students.authroutes");
+// const roleRoutes = require("./routes/role.routes");
+// const adminRoutes = require("./routes/admin.routes");
+const studentRoutes = require("./routes/students.routes");
 const staffRoutes = require("./routes/staff.routes");
 const courseRoutes = require("./routes/course.route");
 const classRoutes = require("./routes/class.route");
@@ -25,8 +28,22 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
+
+//Rate limiting
+app.use(limitter({
+  windowsMs: 15 * 60 * 1000, // 15 minutes
+  max: 15,
+  message: {
+    code: 429,
+    message: " Too many request"
+  },
+  standardHeaders: 'draft-7', // draft-6: `RateLimit-*` headers; draft-7: combined `RateLimit` header
+  limit: 100,
+}))
+
 const PORT = process.env.PORT || 8080;
 
+// app.use("/", authRoutes);
 app.use("/", authRoutes);
 app.use("/", studentRoutes);
 app.use("/", staffRoutes);
@@ -38,6 +55,7 @@ app.use("/api/v1", optionRoutes);
 app.use("/api/v1", answerRoutes);
 app.use("/api/v1", gradeRoutes);
 app.use("/api/v1", attendanceRoutes);
+
 
 app.use(errorMiddleware);
 

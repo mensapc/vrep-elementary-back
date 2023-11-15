@@ -115,12 +115,13 @@ class CourseController {
                 throw new CustomError('Staff with the provided staff_email not found.', 404);
             }
             delete staffExists.password
-
+            delete staffExists.age
+            delete staffExists.staff_id
             // Added the "created_At" field to classSchemeData
             courseSchemeData.created_At = formatCurrentDate();
 
             // Create the class scheme and reference the staff_id
-            const createdScheme = await this.course.createCourseSchem(courseSchemeData, staffID);
+            const createdScheme = await this.course.createCourseSchem(courseSchemeData, staffEmail);
 
             // A validation check to ensure required entities
             if (!createdScheme) {

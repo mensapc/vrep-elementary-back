@@ -88,15 +88,15 @@ class Staff {
   }
 
   //Populate based on email to get additional details of the satff
-  populateStaff(email) {
+  async populateStaff(email) {
     try {
-      const staffQuery = db.collection('staff').where('email', '==', email).get();
+      const staffQuerySnapshot = await db.collection('staff').where('email', '==', email).get();
 
-      if (!staffQuery) {
+      if (staffQuerySnapshot.empty) {
         throw new Error('Staff with the provided email not found.');
       }
 
-      const staffData = staffQuery.docs[0].data();
+      const staffData = staffQuerySnapshot.docs[0].data();
 
       return staffData;
     } catch (error) {
@@ -104,6 +104,8 @@ class Staff {
       throw new Error('Failed to populate staff.');
     }
   }
+
+
   // delete staff by id
   deleteStaffById = async (staff_id) => {
     try {
