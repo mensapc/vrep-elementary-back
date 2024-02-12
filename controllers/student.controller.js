@@ -64,12 +64,12 @@ class StudentController {
 
 	// Get student by reg number
 	getBySearch = async (req, res, next) => {
-		const [key, value] = Object.entries(req.query)[0];
+		const query = req.query;
 
 		try {
-			const query = new Query().where(key, '==', value);
-			let students = await Student.find(query);
-			res.status(200).json({ students });
+			let student = await Student.findOne(query);
+			if (!student) throw new CustomError('Student not found', 404);
+			res.status(200).json(student);
 		} catch (error) {
 			console.error('Fail to retrieve student:', error);
 			next(error);
