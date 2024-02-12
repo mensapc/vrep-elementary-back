@@ -30,7 +30,23 @@ class StaffController {
 		}
 	};
 
-	login = async (req, res, next) => {};
+	login = async (req, res, next) => {
+		const { email, password } = req.body;
+
+		try {
+			const staff = await Staff.findOne({ email });
+			if (!staff) throw new CustomError('Invalid credentials', 404);
+			const comparedPassword = await this.bcryptPassword.PasswordCompare(password, staff.password);
+			if (!comparedPassword) throw new CustomError('Invalid credentials', 400);
+			delete staff._doc.password;
+
+			const token = generateToken({ id: staff._id, email: staff.email, role: staff.role });
+			res.status(200).json({ ...staff._doc, token });
+		} catch (error) {
+			console.error('Error logging in staff:', error);
+			next(error);
+		}
+	};
 
 	//get all staff
 	findAllStaff = async (req, res, next) => {
