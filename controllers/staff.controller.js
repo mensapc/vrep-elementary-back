@@ -51,7 +51,7 @@ class StaffController {
 	//get all staff
 	getAll = async (req, res, next) => {
 		try {
-			const staff = await Staff.find();
+			const staff = await Staff.find().select('-password');
 			res.status(200).json(staff);
 		} catch (error) {
 			console.error(`Error retrieving all staff `, error);
@@ -63,7 +63,7 @@ class StaffController {
 	getById = async (req, res, next) => {
 		const { id } = req.params;
 		try {
-			const staff = await Staff.findOne({ _id: id });
+			const staff = await Staff.findOne({ _id: id }).select('-password');
 			if (!staff) throw new CustomError('Staff not found', 404);
 			res.status(200).json(staff);
 		} catch (error) {
