@@ -5,7 +5,7 @@ require('dotenv').config();
 const connectDB = require('./config/db.js');
 const adminRoutes = require('./routes/admin.routes');
 const studentRoutes = require('./routes/student.routes');
-// const staffRoutes = require('./routes/staff.routes');
+const staffRoutes = require('./routes/staff.routes');
 // const courseRoutes = require('./routes/course.route');
 // const classRoutes = require('./routes/class.route');
 // const examRoutes = require('./routes/exam.routes');
@@ -30,7 +30,7 @@ const PORT = process.env.NODE_ENV || 8080;
 
 app.use('/', adminRoutes);
 app.use('/', studentRoutes);
-// app.use('/', staffRoutes);
+app.use('/', staffRoutes);
 // app.use('/', courseRoutes);
 // app.use('/', classRoutes);
 // app.use('/api/v1', examRoutes);
