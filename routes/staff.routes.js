@@ -13,18 +13,9 @@ router.get('/staff', validateToken, authorize(['readStaff']), staffController.ge
 
 router.get('/staff/:id', validateToken, authorize(['readStaff']), staffController.getById);
 
-router.put(
-	'/staff/:staff_id',
-	validateToken,
-	authorize(['updateStaff']),
-	staffController.updateStaffById
-);
+router.put('/staff/:id', validateToken, authorize(['updateStaff']), staffController.updateStaff);
 
-router.delete(
-	'/staff/:staff_id',
-	validateToken,
-	authorize(['deleteStaff']),
-	staffController.deleteStaffById
-);
+router.delete('/staff/:id', validateToken, authorize(['deleteStaff']), staffController.deleteStaff);
+
 module.exports = router;
 

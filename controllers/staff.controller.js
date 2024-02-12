@@ -73,36 +73,29 @@ class StaffController {
 	};
 
 	// deleting staff by id
-	deleteStaffById = async (req, res, next) => {
-		const staff_id = req.params.staff_id; // Extract staff ID from req.body
+	deleteStaff = async (req, res, next) => {
+		const { id } = req.params;
 		try {
-			await this.staff.deleteStaffById(staff_id);
-			res.status(204).send(); // Successful deletion, no content to send
+			await Staff.findByIdAndDelete({ _id: id });
+			res.status(200).json({ message: 'Staff deleted successfully' });
 		} catch (error) {
-			console.error('Error in deleteStaffById controller:', error);
-			res.status(error.statusCode || 500).json({ error: error.message });
+			console.error(`Error deleting Staff: ${error}`);
+			next(error);
 		}
 	};
+
 	// updating staff details by id
-	updateStaffById = async (req, res, next) => {
+	updateStaff = async (req, res, next) => {
 		try {
-			const staff_id = req.params.staff_id;
-			const updatedData = req.body; // Assuming you send the entire updated data in the request body
+			const data = req.body;
+			delete data.password;
+			delete data._id;
 
-			if (!staff_id) {
-				throw new CustomError('Staff ID is required', 400);
-			}
-
-			const updatedStaff = await this.staff.updateStaffById(staff_id, updatedData);
-
-			if (updatedStaff) {
-				res.status(201).json({ staff: updatedStaff });
-			} else {
-				throw new CustomError(`Staff with ID ${staff_id} not found`, 400);
-			}
+			const updatedStaff = await Staff.findByIdAndUpdate(req.params.id, data, { new: true });
+			res.status(201).json({ ...updatedStaff._doc });
 		} catch (error) {
-			console.error(`Error updating staff with ID ${req.params.staff_id}: ${error}`);
-			throw new Error('Failed to update staff.');
+			console.error(`Error updating staff: ${error}`);
+			next(error);
 		}
 	};
 }
