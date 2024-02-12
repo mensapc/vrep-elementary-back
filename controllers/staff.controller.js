@@ -49,28 +49,29 @@ class StaffController {
 	};
 
 	//get all staff
-	findAllStaff = async (req, res, next) => {
+	getAll = async (req, res, next) => {
 		try {
-			const staff = await this.staff.getAllStaff();
-
-			res.status(200).json({ Allstaff: staff });
+			const staff = await Staff.find();
+			res.status(200).json(staff);
 		} catch (error) {
-			console.error(`Error retrieving all staff's `, error);
+			console.error(`Error retrieving all staff `, error);
 			next(error);
 		}
 	};
-	// get satff by id
-	getStaffById = async (req, res, next) => {
-		const staffId = req.params.staff_id; // Use staff_id from req.params
 
+	// Get staff by id
+	getById = async (req, res, next) => {
+		const { id } = req.params;
 		try {
-			const staff = await this.staff.getStaffById(staffId);
+			const staff = await Staff.findOne({ _id: id });
+			if (!staff) throw new CustomError('Staff not found', 404);
 			res.status(200).json(staff);
 		} catch (error) {
-			console.error('Error in getStaffById controller:', error);
-			res.status(error.statusCode || 500).json({ error: error.message });
+			console.error('Fail to retrieve Staff:', error);
+			next(error);
 		}
 	};
+
 	// deleting staff by id
 	deleteStaffById = async (req, res, next) => {
 		const staff_id = req.params.staff_id; // Extract staff ID from req.body

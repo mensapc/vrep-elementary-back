@@ -9,14 +9,9 @@ router.post('/staff/register', validateToken, authorize(['createStaff']), staffC
 
 router.post('/staff/login', staffController.login);
 
-router.get('/staff', validateToken, authorize(['readStaff']), staffController.findAllStaff);
+router.get('/staff', validateToken, authorize(['readStaff']), staffController.getAll);
 
-router.get(
-	'/staff/:staff_id',
-	validateToken,
-	authorize(['readStaff']),
-	staffController.getStaffById
-);
+router.get('/staff/:id', validateToken, authorize(['readStaff']), staffController.getById);
 
 router.put(
 	'/staff/:staff_id',
