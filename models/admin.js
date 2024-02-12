@@ -1,43 +1,57 @@
-const admin = require('firebase-admin');
-const CustomError = require('../utils/CustomError');
+const mongoose = require('mongoose');
 
-const db = admin.firestore();
+const adminSchema = new mongoose.Schema({
+	role: {
+		type: String,
+		required: true,
+		default: 'admin',
+	},
+	email: {
+		type: String,
+		required: true,
+		unique: true,
+	},
 
-class Admin {
-  createAdmin = async (data) => {
-    try {
-      const userRecord = await admin.auth().createUser({
-        uid: data.reg_number,
-        email: data.email,
-        password: data.password,
-      });
-      await admin
-        .firestore()
-        .collection('admins')
-        .doc(userRecord.uid)
-        .set({ admin_id: userRecord.uid, ...data });
-      return data;
-    } catch (error) {
-      console.error('Error register admin:', error);
-      if (error.code === 'auth/uid-already-exists')
-        throw new CustomError('Student with registration number already exists.', 409);
-      if (error.code === 'auth/email-already-exists')
-        throw new CustomError('The email address is already in use by another account.', 409);
-      throw new Error('Failed to register admin.');
-    }
-  };
+	password: {
+		type: String,
+		required: true,
+		trim: true,
+	},
 
-  findAdminByEmail = async (email) => {
-    try {
-      const querySnapshot = await db.collection('admins').where('email', '==', email).get();
-      const adminDoc = querySnapshot.docs[0];
-      const adminData = adminDoc ? adminDoc.data() : null;
-      return adminData;
-    } catch (error) {
-      console.error('Error finding admin by email:', error);
-      throw new Error('Failed to find admin.');
-    }
-  };
-}
+	first_name: {
+		type: String,
+		required: true,
+		trim: true,
+	},
 
-module.exports = Admin;
+	last_name: {
+		type: String,
+		required: true,
+		trim: true,
+	},
+
+	age: {
+		type: Number,
+		required: true,
+		trim: true,
+	},
+
+	phone_number: {
+		type: String,
+		required: true,
+		trim: true,
+	},
+
+	address: {
+		type: String,
+		required: true,
+		trim: true,
+	},
+
+	photo: {
+		type: String,
+	},
+});
+
+const AdminModel = mongoose.model('Admin', adminSchema);
+module.exports = AdminModel;
