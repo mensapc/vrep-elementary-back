@@ -23,7 +23,7 @@ class AdminController {
 			delete newAdmin._doc.password;
 
 			const token = generateToken({ id: newAdmin._id, email: newAdmin.email, role: newAdmin.role });
-			res.status(200).json({ admin: newAdmin, token });
+			res.status(200).json({ ...newAdmin._doc, token });
 		} catch (error) {
 			console.error(`Error registering admin: ${error}`);
 			next(error);
@@ -41,7 +41,7 @@ class AdminController {
 			delete admin._doc.password;
 
 			const token = generateToken({ id: admin._id, email: admin.email, role: admin.role });
-			res.status(200).json({ admin, token });
+			res.status(200).json({ ...admin._doc, token });
 		} catch (error) {
 			console.error('Error logging in admin:', error);
 			next(error);

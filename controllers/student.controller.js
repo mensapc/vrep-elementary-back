@@ -17,11 +17,11 @@ class StudentController {
 			const regNumber = await this.generateUniqueRegNumber();
 			const newStudent = await Student.create({ ...userData, reg_number: regNumber });
 			const token = generateToken({
-				user_id: newStudent.id,
+				id: newStudent.id,
 				email: newStudent.email,
 				role: newStudent.role,
 			});
-			res.status(201).json({ student: newStudent, token });
+			res.status(201).json({ ...newStudent._doc, token });
 		} catch (error) {
 			console.error(`Error registering Student: ${error}`);
 			next(error);
@@ -42,7 +42,7 @@ class StudentController {
 				email: student.email,
 				role: student.role,
 			});
-			res.status(200).json({ student, token });
+			res.status(200).json({ ...student._doc, token });
 		} catch (error) {
 			console.error('Error logging in student:', error);
 			next(error);
@@ -53,9 +53,9 @@ class StudentController {
 	getById = async (req, res, next) => {
 		const { id } = req.params;
 		try {
-			const student = await Student.findById(id);
+			const student = await Student.findOne({ _id: id });
 			if (!student) throw new CustomError('Student not found', 404);
-			res.status(200).json({ student });
+			res.status(200).json(student);
 		} catch (error) {
 			console.error('Fail to retrieve student:', error);
 			next(error);
