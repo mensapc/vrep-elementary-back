@@ -33,11 +33,15 @@ class StudentController {
 		const { reg_number } = req.body;
 
 		try {
-			const query = new Query().where('reg_number', '==', reg_number);
-			let student = await Student.find(query);
-			student = student[0];
+			let student = await Student.findOne({ reg_number });
 			if (!student) throw new CustomError('Student not found', 404);
-			const token = generateToken({ user_id: student.id, email: student.email });
+			delete student._doc.password;
+
+			const token = generateToken({
+				id: student.id,
+				email: student.email,
+				role: student.role,
+			});
 			res.status(200).json({ student, token });
 		} catch (error) {
 			console.error('Error logging in student:', error);
