@@ -86,12 +86,13 @@ class StudentController {
 			next(error);
 		}
 	};
+
 	// Delete student
 	deleteStudent = async (req, res, next) => {
 		const { id } = req.params;
 		try {
-			await Student.deleteById(id);
-			res.status(200).json({ message: 'Student deleted successfully' });
+			await Student.findByIdAndDelete({ _id: id });
+			res.status(204).json({ message: 'Student deleted successfully' });
 		} catch (error) {
 			console.error(`Error deleting student: ${error}`);
 			next(error);
@@ -104,8 +105,8 @@ class StudentController {
 			const data = req.body;
 			delete data.reg_number;
 
-			const updatedStudent = await Student.updateById(req.params.id, data);
-			res.status(201).json({ student: updatedStudent });
+			const updatedStudent = await Student.findByIdAndUpdate(req.params.id, data, { new: true });
+			res.status(201).json({ ...updatedStudent._doc });
 		} catch (error) {
 			console.error(`Error updating student: ${error}`);
 			next(error);
