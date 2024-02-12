@@ -34,28 +34,17 @@ class AdminController {
 		const { email, password } = req.body;
 
 		try {
-			const admin = await this.findByEmail(email);
-			if (!admin) throw new CustomError('Admin not found', 404);
+			const admin = await Admin.findOne({ email });
+			if (!admin) throw new CustomError('Invalid credentials', 404);
 			const comparedPassword = await this.bcryptPassword.PasswordCompare(password, admin.password);
-			if (!comparedPassword) throw new CustomError('Invalid credentials', 401);
+			if (!comparedPassword) throw new CustomError('Invalid credentials', 400);
+			delete admin._doc.password;
 
-			const token = generateToken({ user_id: admin.id, email: admin.email });
+			const token = generateToken({ id: admin._id, email: admin.email, role: admin.role });
 			res.status(200).json({ admin, token });
 		} catch (error) {
 			console.error('Error logging in admin:', error);
 			next(error);
-		}
-	};
-
-	findByEmail = async (email) => {
-		try {
-			const query = new Query().where('email', '==', email);
-			let admin = await Admin.find(query);
-			admin = admin[0];
-			return admin;
-		} catch (error) {
-			console.error('Error finding admin:', error);
-			throw new Error(error);
 		}
 	};
 }

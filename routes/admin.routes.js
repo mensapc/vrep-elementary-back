@@ -7,6 +7,6 @@ const router = express.Router();
 const adminController = new AdminController();
 
 router.post('/admin/register', validateToken, authorize(['createAdmin']), adminController.register);
-router.post('/login/admin', adminController.login);
+router.post('/admin/login', adminController.login);
 
 module.exports = router;
