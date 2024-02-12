@@ -62,7 +62,7 @@ class StudentController {
 		}
 	};
 
-	// Get student by reg number
+	// Get student by search
 	getBySearch = async (req, res, next) => {
 		const query = req.query;
 
@@ -79,9 +79,8 @@ class StudentController {
 	// Get All students controller
 	getAll = async (req, res, next) => {
 		try {
-			const query = new Query();
-			const students = await Student.find(query);
-			res.status(200).json({ students });
+			const students = await Student.find();
+			res.status(200).json(students);
 		} catch (error) {
 			console.error(`Error retrieving all students `, error);
 			next(error);
