@@ -1,29 +1,35 @@
-const { Query } = require("firefose");
-const Question = require("../models/question");
-const OptionController = require("./option.controller");
-const AnswerController = require("./answer.controller");
+const mongoose = require('mongoose');
+const Exam = require('../models/exam');
+const Question = require('../models/question');
+const CustomError = require('../utils/CustomError');
 
 class QuestionController {
-  constructor() {
-    this.optionController = new OptionController();
-    this.answerController = new AnswerController();
-  }
-
   createQuestion = async (req, res, next) => {
     const questionData = req.body;
+    const session = await mongoose.startSession();
 
     try {
-      const newQuestion = await Question.create(questionData);
-      res.status(200).json({ question: newQuestion });
+      await session.startTransaction();
+      const exam = await Exam.findById(questionData.exam_id).session(session);
+      if (!exam) throw new CustomError('Exam id  you provided not found', 404);
+
+      const newQuestion = await Question.create({ ...questionData, exam: exam._id });
+      exam.questions.push(newQuestion._id);
+      await exam.save({ session });
+      await session.commitTransaction();
+      return res.status(200).json(newQuestion);
     } catch (error) {
+      await session.abortTransaction();
       console.error(`Error creating question: ${error}`);
       next(error);
+    } finally {
+      session.endSession();
     }
   };
 
   examQuestionsWithOptions = async (exam_id) => {
     try {
-      const query = new Query().where("exam_id", "==", exam_id);
+      const query = new Query().where('exam_id', '==', exam_id);
       const examQuestions = await Question.find(query);
       const questionsWithOptions = await Promise.all(
         examQuestions.map(async (question) => {
@@ -39,7 +45,7 @@ class QuestionController {
   };
   QuestionsWithOptionsAndAnswers = async (exam_id, student_id) => {
     try {
-      const query = new Query().where("exam_id", "==", exam_id);
+      const query = new Query().where('exam_id', '==', exam_id);
       const examQuestions = await Question.find(query);
       const optionsAndAnswer = await Promise.all(
         examQuestions.map(async (question) => {
@@ -71,7 +77,7 @@ class QuestionController {
     const { question_id } = req.params;
     try {
       await this.deleteQuestion(question_id);
-      res.status(200).json({ message: "Question deleted successfully" });
+      res.status(200).json({ message: 'Question deleted successfully' });
     } catch (error) {
       console.error(`Error deleting question: ${error}`);
       next(error);
@@ -80,7 +86,7 @@ class QuestionController {
 
   deleteExamQuestions = async (exam_id) => {
     try {
-      const query = new Query().where("exam_id", "==", exam_id);
+      const query = new Query().where('exam_id', '==', exam_id);
       const questions = await Question.find(query);
       await Promise.all(
         questions.map(async (question) => {
