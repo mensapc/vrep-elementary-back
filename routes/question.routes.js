@@ -1,22 +1,24 @@
-const express = require("express");
-const { validateToken } = require("../middlewares/validations");
-const { authorize } = require("../middlewares/authorize");
-const QuestionController = require("../controllers/question.controller");
+const express = require('express');
+const { validateToken } = require('../middlewares/validations');
+const { authorize } = require('../middlewares/authorize');
+const QuestionController = require('../controllers/question.controller');
 
 const router = express.Router();
 const questionController = new QuestionController();
 
 router.post(
-  "/questions",
+  '/question',
   validateToken,
-  authorize(["createQuestion"]),
+  authorize(['createQuestion']),
   questionController.createQuestion
 );
 
+router.get('/questions/:id', validateToken, questionController.getQuestions);
+
 router.delete(
-  "/questions/:question_id",
+  '/questions/:question_id',
   validateToken,
-  authorize(["deleteQuestion"]),
+  authorize(['deleteQuestion']),
   questionController.deleteQuestionById
 );
 
