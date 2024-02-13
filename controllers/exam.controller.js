@@ -31,9 +31,8 @@ class ExamController {
 
 	getExams = async (req, res, next) => {
 		try {
-			const query = new Query();
-			const exams = await Exam.find(query);
-			res.status(200).json({ exams });
+			const exams = await Exam.find();
+			res.status(200).json(exams);
 		} catch (error) {
 			console.error(`Error getting exams: ${error}`);
 			next(error);
