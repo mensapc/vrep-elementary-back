@@ -13,7 +13,9 @@ router.post(
   questionController.createQuestion
 );
 
-router.get('/questions/:id', validateToken, questionController.getQuestions);
+router.get('/questions', validateToken, questionController.getQuestions);
+router.get('/questions/:id', validateToken, questionController.getQuestion);
+router.get('/questions/:id/full', validateToken, questionController.getQuestionWithOptions);
 
 router.delete(
   '/questions/:question_id',

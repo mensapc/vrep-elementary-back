@@ -28,12 +28,11 @@ class QuestionController {
   };
 
   getQuestions = async (req, res, next) => {
-    const { id } = req.params;
     try {
-      const questions = await Question.findById(id).populate('options');
+      const questions = await Question.find();
       res.status(200).json(questions);
     } catch (error) {
-      console.error(`Error getting questions: ${error}`);
+      console.error(`Error getting question: ${error}`);
       next(error);
     }
   };
