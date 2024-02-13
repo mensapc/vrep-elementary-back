@@ -75,6 +75,27 @@ class QuestionController {
     }
   };
 
+  deleteQuestion = async (req, res, next) => {
+    const { id } = req.params;
+    const session = await mongoose.startSession();
+    try {
+      await session.startTransaction();
+      const questionToDelete = await Question.findById(id).populate('options').session(session);
+      if (!questionToDelete) throw new CustomError('Question not found', 404);
+
+      await Question.deleteMany({ _id: { $in: questionToDelete.options } }, { session });
+      await questionToDelete.deleteOne({ session });
+      await session.commitTransaction();
+      return res.status(200).json({ message: 'Question deleted successfully' });
+    } catch (error) {
+      await session.abortTransaction();
+      console.error(`Error deleting question: ${error}`);
+      next(error);
+    } finally {
+      session.endSession();
+    }
+  };
+
   examQuestionsWithOptions = async (exam_id) => {
     try {
       const query = new Query().where('exam_id', '==', exam_id);
@@ -106,29 +127,6 @@ class QuestionController {
     } catch (error) {
       console.error(`Error getting questions: ${error}`);
       throw new Error(error);
-    }
-  };
-
-  deleteQuestion = async (req, res, next) => {
-    try {
-      await this.optionController.deleteQuestionOptions(question_id);
-      await this.answerController.deleteQuestionAnswers(question_id);
-      await Question.deleteById(question_id);
-      return;
-    } catch (error) {
-      console.error(`Error deleting question: ${error}`);
-      throw new Error(error);
-    }
-  };
-
-  deleteQuestionById = async (req, res, next) => {
-    const { question_id } = req.params;
-    try {
-      await this.deleteQuestion(question_id);
-      res.status(200).json({ message: 'Question deleted successfully' });
-    } catch (error) {
-      console.error(`Error deleting question: ${error}`);
-      next(error);
     }
   };
 

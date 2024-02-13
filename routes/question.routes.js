@@ -16,12 +16,18 @@ router.post(
 router.get('/questions', validateToken, questionController.getQuestions);
 router.get('/questions/:id', validateToken, questionController.getQuestion);
 router.get('/questions/:id/full', validateToken, questionController.getQuestionWithOptions);
+router.put(
+  '/questions/:id',
+  validateToken,
+  authorize(['updateQuestion']),
+  questionController.updateQuestion
+);
 
 router.delete(
-  '/questions/:question_id',
+  '/questions/:id',
   validateToken,
   authorize(['deleteQuestion']),
-  questionController.deleteQuestionById
+  questionController.deleteQuestion
 );
 
 module.exports = router;
