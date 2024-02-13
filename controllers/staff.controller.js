@@ -5,99 +5,99 @@ const BcryptPassword = require('../utils/utils.bcrypt.password');
 const registrationUtils = require('../utils/utils.registration');
 
 class StaffController {
-	constructor() {
-		this.bcryptPassword = new BcryptPassword();
-		this.registrationUtils = new registrationUtils();
-	}
+  constructor() {
+    this.bcryptPassword = new BcryptPassword();
+    this.registrationUtils = new registrationUtils();
+  }
 
-	register = async (req, res, next) => {
-		const userData = req.body;
+  register = async (req, res, next) => {
+    const userData = req.body;
 
-		try {
-			this.registrationUtils.validateData(userData, 'staff');
-			const staff = await Staff.findOne({ email: userData.email });
-			if (staff) throw new CustomError('staff already exists', 400);
-			const hashedPassword = await this.bcryptPassword.HashPassword(userData.password);
+    try {
+      this.registrationUtils.validateData(userData, 'staff');
+      const staff = await Staff.findOne({ email: userData.email });
+      if (staff) throw new CustomError('staff already exists', 400);
+      const hashedPassword = await this.bcryptPassword.HashPassword(userData.password);
 
-			const newStaff = await Staff.create({ ...userData, password: hashedPassword });
-			delete newStaff._doc.password;
+      const newStaff = await Staff.create({ ...userData, password: hashedPassword });
+      delete newStaff._doc.password;
 
-			const token = generateToken({ id: newStaff._id, email: newStaff.email, role: newStaff.role });
-			res.status(200).json({ ...newStaff._doc, token });
-		} catch (error) {
-			console.error(`Error registering staff: ${error}`);
-			next(error);
-		}
-	};
+      const token = generateToken({ id: newStaff._id, email: newStaff.email, role: newStaff.role });
+      res.status(200).json({ ...newStaff._doc, token });
+    } catch (error) {
+      console.error(`Error registering staff: ${error}`);
+      next(error);
+    }
+  };
 
-	login = async (req, res, next) => {
-		const { email, password } = req.body;
+  login = async (req, res, next) => {
+    const { email, password } = req.body;
 
-		try {
-			const staff = await Staff.findOne({ email });
-			if (!staff) throw new CustomError('Invalid credentials', 404);
-			const comparedPassword = await this.bcryptPassword.PasswordCompare(password, staff.password);
-			if (!comparedPassword) throw new CustomError('Invalid credentials', 400);
-			delete staff._doc.password;
+    try {
+      const staff = await Staff.findOne({ email });
+      if (!staff) throw new CustomError('Invalid credentials', 404);
+      const comparedPassword = await this.bcryptPassword.PasswordCompare(password, staff.password);
+      if (!comparedPassword) throw new CustomError('Invalid credentials', 400);
+      delete staff._doc.password;
 
-			const token = generateToken({ id: staff._id, email: staff.email, role: staff.role });
-			res.status(200).json({ ...staff._doc, token });
-		} catch (error) {
-			console.error('Error logging in staff:', error);
-			next(error);
-		}
-	};
+      const token = generateToken({ id: staff._id, email: staff.email, role: staff.role });
+      res.status(200).json({ ...staff._doc, token });
+    } catch (error) {
+      console.error('Error logging in staff:', error);
+      next(error);
+    }
+  };
 
-	//get all staff
-	getAll = async (req, res, next) => {
-		try {
-			const staff = await Staff.find().select('-password');
-			res.status(200).json(staff);
-		} catch (error) {
-			console.error(`Error retrieving all staff `, error);
-			next(error);
-		}
-	};
+  //get all staff
+  getAll = async (req, res, next) => {
+    try {
+      const staff = await Staff.find().select('-password');
+      res.status(200).json(staff);
+    } catch (error) {
+      console.error(`Error retrieving all staff `, error);
+      next(error);
+    }
+  };
 
-	// Get staff by id
-	getById = async (req, res, next) => {
-		const { id } = req.params;
-		try {
-			const staff = await Staff.findOne({ _id: id }).select('-password');
-			if (!staff) throw new CustomError('Staff not found', 404);
-			res.status(200).json(staff);
-		} catch (error) {
-			console.error('Fail to retrieve Staff:', error);
-			next(error);
-		}
-	};
+  // Get staff by id
+  getById = async (req, res, next) => {
+    const { id } = req.params;
+    try {
+      const staff = await Staff.findOne({ _id: id }).select('-password');
+      if (!staff) throw new CustomError('Staff not found', 404);
+      res.status(200).json(staff);
+    } catch (error) {
+      console.error('Fail to retrieve Staff:', error);
+      next(error);
+    }
+  };
 
-	// deleting staff by id
-	deleteStaff = async (req, res, next) => {
-		const { id } = req.params;
-		try {
-			await Staff.findByIdAndDelete({ _id: id });
-			res.status(200).json({ message: 'Staff deleted successfully' });
-		} catch (error) {
-			console.error(`Error deleting Staff: ${error}`);
-			next(error);
-		}
-	};
+  // deleting staff by id
+  deleteStaff = async (req, res, next) => {
+    const { id } = req.params;
+    try {
+      await Staff.findByIdAndDelete({ _id: id });
+      res.status(200).json({ message: 'Staff deleted successfully' });
+    } catch (error) {
+      console.error(`Error deleting Staff: ${error}`);
+      next(error);
+    }
+  };
 
-	// updating staff details by id
-	updateStaff = async (req, res, next) => {
-		try {
-			const data = req.body;
-			delete data.password;
-			delete data._id;
+  // updating staff details by id
+  updateStaff = async (req, res, next) => {
+    try {
+      const data = req.body;
+      delete data.password;
+      delete data._id;
 
-			const updatedStaff = await Staff.findByIdAndUpdate(req.params.id, data, { new: true });
-			res.status(201).json({ ...updatedStaff._doc });
-		} catch (error) {
-			console.error(`Error updating staff: ${error}`);
-			next(error);
-		}
-	};
+      const updatedStaff = await Staff.findByIdAndUpdate(req.params.id, data, { new: true });
+      res.status(201).json({ ...updatedStaff._doc });
+    } catch (error) {
+      console.error(`Error updating staff: ${error}`);
+      next(error);
+    }
+  };
 }
 
 module.exports = StaffController;
