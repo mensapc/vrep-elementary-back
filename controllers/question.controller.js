@@ -59,6 +59,22 @@ class QuestionController {
     }
   };
 
+  updateQuestion = async (req, res, next) => {
+    const { id } = req.params;
+    const questionData = req.body;
+    delete questionData._id;
+    delete questionData.exam;
+
+    try {
+      const updatedQuestion = await Question.findByIdAndUpdate(id, questionData, { new: true });
+      if (!updatedQuestion) throw new CustomError('Question id you provided not found', 404);
+      return res.status(200).json(updatedQuestion);
+    } catch (error) {
+      console.error(`Error updating question: ${error}`);
+      next(error);
+    }
+  };
+
   examQuestionsWithOptions = async (exam_id) => {
     try {
       const query = new Query().where('exam_id', '==', exam_id);
@@ -93,7 +109,7 @@ class QuestionController {
     }
   };
 
-  deleteQuestion = async (question_id) => {
+  deleteQuestion = async (req, res, next) => {
     try {
       await this.optionController.deleteQuestionOptions(question_id);
       await this.answerController.deleteQuestionAnswers(question_id);
