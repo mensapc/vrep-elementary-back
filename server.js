@@ -11,7 +11,7 @@ const staffRoutes = require('./routes/staff.routes');
 const examRoutes = require('./routes/exam.routes');
 const questionRoutes = require('./routes/question.routes');
 const optionRoutes = require('./routes/option.routes');
-// const answerRoutes = require('./routes/answer.routes');
+const answerRoutes = require('./routes/answer.routes');
 // const gradeRoutes = require('./routes/grade.routes');
 // const attendanceRoutes = require('./routes/attendance.routes');
 
@@ -36,7 +36,7 @@ app.use('/', staffRoutes);
 app.use('/api/v1', examRoutes);
 app.use('/api/v1', questionRoutes);
 app.use('/api/v1', optionRoutes);
-// app.use('/api/v1', answerRoutes);
+app.use('/api/v1', answerRoutes);
 // app.use('/api/v1', gradeRoutes);
 // app.use('/api/v1', attendanceRoutes);
 
