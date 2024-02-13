@@ -7,5 +7,11 @@ const router = express.Router();
 const answerController = new AnswerController();
 
 router.post('/answer', validateToken, authorize(['createAnswer']), answerController.createAnswer);
+router.put(
+  '/answers/:id',
+  validateToken,
+  authorize(['updateAnswer']),
+  answerController.updateAnswer
+);
 
 module.exports = router;

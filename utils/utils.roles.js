@@ -56,7 +56,7 @@ const userRoles = {
     'createAttendance',
     'createUserRole',
   ],
-  pupil: ['readStudent', 'readCourses', 'readClass', 'createAnswer'],
+  pupil: ['readStudent', 'readCourses', 'readClass', 'createAnswer', 'updateAnswer'],
 };
 
 module.exports = userRoles;
