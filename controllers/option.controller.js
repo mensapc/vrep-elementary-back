@@ -28,6 +28,17 @@ class OptionController {
     }
   };
 
+  getOption = async (req, res, next) => {
+    const { id } = req.params;
+    try {
+      const option = await Option.findById(id);
+      res.status(200).json(option);
+    } catch (error) {
+      console.error(`Error getting option: ${error}`);
+      next(error);
+    }
+  };
+
   questionwithOptionsAndAnswer = async (question_id) => {
     try {
       const query = new Query().where('question_id', '==', question_id);
