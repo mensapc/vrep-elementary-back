@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 const Exam = require('../models/exam');
+const Option = require('../models/option');
+const Question = require('../models/question');
 const {
   calculateMarks,
   checkExamAvailability,
@@ -100,14 +102,31 @@ class ExamController {
   };
 
   deleteExam = async (req, res, next) => {
-    const { exam_id } = req.params;
+    const { id } = req.params;
+    const session = await mongoose.startSession();
     try {
-      await this.questionController.deleteExamQuestions(exam_id);
-      await Exam.deleteById(exam_id);
-      res.status(200).json({ message: 'Exam deleted successfully' });
+      await session.startTransaction();
+      const examToDelete = await Exam.findById(id)
+        .populate({ path: 'questions', populate: { path: 'options' } })
+        .session(session);
+
+      if (!examToDelete) throw new CustomError('Exam not found', 404);
+
+      for (const question of examToDelete.questions) {
+        await Option.deleteMany({ _id: { $in: question.options } }, { session });
+      }
+
+      await Question.deleteMany({ _id: { $in: examToDelete.questions } }, { session });
+      await examToDelete.deleteOne({ session });
+      await session.commitTransaction();
+
+      return res.status(200).json({ message: 'Exam deleted successfully' });
     } catch (error) {
+      await session.abortTransaction();
       console.error(`Error deleting exam: ${error}`);
       next(error);
+    } finally {
+      session.endSession();
     }
   };
 
