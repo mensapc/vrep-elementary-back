@@ -1,7 +1,6 @@
-const { Schema, Model, SchemaTypes } = require("firefose");
-const { String, Boolean } = SchemaTypes;
+const mongoose = require('mongoose');
 
-const optionSchema = new Schema({
+const optionSchema = new mongoose.Schema({
   content: {
     type: String,
     required: true,
@@ -10,11 +9,8 @@ const optionSchema = new Schema({
     type: Boolean,
     required: true,
   },
-  question_id: {
-    type: String,
-    required: true,
-  },
+  question: { type: mongoose.Schema.Types.ObjectId, ref: 'Question', required: true },
 });
 
-const Option = new Model("options", optionSchema);
-module.exports = Option;
+const OptionModel = mongoose.model('Option', optionSchema);
+module.exports = OptionModel;
