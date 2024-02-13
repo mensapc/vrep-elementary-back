@@ -13,6 +13,19 @@ class AnswerController {
     }
   };
 
+  updateAnswer = async (req, res, next) => {
+    const { id } = req.params;
+    const { choosen_option } = req.body;
+    try {
+      const updatedAnswer = await Answer.findByIdAndUpdate(id, { choosen_option }, { new: true });
+      if (!updatedAnswer) throw new CustomError('Answer id you provided not found', 404);
+      return res.status(200).json(updatedAnswer);
+    } catch (error) {
+      console.error(`Error updating answer: ${error}`);
+      next(error);
+    }
+  };
+
   studentAnswer = async (student_id, question_id) => {
     try {
       const query = new Query()
