@@ -39,23 +39,15 @@ class OptionController {
     }
   };
 
-  questionwithOptionsAndAnswer = async (question_id) => {
-    try {
-      const query = new Query().where('question_id', '==', question_id);
-      const options = await Option.find(query);
-      return options;
-    } catch (error) {
-      console.error(`Error getting options: ${error}`);
-      throw new Error(error);
-    }
-  };
-
   updateOption = async (req, res, next) => {
-    const { option_id } = req.params;
+    const { id } = req.params;
     const optionData = req.body;
+    delete optionData._id;
+    delete optionData.question;
+
     try {
-      const updatedOption = await Option.updateById(option_id, optionData);
-      res.status(200).json({ option: updatedOption });
+      const updatedOption = await Option.findByIdAndUpdate(id, optionData, { new: true });
+      res.status(200).json(updatedOption);
     } catch (error) {
       console.error(`Error updating option: ${error}`);
       next(error);
@@ -70,6 +62,17 @@ class OptionController {
     } catch (error) {
       console.error(`Error deleting option: ${error}`);
       next(error);
+    }
+  };
+
+  questionwithOptionsAndAnswer = async (question_id) => {
+    try {
+      const query = new Query().where('question_id', '==', question_id);
+      const options = await Option.find(query);
+      return options;
+    } catch (error) {
+      console.error(`Error getting options: ${error}`);
+      throw new Error(error);
     }
   };
 
