@@ -37,6 +37,17 @@ class QuestionController {
     }
   };
 
+  getQuestion = async (req, res, next) => {
+    const { id } = req.params;
+    try {
+      const question = await Question.findById(id);
+      res.status(200).json(question);
+    } catch (error) {
+      console.error(`Error getting question: ${error}`);
+      next(error);
+    }
+  };
+
   examQuestionsWithOptions = async (exam_id) => {
     try {
       const query = new Query().where('exam_id', '==', exam_id);
