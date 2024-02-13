@@ -15,7 +15,7 @@ router.put(
   optionController.updateOption
 );
 router.delete(
-  '/options/:option_id',
+  '/options/:id',
   validateToken,
   authorize(['deleteOption']),
   optionController.deleteOption

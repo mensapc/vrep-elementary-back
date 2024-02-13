@@ -76,6 +76,7 @@ class ExamController {
     const { id } = req.params;
     const examData = req.body;
     delete examData._id;
+    delete examData.questions;
 
     try {
       if (examData.time_limit) {

@@ -55,9 +55,10 @@ class OptionController {
   };
 
   deleteOption = async (req, res, next) => {
-    const { option_id } = req.params;
+    const { id } = req.params;
     try {
-      await Option.deleteById(option_id);
+      const optionToDelete = await Option.findByIdAndDelete({ _id: id });
+      if (!optionToDelete) throw new CustomError('Option id you provided not found', 404);
       res.status(200).json({ message: 'Option deleted successfully' });
     } catch (error) {
       console.error(`Error deleting option: ${error}`);
