@@ -5,6 +5,16 @@ class AnswerController {
   createAnswer = async (req, res, next) => {
     const answerData = req.body;
     try {
+      const answerExist = await Answer.findOne({
+        question: answerData.question,
+        student: answerData.student,
+      });
+      if (answerExist)
+        throw new CustomError(
+          'You have already answered this question, consider to update the answer instead!',
+          400
+        );
+
       const answer = await Answer.create(answerData);
       return res.status(200).json(answer);
     } catch (error) {
@@ -15,13 +25,23 @@ class AnswerController {
 
   updateAnswer = async (req, res, next) => {
     const { id } = req.params;
-    const { choosen_option } = req.body;
+    const { chosen_option } = req.body;
     try {
-      const updatedAnswer = await Answer.findByIdAndUpdate(id, { choosen_option }, { new: true });
+      const updatedAnswer = await Answer.findByIdAndUpdate(id, { chosen_option }, { new: true });
       if (!updatedAnswer) throw new CustomError('Answer id you provided not found', 404);
       return res.status(200).json(updatedAnswer);
     } catch (error) {
       console.error(`Error updating answer: ${error}`);
+      next(error);
+    }
+  };
+
+  getAnswers = async (req, res, next) => {
+    try {
+      const answers = await Answer.find();
+      return res.status(200).json(answers);
+    } catch (error) {
+      console.error(`Error getting answers: ${error}`);
       next(error);
     }
   };
