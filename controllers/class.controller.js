@@ -37,6 +37,18 @@ class ClassController {
       next(error);
     }
   };
+
+  getClassByTeacherId = async (req, res, next) => {
+    const { id } = req.params;
+    try {
+      const _class = await Class.find({ staff: id });
+      if (!_class) throw new CustomError('Class not found', 404);
+      res.status(200).json(_class);
+    } catch (error) {
+      console.error(`Error getting class by staff id: ${error}`);
+      next(error);
+    }
+  };
 }
 
 module.exports = ClassController;

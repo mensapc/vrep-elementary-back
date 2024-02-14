@@ -8,6 +8,12 @@ const router = express.Router();
 router.post('/class', validateToken, authorize(['createClass']), classcontroller.createClass);
 router.get('/classes', validateToken, classcontroller.getClasses);
 router.get('/classes/:id', validateToken, authorize(['readClass']), classcontroller.getClassById);
+router.get(
+  '/classes/teacher/:id',
+  validateToken,
+  authorize(['readClass']),
+  classcontroller.getClassByTeacherId
+);
 // router.delete(
 //   '/delete/class/:classID',
 //   validateToken,
