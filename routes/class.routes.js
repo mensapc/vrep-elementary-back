@@ -20,11 +20,6 @@ router.get(
 //   authorize(['deleteClass']),
 //   classcontroller.deleteClassByID
 // );
-// router.put(
-//   '/update/class/:classID',
-//   validateToken,
-//   authorize(['updateClass']),
-//   classcontroller.updateClassByID
-// );
+router.put('/classes/:id', validateToken, authorize(['updateClass']), classcontroller.updateClass);
 module.exports = router;
 

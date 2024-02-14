@@ -49,6 +49,19 @@ class ClassController {
       next(error);
     }
   };
+
+  updateClass = async (req, res, next) => {
+    const { id } = req.params;
+    const { name, description } = req.body;
+    try {
+      const _class = await Class.findByIdAndUpdate(id, { name, description }, { new: true });
+      if (!_class) throw new CustomError('Class not found', 404);
+      res.status(200).json(_class);
+    } catch (error) {
+      console.error(`Error updating class: ${error}`);
+      next(error);
+    }
+  };
 }
 
 module.exports = ClassController;
