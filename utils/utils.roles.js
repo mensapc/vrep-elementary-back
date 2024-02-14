@@ -30,6 +30,7 @@ const userRoles = {
     'createUserRole',
     'createAdmin',
     'getExamSummary',
+    'addTeacherToCourse',
   ],
   staff: [
     'searchStudent',
@@ -37,11 +38,9 @@ const userRoles = {
     'readStudents',
     'updateCourse',
     'createClass',
-
+    'addTeacherToCourse',
     'readCourses',
-    'createCourse',
     'readClass',
-    'createCourseData',
     'updateScheme',
     'getCoursesScheme',
     'createExam',

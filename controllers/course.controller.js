@@ -12,6 +12,23 @@ class CourseController {
       next(error);
     }
   };
+
+  AddTeacherToCourse = async (req, res, next) => {
+    try {
+      const { course, staff } = req.body;
+      const newCourse = await Course.findByIdAndUpdate(
+        course,
+        { $push: { staff: staff } },
+        { new: true }
+      );
+      if (!newCourse) throw new CustomError('course not found', 404);
+      res.status(200).json(newCourse);
+    } catch (error) {
+      console.error(`Error adding teacher to course: ${error}`);
+      next(error);
+    }
+  };
+
   // Get All Courses
   getAllCourses = async (req, res, next) => {
     try {
