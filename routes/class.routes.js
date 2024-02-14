@@ -7,12 +7,7 @@ const router = express.Router();
 
 router.post('/class', validateToken, authorize(['createClass']), classcontroller.createClass);
 router.get('/classes', validateToken, classcontroller.getClasses);
-// router.get(
-//   '/single/class/:classID',
-//   validateToken,
-//   authorize(['readSingleClass']),
-//   classcontroller.getSingleClass
-// );
+router.get('/classes/:id', validateToken, authorize(['readClass']), classcontroller.getClassById);
 // router.delete(
 //   '/delete/class/:classID',
 //   validateToken,

@@ -18,7 +18,7 @@ const userRoles = {
     'updateCourse',
     'createClass',
 
-    'readSingleClass',
+    'readClass',
     'deleteClass',
     'updateClass',
     'createCourseData',
@@ -40,7 +40,7 @@ const userRoles = {
 
     'readCourses',
     'createCourse',
-    'readSingleClass',
+    'readClass',
     'createCourseData',
     'updateScheme',
     'getCoursesScheme',
