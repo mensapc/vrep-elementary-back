@@ -1,6 +1,11 @@
 const mongoose = require('mongoose');
 
 const answerSchema = new mongoose.Schema({
+  exam: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Exam',
+    required: true,
+  },
   question: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Question',
@@ -11,13 +16,13 @@ const answerSchema = new mongoose.Schema({
     ref: 'Student',
     required: true,
   },
-  choosen_option: {
+  chosen_option: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Option',
     required: true,
   },
 });
 
-const AnswerModel = mongoose.model('Model', answerSchema);
+const AnswerModel = mongoose.model('Answer', answerSchema);
 
 module.exports = AnswerModel;
