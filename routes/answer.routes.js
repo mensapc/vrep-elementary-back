@@ -7,6 +7,7 @@ const router = express.Router();
 const answerController = new AnswerController();
 
 router.post('/answer', validateToken, authorize(['createAnswer']), answerController.createAnswer);
+router.get('/answers', validateToken, answerController.getAnswers);
 router.put(
   '/answers/:id',
   validateToken,
