@@ -6,7 +6,7 @@ const classcontroller = new ClassController();
 const router = express.Router();
 
 router.post('/class', validateToken, authorize(['createClass']), classcontroller.createClass);
-// router.get('/class', validateToken, authorize(['readClass']), classcontroller.getAllClasses);
+router.get('/classes', validateToken, classcontroller.getClasses);
 // router.get(
 //   '/single/class/:classID',
 //   validateToken,
