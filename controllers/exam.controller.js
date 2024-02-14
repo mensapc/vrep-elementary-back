@@ -2,8 +2,9 @@ const mongoose = require('mongoose');
 const Exam = require('../models/exam');
 const Option = require('../models/option');
 const Question = require('../models/question');
+const Answer = require('../models/answer');
 const {
-  calculateMarks,
+  CalculateResults,
   checkExamAvailability,
   examDuration,
   validateExamDuration,
@@ -61,7 +62,15 @@ class ExamController {
       const exam = await Exam.findOne({ _id: id })
         .populate({ path: 'questions', populate: { path: 'options' } })
         .session(session);
+
+      if (req.user.role === 'pupil') {
+        // check if exam is available
+        const examAvailability = checkExamAvailability(exam);
+        if (!examAvailability.is_available) throw new CustomError(examAvailability.message, 403);
+      }
+
       await session.commitTransaction();
+
       return res.status(200).json(exam);
     } catch (error) {
       await session.abortTransaction();
@@ -132,19 +141,25 @@ class ExamController {
   };
 
   getExamResults = async (req, res, next) => {
-    const { student_id, exam_id } = req.params;
+    const { exam_id, student_id } = req.body;
     try {
-      const exam = await Exam.findById(exam_id);
-      const questionsWithAnswers = await this.questionController.QuestionsWithOptionsAndAnswers(
-        exam.id,
-        student_id
-      );
-      const studentMarks = calculateMarks(exam, questionsWithAnswers);
-      res
-        .status(200)
-        .json({ exam: { ...exam, questions: questionsWithAnswers }, student_marks: studentMarks });
+      const exam = await Exam.findById(exam_id).populate({
+        path: 'questions',
+        populate: { path: 'options' },
+      });
+      if (!exam) throw new CustomError('Exam not found', 404);
+
+      const answers = await Answer.find({ student: student_id, exam: exam_id })
+        .populate({ path: 'question', select: '_id points' })
+        .populate('chosen_option');
+
+      if (!answers.length) throw new CustomError('No answers found for this exam', 404);
+
+      const results = CalculateResults(exam, answers);
+
+      res.status(200).json(results);
     } catch (error) {
-      console.error(`Error getting exam: ${error}`);
+      console.error(`Error calculating result: ${error}`);
       next(error);
     }
   };
