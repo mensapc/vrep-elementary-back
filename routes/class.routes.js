@@ -14,12 +14,12 @@ router.get(
   authorize(['readClass']),
   classcontroller.getClassByTeacherId
 );
-// router.delete(
-//   '/delete/class/:classID',
-//   validateToken,
-//   authorize(['deleteClass']),
-//   classcontroller.deleteClassByID
-// );
+router.delete(
+  '/classes/:id',
+  validateToken,
+  authorize(['deleteClass']),
+  classcontroller.deleteClass
+);
 router.put('/classes/:id', validateToken, authorize(['updateClass']), classcontroller.updateClass);
 module.exports = router;
 

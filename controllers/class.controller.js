@@ -62,6 +62,18 @@ class ClassController {
       next(error);
     }
   };
+
+  deleteClass = async (req, res, next) => {
+    const { id } = req.params;
+    try {
+      const _class = await Class.findByIdAndDelete(id);
+      if (!_class) throw new CustomError('Class not found', 404);
+      res.status(200).json({ message: 'Class deleted successfully' });
+    } catch (error) {
+      console.error(`Error deleting class: ${error}`);
+      next(error);
+    }
+  };
 }
 
 module.exports = ClassController;
