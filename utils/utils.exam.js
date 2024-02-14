@@ -1,14 +1,49 @@
-const calculateMarks = (exam, questionsWithAnswers) => {
-  const totalPoints = questionsWithAnswers.reduce((acc, question) => acc + question.points, 0);
+CalculateResults = (exam, answers) => {
+  const questionMap = new Map();
+  const result = {
+    _id: exam._id,
+    name: exam.name,
+    description: exam.description,
+    max_score: exam.max_score,
+    time_limit: exam.time_limit,
+    start_date: exam.start_date,
+    end_date: exam.end_date,
+    totalMarks: 0,
+    scoredMarks: 0,
+    overview: [],
+  };
 
-  const studentMarks = questionsWithAnswers.reduce((acc, question) => {
-    const selectedOption = question.options.find(
-      (option) => option.id === question.answer[0].option_id
-    );
-    return acc + (selectedOption.is_correct ? question.points : 0);
-  }, 0);
+  for (const question of exam.questions) {
+    questionMap.set(question._id.toString(), {
+      content: question.content,
+      points: question.points,
+      correctOption: question.options.find((opt) => opt.is_correct),
+    });
 
-  return (studentMarks / totalPoints) * exam.max_score;
+    result.totalMarks += question.points;
+  }
+
+  for (const answer of answers) {
+    const questionInfo = questionMap.get(answer.question._id.toString());
+    if (!questionInfo) continue;
+
+    const isCorrect = answer.chosen_option.is_correct;
+    const scoredMarks = isCorrect ? questionInfo.points : 0;
+
+    result.scoredMarks += scoredMarks;
+    result.overview.push({
+      question: {
+        _id: answer.question._id,
+        content: questionInfo.content,
+        points: questionInfo.points,
+      },
+      correctAnswer: questionInfo.correctOption,
+      studentAnswer: answer.chosen_option,
+      isCorrect: isCorrect,
+    });
+  }
+
+  return result;
 };
 
 const ExamTimeInMilliseconds = (exam) => {
@@ -29,17 +64,17 @@ const timeConverter = (time) => {
 const validateExamDuration = (exam) => {
   const { start_date, end_date } = exam;
   if (!start_date || !end_date) {
-    return { is_valid: false, message: "Exam start time and exam end time must be provided." };
+    return { is_valid: false, message: 'Exam start time and exam end time must be provided.' };
   }
 
   const { examStartTime, examEndTime, currentTime } = ExamTimeInMilliseconds(exam);
 
   if (examStartTime < currentTime || examEndTime < currentTime) {
-    return { is_valid: false, message: "Exam start time and exam end time must be in the future." };
+    return { is_valid: false, message: 'Exam start time and exam end time must be in the future.' };
   }
 
   if (examStartTime >= examEndTime) {
-    return { is_valid: false, message: "Exam start time must be before exam end time." };
+    return { is_valid: false, message: 'Exam start time must be before exam end time.' };
   }
   return { is_valid: true };
 };
@@ -48,7 +83,7 @@ const examDuration = (exam) => {
   const { examStartTime, examEndTime } = ExamTimeInMilliseconds(exam);
 
   const { hours, minutes, seconds } = timeConverter(examEndTime - examStartTime);
-  let duration = "";
+  let duration = '';
   if (hours > 0) duration += `${hours} hr `;
   if (minutes > 0) duration += `${minutes} min `;
   if (seconds > 0) duration += `${seconds} sec`;
@@ -61,7 +96,7 @@ const checkExamAvailability = (exam) => {
   if (currentTime < examStartTime) {
     const { days, hours, minutes, seconds } = timeConverter(examStartTime - currentTime);
 
-    let message = "";
+    let message = '';
 
     if (days > 1) message += `${days} days `;
     if (hours > 0 && hours < 24) message += `${hours} hours `;
@@ -70,10 +105,10 @@ const checkExamAvailability = (exam) => {
 
     return { is_available: false, message: `The exam will be available in ${message.trim()}.` };
   } else if (currentTime > examEndTime) {
-    return { is_available: false, message: "The exam is no longer available." };
+    return { is_available: false, message: 'The exam is no longer available.' };
   } else {
     return { is_available: true };
   }
 };
 
-module.exports = { calculateMarks, checkExamAvailability, examDuration, validateExamDuration };
+module.exports = { CalculateResults, checkExamAvailability, examDuration, validateExamDuration };
