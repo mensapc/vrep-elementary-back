@@ -13,7 +13,7 @@ class CourseController {
     }
   };
 
-  AddTeacherToCourse = async (req, res, next) => {
+  addTeacherToCourse = async (req, res, next) => {
     try {
       const { course, staff } = req.body;
 
@@ -49,13 +49,16 @@ class CourseController {
   };
 
   // Get All Courses
-  getAllCourses = async (req, res, next) => {
+  getCourses = async (req, res, next) => {
     try {
-      const courses = await this.course.getAllCourses();
-      res.status(200).json({ courses });
+      const courses = await Course.find();
+      if (!courses) {
+        throw new CustomError('No Course found .', 404);
+      }
+      res.status(200).json(courses);
     } catch (error) {
-      console.error('Error getting all courses:', error);
-      res.status(error.statusCode || 500).json({ error: error.message });
+      console.error('Error getting courses:', error);
+      next(error);
     }
   };
 

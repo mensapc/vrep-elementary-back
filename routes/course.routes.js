@@ -6,11 +6,12 @@ const courseController = new CourseController();
 const router = express.Router();
 
 router.post('/course', validateToken, authorize(['createCourse']), courseController.createCourse);
+router.get('/courses', validateToken, courseController.getCourses);
 router.put(
   '/course/teacher/assign',
   validateToken,
   authorize(['teacherCourse']),
-  courseController.AddTeacherToCourse
+  courseController.addTeacherToCourse
 );
 router.put(
   '/course/teacher/remove',
@@ -20,7 +21,6 @@ router.put(
 );
 // router.post('/create/course_schema', validateToken, authorize(['createCourseData']), courseController.createCourseSchemData);
 // router.get('/courses_scheme', validateToken, authorize(['getCoursesScheme']), courseController.getCourseSchemes)
-// router.get('/courses', validateToken, authorize(['readCourse']), courseController.getAllCourses);
 // router.get('/course/:courseId', validateToken, authorize(['readCourses']), courseController.getSingleCourse)
 // router.delete('/delete/course/:courseID', validateToken, authorize(['deletecourse']), courseController.deleteCourseByID)
 // router.put('/update/course/:courseID', validateToken, authorize(['updateCourse']), courseController.updateCourseByID)

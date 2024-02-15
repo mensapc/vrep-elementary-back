@@ -13,7 +13,7 @@ const userRoles = {
     'updateStaff',
     'createCourse',
     'readCourse',
-    'readCourses',
+
     'deletecourse',
     'updateCourse',
     'createClass',
@@ -39,7 +39,7 @@ const userRoles = {
     'updateCourse',
     'createClass',
     'teacherCourse',
-    'readCourses',
+
     'readClass',
     'updateScheme',
     'getCoursesScheme',
@@ -57,7 +57,7 @@ const userRoles = {
     'createUserRole',
     'getExamSummary',
   ],
-  pupil: ['readStudent', 'readCourses', 'createAnswer', 'updateAnswer'],
+  pupil: ['readStudent', 'createAnswer', 'updateAnswer'],
 };
 
 module.exports = userRoles;
