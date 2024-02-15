@@ -27,5 +27,11 @@ router.post(
   authorize(['courseClass']),
   classcontroller.addCourseToClass
 );
+router.put(
+  '/class/course/remove',
+  validateToken,
+  authorize(['courseClass']),
+  classcontroller.removeCourseFromClass
+);
 module.exports = router;
 

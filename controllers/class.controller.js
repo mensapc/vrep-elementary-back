@@ -101,6 +101,24 @@ class ClassController {
       session.endSession();
     }
   };
+
+  removeCourseFromClass = async (req, res, next) => {
+    const { _class, course } = req.body;
+    try {
+      const newClass = await Class.findByIdAndUpdate(
+        _class,
+        { $pull: { courses: { course } } },
+        { new: true }
+      );
+      if (!newClass) {
+        throw new CustomError('Fail to remove course from class', 400);
+      }
+      res.status(200).json(newClass);
+    } catch (error) {
+      console.error(`Error removing course from class: ${error}`);
+      next(error);
+    }
+  };
 }
 
 module.exports = ClassController;
