@@ -1,5 +1,7 @@
+const mongoose = require('mongoose');
 const Class = require('../models/class');
 const CustomError = require('../utils/CustomError');
+const { checkIfCourseAlreadyAdded, addStaffToCourse } = require('../utils/utils.class');
 
 class ClassController {
   createClass = async (req, res, next) => {
@@ -72,6 +74,31 @@ class ClassController {
     } catch (error) {
       console.error(`Error deleting class: ${error}`);
       next(error);
+    }
+  };
+
+  addCourseToClass = async (req, res, next) => {
+    const { _class, course, staff } = req.body;
+    const session = await mongoose.startSession();
+    try {
+      await session.withTransaction(async () => {
+        await checkIfCourseAlreadyAdded(_class, course, session);
+        await addStaffToCourse(course, staff, session);
+        const newClass = await Class.findByIdAndUpdate(
+          _class,
+          { $push: { courses: { course, staff } } },
+          { new: true }
+        ).session(session);
+        if (!newClass) {
+          throw new CustomError('Fail to add course in class', 400);
+        }
+        res.status(200).json(newClass);
+      });
+    } catch (error) {
+      console.error(`Error adding course to class: ${error}`);
+      next(error);
+    } finally {
+      session.endSession();
     }
   };
 }
