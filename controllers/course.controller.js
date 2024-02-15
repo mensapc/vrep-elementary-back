@@ -79,24 +79,14 @@ class CourseController {
     }
   };
 
-  // Delete course by ID
-  deleteCourseByID = async (req, res, next) => {
+  deleteCourse = async (req, res, next) => {
+    const { id } = req.params;
     try {
-      const courseID = req.params.courseID;
-
-      if (!courseID) {
-        throw new CustomError('Invalid course ID provided in the request.', 400);
+      const courseToDelete = await Course.findByIdAndDelete(id);
+      if (!courseToDelete) {
+        throw new CustomError('Course not found', 404);
       }
-
-      const deletedCourse = await this.course.deleteCourse(courseID);
-
-      if (deletedCourse) {
-        // Course deletion was successful
-        return res.status(200).json({ message: 'Deleted successfully' });
-      } else {
-        // Course not found or not deleted
-        return res.status(404).json({ message: 'Course not found' });
-      }
+      res.status(200).json({ message: 'Course deleted successfully' });
     } catch (error) {
       console.error(`Error deleting course with ID ${req.params.courseID}: ${error}`);
       next(error);

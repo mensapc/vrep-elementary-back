@@ -26,10 +26,12 @@ router.put(
   authorize(['updateCourse']),
   courseController.updateCourse
 );
-// router.post('/create/course_schema', validateToken, authorize(['createCourseData']), courseController.createCourseSchemData);
-// router.get('/courses_scheme', validateToken, authorize(['getCoursesScheme']), courseController.getCourseSchemes)
-// router.delete('/delete/course/:courseID', validateToken, authorize(['deletecourse']), courseController.deleteCourseByID)
-// router.put('/update/courses_scheme/:courseScheme_ID', validateToken, authorize(['updateScheme']), courseController.updateCourseScheme)
+router.delete(
+  '/courses/:id',
+  validateToken,
+  authorize(['deletecourse']),
+  courseController.deleteCourse
+);
 
 module.exports = router;
 
