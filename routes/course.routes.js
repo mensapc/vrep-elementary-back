@@ -7,10 +7,16 @@ const router = express.Router();
 
 router.post('/course', validateToken, authorize(['createCourse']), courseController.createCourse);
 router.put(
-  '/course/teacher',
+  '/course/teacher/assign',
   validateToken,
-  authorize(['addTeacherToCourse']),
+  authorize(['teacherCourse']),
   courseController.AddTeacherToCourse
+);
+router.put(
+  '/course/teacher/remove',
+  validateToken,
+  authorize(['teacherCourse']),
+  courseController.removeTeacherFromCourse
 );
 // router.post('/create/course_schema', validateToken, authorize(['createCourseData']), courseController.createCourseSchemData);
 // router.get('/courses_scheme', validateToken, authorize(['getCoursesScheme']), courseController.getCourseSchemes)

@@ -16,6 +16,9 @@ class CourseController {
   AddTeacherToCourse = async (req, res, next) => {
     try {
       const { course, staff } = req.body;
+
+      const staffExists = await Course.find({ staff: staff });
+      if (staffExists.length) throw new CustomError('this teacher already exists in course', 400);
       const newCourse = await Course.findByIdAndUpdate(
         course,
         { $push: { staff: staff } },
@@ -25,6 +28,22 @@ class CourseController {
       res.status(200).json(newCourse);
     } catch (error) {
       console.error(`Error adding teacher to course: ${error}`);
+      next(error);
+    }
+  };
+
+  removeTeacherFromCourse = async (req, res, next) => {
+    try {
+      const { course, staff } = req.body;
+      const newCourse = await Course.findByIdAndUpdate(
+        course,
+        { $pull: { staff: staff } },
+        { new: true }
+      );
+      if (!newCourse) throw new CustomError('course not found', 404);
+      res.status(200).json(newCourse);
+    } catch (error) {
+      console.error(`Error removing teacher from course: ${error}`);
       next(error);
     }
   };
