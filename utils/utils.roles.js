@@ -13,11 +13,9 @@ const userRoles = {
     'updateStaff',
     'createCourse',
     'readCourse',
-
     'deletecourse',
     'updateCourse',
     'createClass',
-
     'readClass',
     'deleteClass',
     'updateClass',

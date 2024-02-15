@@ -20,10 +20,15 @@ router.put(
   authorize(['teacherCourse']),
   courseController.removeTeacherFromCourse
 );
+router.put(
+  '/courses/:id',
+  validateToken,
+  authorize(['updateCourse']),
+  courseController.updateCourse
+);
 // router.post('/create/course_schema', validateToken, authorize(['createCourseData']), courseController.createCourseSchemData);
 // router.get('/courses_scheme', validateToken, authorize(['getCoursesScheme']), courseController.getCourseSchemes)
 // router.delete('/delete/course/:courseID', validateToken, authorize(['deletecourse']), courseController.deleteCourseByID)
-// router.put('/update/course/:courseID', validateToken, authorize(['updateCourse']), courseController.updateCourseByID)
 // router.put('/update/courses_scheme/:courseScheme_ID', validateToken, authorize(['updateScheme']), courseController.updateCourseScheme)
 
 module.exports = router;

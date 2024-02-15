@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Course = require('../models/course');
 const CustomError = require('../utils/CustomError');
 
@@ -102,14 +103,15 @@ class CourseController {
     }
   };
 
-  // Controller function to update a course by ID
-  updateCourseByID = async (req, res, next) => {
+  updateCourse = async (req, res, next) => {
+    const { id } = req.params;
+    const { name, description } = req.body;
     try {
-      const courseID = req.params.courseID; // Get the course ID from the request params
-      const updatedData = req.body; // Updated data from the request body
-
-      const updatedCourse = await this.course.updateCourseByID(courseID, updatedData);
-
+      const updatedCourse = await Course.findByIdAndUpdate(
+        id,
+        { name, description },
+        { new: true }
+      );
       res.status(200).json(updatedCourse);
     } catch (error) {
       console.error(`Error updating course: ${error}`);
