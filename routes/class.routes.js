@@ -21,5 +21,11 @@ router.delete(
   classcontroller.deleteClass
 );
 router.put('/classes/:id', validateToken, authorize(['updateClass']), classcontroller.updateClass);
+router.post(
+  '/class/course/add',
+  validateToken,
+  authorize(['courseClass']),
+  classcontroller.addCourseToClass
+);
 module.exports = router;
 

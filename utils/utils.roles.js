@@ -29,6 +29,7 @@ const userRoles = {
     'createAdmin',
     'getExamSummary',
     'teacherCourse',
+    'courseClass',
   ],
   staff: [
     'searchStudent',
