@@ -29,7 +29,9 @@ const examSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  course: { type: mongoose.Schema.Types.ObjectId, ref: 'Course', required: true },
   questions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Question' }],
+  classes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Class' }],
 });
 
 const ExamModel = mongoose.model('Exam', examSchema);

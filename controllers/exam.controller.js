@@ -25,7 +25,7 @@ class ExamController {
       if (!duration.is_valid) throw new CustomError(duration.message, 400);
       examData.time_limit = duration.duration;
 
-      const newExam = await Exam.create({ ...examData, creator_id: examData.creator_id });
+      const newExam = await Exam.create(examData);
       res.status(200).json(newExam);
     } catch (error) {
       console.error(`Error creating exam: ${error}`);
