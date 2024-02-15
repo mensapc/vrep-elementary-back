@@ -8,6 +8,7 @@ const {
   checkExamAvailability,
   examDuration,
   validateExamDuration,
+  ExamDetailsAndAnswers,
 } = require('../utils/utils.exam');
 const CustomError = require('../utils/CustomError');
 
@@ -142,25 +143,19 @@ class ExamController {
 
   getExamResults = async (req, res, next) => {
     const { exam_id, student_id } = req.body;
+    const session = await mongoose.startSession();
     try {
-      const exam = await Exam.findById(exam_id).populate({
-        path: 'questions',
-        populate: { path: 'options' },
+      await session.withTransaction(async () => {
+        const { exam, answers } = await ExamDetailsAndAnswers(exam_id, student_id, session);
+        const results = CalculateResults(exam, answers);
+        res.status(200).json(results);
       });
-      if (!exam) throw new CustomError('Exam not found', 404);
-
-      const answers = await Answer.find({ student: student_id, exam: exam_id })
-        .populate({ path: 'question', select: '_id points' })
-        .populate('chosen_option');
-
-      if (!answers.length) throw new CustomError('No answers found for this exam', 404);
-
-      const results = CalculateResults(exam, answers);
-
-      res.status(200).json(results);
     } catch (error) {
+      await session.abortTransaction();
       console.error(`Error calculating result: ${error}`);
       next(error);
+    } finally {
+      session.endSession();
     }
   };
 }
