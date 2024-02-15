@@ -16,4 +16,16 @@ const addStaffToCourse = async (courseId, staff, session) => {
   }
 };
 
-module.exports = { checkIfCourseAlreadyAdded, addStaffToCourse };
+const classWithPopulatedData = async (id) => {
+  return Class.findById(id)
+    .populate({
+      path: 'courses',
+      populate: [
+        { path: 'course', select: 'name' },
+        { path: 'staff', select: 'first_name last_name email phone_number' },
+      ],
+    })
+    .populate({ path: 'staff', select: 'first_name last_name email phone_number' });
+};
+
+module.exports = { checkIfCourseAlreadyAdded, addStaffToCourse, classWithPopulatedData };

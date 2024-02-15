@@ -1,7 +1,11 @@
 const mongoose = require('mongoose');
 const Class = require('../models/class');
 const CustomError = require('../utils/CustomError');
-const { checkIfCourseAlreadyAdded, addStaffToCourse } = require('../utils/utils.class');
+const {
+  checkIfCourseAlreadyAdded,
+  addStaffToCourse,
+  classWithPopulatedData,
+} = require('../utils/utils.class');
 
 class ClassController {
   createClass = async (req, res, next) => {
@@ -31,7 +35,7 @@ class ClassController {
   getClassById = async (req, res, next) => {
     const { id } = req.params;
     try {
-      const _class = await Class.findById(id);
+      const _class = await classWithPopulatedData(id);
       if (!_class) throw new CustomError('Class not found', 404);
       res.status(200).json(_class);
     } catch (error) {
