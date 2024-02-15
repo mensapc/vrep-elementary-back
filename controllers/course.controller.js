@@ -63,12 +63,15 @@ class CourseController {
   };
 
   // Get Single Course
-  getSingleCourse = async (req, res, next) => {
-    const courseId = req.params.courseId;
+  getCourse = async (req, res, next) => {
+    const { id } = req.params;
 
     try {
-      const courseData = await this.course.getCourseById(courseId);
-      res.status(200).json({ course: courseData });
+      const course = await Course.findById(id);
+      if (!course) {
+        throw new CustomError('Course not found', 404);
+      }
+      res.status(200).json(course);
     } catch (error) {
       console.error(`Error CourseID number ${courseId}: ${error}`);
       next(error);
