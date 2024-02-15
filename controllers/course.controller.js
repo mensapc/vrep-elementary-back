@@ -1,12 +1,11 @@
-const mongoose = require('mongoose');
 const Course = require('../models/course');
 const CustomError = require('../utils/CustomError');
 
 class CourseController {
   createCourse = async (req, res, next) => {
     try {
-      const { name, description } = req.body;
-      const course = await Course.create({ name, description });
+      const { name, description, duration } = req.body;
+      const course = await Course.create({ name, description, duration });
       res.status(200).json(course);
     } catch (error) {
       console.error(`Error creating course and referencing class: ${error}`);
