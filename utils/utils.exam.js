@@ -1,15 +1,14 @@
-CalculateResults = (exam, answers) => {
+const Answer = require('../models/answer');
+const Exam = require('../models/exam');
+
+const CalculateResults = (exam, answers) => {
   const questionMap = new Map();
+  const { questions, ...examData } = exam._doc;
   const result = {
-    _id: exam._id,
-    name: exam.name,
-    description: exam.description,
-    max_score: exam.max_score,
-    time_limit: exam.time_limit,
-    start_date: exam.start_date,
-    end_date: exam.end_date,
+    ...examData,
     totalMarks: 0,
     scoredMarks: 0,
+    percentage: 0,
     overview: [],
   };
 
@@ -43,7 +42,31 @@ CalculateResults = (exam, answers) => {
     });
   }
 
+  result.percentage = (result.scoredMarks / result.totalMarks) * 100;
+
   return result;
+};
+
+const ExamDetailsAndAnswers = async (examId, studentId, session) => {
+  const exam = await Exam.findById(examId)
+    .populate({
+      path: 'questions',
+      populate: { path: 'options' },
+    })
+    .session(session);
+  if (!exam) {
+    throw new CustomError('Exam not found', 404);
+  }
+
+  const answers = await Answer.find({ student: studentId, exam: examId })
+    .populate({ path: 'question', select: '_id points' })
+    .populate('chosen_option')
+    .session(session);
+
+  if (!answers.length) {
+    throw new CustomError('No answers found for this exam', 404);
+  }
+  return { exam, answers };
 };
 
 const ExamTimeInMilliseconds = (exam) => {
@@ -111,4 +134,10 @@ const checkExamAvailability = (exam) => {
   }
 };
 
-module.exports = { CalculateResults, checkExamAvailability, examDuration, validateExamDuration };
+module.exports = {
+  CalculateResults,
+  checkExamAvailability,
+  examDuration,
+  validateExamDuration,
+  ExamDetailsAndAnswers,
+};
