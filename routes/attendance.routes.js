@@ -12,11 +12,7 @@ router.post(
   authorize(['createAttendance']),
   attendanceController.createAttendance
 );
-// router.get(
-//   "/attendance/students/:student_id",
-//   validateToken,
-//   attendanceController.getAttendanceByStudent
-// );
+router.post('/attendance/search', validateToken, attendanceController.getAttendanceBySearch);
 // router.get(
 //   "/attendance/courses/:course_id",
 //   validateToken,
