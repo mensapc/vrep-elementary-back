@@ -11,5 +11,5 @@ const gradeSchema = new mongoose.Schema({
   exam: { type: mongoose.Schema.Types.ObjectId, ref: 'Exam', required: true },
 });
 
-const GradeModel = new Model('Grade', gradeSchema);
+const GradeModel = mongoose.model('Grade', gradeSchema);
 module.exports = GradeModel;
