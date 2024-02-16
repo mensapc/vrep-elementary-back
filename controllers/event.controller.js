@@ -32,6 +32,25 @@ class EventController {
       next(error);
     }
   };
+
+  updateEvent = async (req, res, next) => {
+    const { id } = req.params;
+    const data = req.body;
+    try {
+      const event = await Event.findOneAndUpdate(
+        {
+          _id: id,
+        },
+        data,
+        { new: true }
+      );
+      if (!event) throw new CustomError('Event not found', 404);
+      res.status(200).json(event);
+    } catch (error) {
+      console.error(`Error updating event: ${error.message}`);
+      next(error);
+    }
+  };
 }
 
 module.exports = EventController;

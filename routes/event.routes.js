@@ -14,5 +14,6 @@ router.post(
   authorize(['getAllEvents']),
   eventController.getEventBySearch
 );
+router.put('/events/:id', validateToken, authorize(['updateEvent']), eventController.updateEvent);
 
 module.exports = router;
