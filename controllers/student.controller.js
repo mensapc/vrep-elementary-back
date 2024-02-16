@@ -81,7 +81,7 @@ class StudentController {
     const query = req.query;
 
     try {
-      let student = await Student.findOne(query);
+      let student = await Student.find(query);
       if (!student) throw new CustomError('Student not found', 404);
       res.status(200).json(student);
     } catch (error) {
