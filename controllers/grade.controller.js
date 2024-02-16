@@ -1,23 +1,38 @@
-const { Query } = require("firefose");
-const Grade = require("../models/grade");
+const mongoose = require('mongoose');
+const Grade = require('../models/grade');
+const { ExamDetailsAndAnswers, CalculateResults } = require('../utils/utils.exam');
+const { checkGradeExistence } = require('../utils/utils.grade');
+const CustomError = require('../utils/CustomError');
 
 class GradeController {
   createGrade = async (req, res, next) => {
-    const gradeData = req.body;
+    const { exam_id, student_id } = req.body;
 
     try {
-      const newGrade = await Grade.create(gradeData);
-      res.status(200).json({ grade: newGrade });
+      const gradeExist = await checkGradeExistence(exam_id, student_id);
+      if (gradeExist) throw new CustomError('Grade already exists', 400);
+
+      const { exam, answers } = await ExamDetailsAndAnswers(exam_id, student_id, session);
+      const results = CalculateResults(exam, answers);
+      const grade = await Grade.create({
+        total: results.totalMarks,
+        percentage: results.percentage,
+        score: results.scoredMarks,
+        student: student_id,
+        course: results.course,
+        class: results.student_class,
+        exam: exam_id,
+      });
+      res.status(200).json(grade);
     } catch (error) {
-      console.error(`Error creating grade: ${error}`);
+      console.error(`Error calculating result: ${error}`);
       next(error);
     }
   };
 
-  getGradesByStudent = async (req, res, next) => {
-    const { student_id } = req.params;
+  getGradesBySearch = async (req, res, next) => {
+    const query = req.query;
     try {
-      const query = new Query().where("student_id", "==", student_id);
       const grades = await Grade.find(query);
       res.status(200).json({ grades });
     } catch (error) {
@@ -26,14 +41,16 @@ class GradeController {
     }
   };
 
-  getGradesByExam = async (req, res, next) => {
-    const { exam_id } = req.params;
+  updateGrade = async (req, res, next) => {
+    const { id } = req.params;
+    const { grade } = req.body;
+
     try {
-      const query = new Query().where("exam_id", "==", exam_id);
-      const grades = await Grade.find(query);
-      res.status(200).json({ grades });
+      const updatedGrade = await Grade.findByIdAndUpdate(id, { $set: { grade } }, { new: true });
+      if (!updatedGrade) throw new CustomError('Grade not found', 404);
+      res.status(200).json(updatedGrade);
     } catch (error) {
-      console.error(`Error getting grades: ${error}`);
+      console.error(`Error updating grade: ${error}`);
       next(error);
     }
   };

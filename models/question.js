@@ -1,7 +1,6 @@
-const { Schema, Model, SchemaTypes } = require("firefose");
-const { String, Number } = SchemaTypes;
+const mongoose = require('mongoose');
 
-const questionSchema = new Schema({
+const questionSchema = new mongoose.Schema({
   content: {
     type: String,
     required: true,
@@ -10,11 +9,9 @@ const questionSchema = new Schema({
     type: Number,
     required: true,
   },
-  exam_id: {
-    type: String,
-    required: true,
-  },
+  exam: { type: mongoose.Schema.Types.ObjectId, ref: 'Exam', required: true },
+  options: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Option' }],
 });
 
-const Question = new Model("questions", questionSchema);
-module.exports = Question;
+const QuestionModel = mongoose.model('Question', questionSchema);
+module.exports = QuestionModel;

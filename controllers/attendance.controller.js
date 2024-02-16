@@ -1,5 +1,5 @@
-const { Query } = require("firefose");
-const Attendance = require("../models/attendance");
+const Attendance = require('../models/attendance');
+const CustomError = require('../utils/CustomError');
 
 class AttendanceController {
   createAttendance = async (req, res, next) => {
@@ -7,31 +7,36 @@ class AttendanceController {
 
     try {
       const newAttendance = await Attendance.create(attendanceData);
-      res.status(200).json({ attendance: newAttendance });
+      if (!newAttendance) throw new CustomError('Attendance not created', 400);
+      res.status(200).json(newAttendance);
     } catch (error) {
       console.error(`Error creating attendance: ${error}`);
       next(error);
     }
   };
 
-  getAttendanceByStudent = async (req, res, next) => {
-    const { student_id } = req.params;
+  getAttendanceBySearch = async (req, res, next) => {
+    const query = req.query;
     try {
-      const query = new Query().where("student_id", "==", student_id);
       const attendance = await Attendance.find(query);
-      res.status(200).json({ attendance });
+      if (!attendance) throw new CustomError('Attendance not found', 404);
+      res.status(200).json(attendance);
     } catch (error) {
       console.error(`Error getting attendance: ${error}`);
       next(error);
     }
   };
 
-  getAttendanceByCourse = async (req, res, next) => {
-    const { course_id } = req.params;
+  updateAttendance = async (req, res, next) => {
+    const { id } = req.params;
+    const { attendance_status, comments, reason } = req.body;
     try {
-      const query = new Query().where("course_id", "==", course_id);
-      const attendance = await Attendance.find(query);
-      res.status(200).json({ attendance });
+      const updatedAttendance = await Attendance.findByIdAndUpdate(
+        id,
+        { attendance_status, comments, reason },
+        { new: true }
+      );
+      res.status(200).json(updatedAttendance);
     } catch (error) {
       console.error(`Error getting attendance: ${error}`);
       next(error);

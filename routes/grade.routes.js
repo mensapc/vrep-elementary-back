@@ -1,13 +1,18 @@
-const express = require("express");
-const { validateToken } = require("../middlewares/validations");
-const { authorize } = require("../middlewares/authorize");
-const GradeController = require("../controllers/grade.controller");
+const express = require('express');
+const { validateToken } = require('../middlewares/validations');
+const { authorize } = require('../middlewares/authorize');
+const GradeController = require('../controllers/grade.controller');
 
 const router = express.Router();
 const gradeController = new GradeController();
 
-router.post("/grades", validateToken, authorize(["createGrade"]), gradeController.createGrade);
-router.get("/grades/students/:student_id", validateToken, gradeController.getGradesByStudent);
-router.get("/grades/exams/:exam_id", validateToken, gradeController.getGradesByExam);
+router.post('/grade', validateToken, gradeController.createGrade);
+router.get(
+  '/grades/search',
+  validateToken,
+  authorize(['searchGrade']),
+  gradeController.getGradesBySearch
+);
+router.put('/grades/:id', validateToken, authorize(['updateGrade']), gradeController.updateGrade);
 
 module.exports = router;

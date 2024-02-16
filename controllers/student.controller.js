@@ -1,147 +1,186 @@
+const mongoose = require('mongoose');
 const Student = require('../models/student');
+const Class = require('../models/class.js');
 const CustomError = require('../utils/CustomError.js');
-const RegistrationUtils = require('../utils/utils.addStudent');
-const generateToken = require('../utils/utils.token')
+const RegistrationUtils = require('../utils/utils.registration');
+const generateToken = require('../utils/utils.token');
 const generateRegNumber = require('../utils/utils.registration_number');
-const admin = require('firebase-admin');
 
+class StudentController {
+  constructor() {
+    this.registrationUtils = new RegistrationUtils();
+  }
 
-class StudentAuthController {
-    constructor() {
-        this.student = new Student();
-        this.registrationUtils = new RegistrationUtils();
+  // Registering Student controller
+  register = async (req, res, next) => {
+    const userData = req.body;
+    const session = await mongoose.startSession();
+    try {
+      this.registrationUtils.validateData(userData, 'pupil');
+      const regNumber = await this.generateUniqueRegNumber();
+
+      await session.startTransaction();
+      const _class = await Class.findOne({ _id: userData._class }).session(session);
+      if (!_class) throw new CustomError('Class with provided id not found', 404);
+
+      const newStudent = await Student.create({ ...userData, reg_number: regNumber });
+      _class.students.push(newStudent._id);
+      await _class.save({ session });
+      const token = generateToken({
+        id: newStudent.id,
+        email: newStudent.email,
+        role: newStudent.role,
+      });
+      await session.commitTransaction();
+      res.status(201).json({ ...newStudent._doc, token });
+    } catch (error) {
+      await session.abortTransaction();
+      console.error(`Error registering Student: ${error}`);
+      next(error);
+    } finally {
+      session.endSession();
     }
+  };
 
+  // Login Student controller
+  login = async (req, res, next) => {
+    const { reg_number } = req.body;
 
+    try {
+      let student = await Student.findOne({ reg_number });
+      if (!student) throw new CustomError('Student not found', 404);
+      delete student._doc.password;
 
-    // Registering Student controller
-    addStudent = async (req, res, next) => {
-        const userType = req.params.userType;
-        const userData = req.body;
-
-        let newUser;
-        let regNumber;
-
-        try {
-
-            this.registrationUtils.validateStudentInfo(userData, userType,);
-            const { email, role, } = await this.registrationUtils.prepareData(userData);
-            switch (userType) {
-                case 'student':
-
-                    regNumber = await this.generateUniqueRegNumber();
-                    newUser = await this.student.AddSingleStudent({
-                        ...userData,
-                        email,
-                        role,
-                        reg_number: regNumber
-                    });
-
-                    break;
-
-                default:
-                    throw new CustomError(`Route: register/${userType} not found`, 404);
-
-
-            }
-            const token = generateToken(newUser);
-            res.status(201).json({ student: newUser, token });
-        } catch (error) {
-            console.error(`Error registering ${userType}: ${error}`);
-            next(error);
-        }
-    };
-
-    // Get Single student controller
-    getSingleStudent = async (req, res, next) => {
-        const reg_number = req.body.reg_number;
-
-        try {
-            const studentData = await this.student.findStudentByRegNumber(reg_number);
-
-            if (!studentData) {
-                throw new CustomError(`Student with registration number ${reg_number} not found`, 404);
-            }
-
-            res.status(200).json({ student: studentData, });
-        } catch (error) {
-            console.error(`Error retrieving student with registration number ${reg_number}: ${error}`);
-            next(error);
-        }
-    };
-
-    // Get All students controller
-    getAllStudents = async (req, res, next) => {
-        try {
-            const students = await this.student.findAllStudents();
-
-            if (students.length === 0) {
-                return res.status(404).json({ message: 'No students found .' })
-            }
-            res.status(200).json({ Allstudents: students })
-        } catch (error) {
-            console.error(`Error retrieving all students `, error);
-            next(error);
-        }
-    };
-    // Delete student controller
-    deleteStudent = async (req, res, next) => {
-        try {
-            const reg_number = req.params.reg_number;
-
-            if (!reg_number) {
-                throw new CustomError(`Route: not able to get /${reg_number}`, 400);
-            }
-
-            const deletedStudent = await this.student.deleteStudentByRegNumber(reg_number);
-
-            if (!deletedStudent) {
-                res.status(204).json({ message: `Student with registration number /${reg_number} deleted` });
-            }
-        } catch (error) {
-            console.error(`Error deleting student with registration number ${req.body.reg_number}: ${error}`);
-            next(error);
-        }
-    };
-
-
-    // An Update Student controller
-    updateStudent = async (req, res, next) => {
-        try {
-            const { reg_number } = req.body;
-            const updatedData = req.body; // Assuming you send the entire updated data in the request body
-
-            if (!reg_number) {
-                throw new CustomError('Registration number is required', 400);
-            }
-
-            const updatedStudent = await this.student.updateStudentByRegNumber(reg_number, updatedData);
-
-            res.status(201).json({ student: updatedStudent });
-        } catch (error) {
-            console.error(`Error updating student with registration number ${req.body.reg_number}: ${error}`);
-            next(error);
-        }
-    };
-
-
-
-    // *** validation check of reg_Number on firestore ***
-    generateUniqueRegNumber = () => {
-        const regNumber = generateRegNumber();
-        return this.checkStudentRegNumber(regNumber);
-    };
-
-    checkStudentRegNumber = async (reg_number) => {
-        try {
-            const userRecord = await admin.auth().getUser(reg_number);
-            return userRecord.uid ? this.generateUniqueRegNumber() : reg_number;
-        } catch (error) {
-            if (error.code === "auth/user-not-found") return reg_number;
-            throw new Error("Failed to find user by reg number.");
-        }
+      const token = generateToken({
+        id: student.id,
+        email: student.email,
+        role: student.role,
+      });
+      res.status(200).json({ ...student._doc, token });
+    } catch (error) {
+      console.error('Error logging in student:', error);
+      next(error);
     }
+  };
+
+  // Get student by id
+  getById = async (req, res, next) => {
+    const { id } = req.params;
+    try {
+      const student = await Student.findOne({ _id: id });
+      if (!student) throw new CustomError('Student not found', 404);
+      res.status(200).json(student);
+    } catch (error) {
+      console.error('Fail to retrieve student:', error);
+      next(error);
+    }
+  };
+
+  // Get student by search
+  getBySearch = async (req, res, next) => {
+    const query = req.query;
+
+    try {
+      let student = await Student.findOne(query);
+      if (!student) throw new CustomError('Student not found', 404);
+      res.status(200).json(student);
+    } catch (error) {
+      console.error('Fail to retrieve student:', error);
+      next(error);
+    }
+  };
+
+  // Get All students controller
+  getAll = async (req, res, next) => {
+    try {
+      const students = await Student.find();
+      res.status(200).json(students);
+    } catch (error) {
+      console.error(`Error retrieving all students `, error);
+      next(error);
+    }
+  };
+
+  // Delete student
+  deleteStudent = async (req, res, next) => {
+    const { id } = req.params;
+    const session = await mongoose.startSession();
+    try {
+      await session.startTransaction();
+      const student = await Student.findOne({ _id: id }).session(session);
+      if (!student) throw new CustomError('Student not found', 404);
+
+      await Class.updateOne({ _id: student._class }, { $pull: { students: id } }).session(session);
+      await Student.findByIdAndDelete({ _id: id }).session(session);
+      res.status(200).json({ message: 'Student deleted successfully' });
+      await session.commitTransaction();
+    } catch (error) {
+      await session.abortTransaction();
+      console.error(`Error deleting student: ${error}`);
+      next(error);
+    } finally {
+      session.endSession();
+    }
+  };
+
+  // An Update Student controller
+  updateStudent = async (req, res, next) => {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+    try {
+      const { id } = req.params;
+      const data = req.body;
+      delete data.reg_number;
+      delete data._id;
+
+      if (data._class) {
+        await this.updateStudentClass(id, data, session, res);
+      } else {
+        const info = await Student.findByIdAndUpdate(id, data, { new: true }).session(session);
+        res.status(201).json(info);
+      }
+      await session.commitTransaction();
+    } catch (error) {
+      console.error(`Error updating student: ${error}`);
+      await session.abortTransaction();
+      next(error);
+    } finally {
+      session.endSession();
+    }
+  };
+
+  updateStudentClass = async (id, data, session, res) => {
+    const student = await Student.findById(id).session(session).session(session);
+    const _class = await Class.findOne({ _id: data._class }).session(session);
+    if (!_class) throw new CustomError('Class with provided id not found', 404);
+
+    await Class.updateOne({ _id: student._class }, { $pull: { students: id } }).session(session);
+    const updatedStudent = await Student.findByIdAndUpdate(
+      id,
+      { $set: { _class, ...data } },
+      { new: true }
+    ).session(session);
+    await Class.updateOne({ _id: _class }, { $addToSet: { students: id } }).session(session);
+    res.status(200).json(updatedStudent);
+  };
+
+  // Generate Unique Registration Number
+  generateUniqueRegNumber = () => {
+    const regNumber = generateRegNumber();
+    return this.checkStudentRegNumber(regNumber);
+  };
+
+  // Check if Registration Number is Unique
+  checkStudentRegNumber = async (reg_number) => {
+    try {
+      const student = await Student.findOne({ reg_number });
+      if (student) return this.generateUniqueRegNumber();
+      return reg_number;
+    } catch (error) {
+      throw new Error('Failed to find student by reg number.');
+    }
+  };
 }
 
+module.exports = StudentController;
 
-module.exports = StudentAuthController;

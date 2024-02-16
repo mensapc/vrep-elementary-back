@@ -1,110 +1,129 @@
+const mongoose = require('mongoose');
 const Class = require('../models/class');
-const Staff = require('../models/staff'); // Import the Staff model;
 const CustomError = require('../utils/CustomError');
+const {
+  checkIfCourseAlreadyAdded,
+  addStaffToCourse,
+  classWithPopulatedData,
+} = require('../utils/utils.class');
 
 class ClassController {
-    constructor() {
-        this.class = new Class();
-        this.staff = new Staff();
+  createClass = async (req, res, next) => {
+    const classData = req.body;
+    try {
+      const ClassExist = await Class.findOne({ name: classData.name });
+      if (ClassExist) throw new CustomError('Class with the same name already exist', 400);
+
+      const newClass = await Class.create(classData);
+      res.status(200).json(newClass);
+    } catch (error) {
+      console.error(`Error creating class: ${error}`);
+      next(error);
     }
+  };
 
-    // Controller function to create a new class and reference staff_id
-    createClassAndReferenceStaff = async (req, res, next) => {
-        try {
-            const classData = req.body; // Class data from request body
-            const staffID = classData.staff_id; // Get staff_id from class data
+  getClasses = async (req, res, next) => {
+    try {
+      const classes = await Class.find();
+      res.status(200).json(classes);
+    } catch (error) {
+      console.error(`Error getting classes: ${error}`);
+      next(error);
+    }
+  };
 
-            // Ensure staff with provided staff_id exists
-            const staffExists = await this.staff.getStaffById(staffID);
+  getClassById = async (req, res, next) => {
+    const { id } = req.params;
+    try {
+      const _class = await classWithPopulatedData(id);
+      if (!_class) throw new CustomError('Class not found', 404);
+      res.status(200).json(_class);
+    } catch (error) {
+      console.error(`Error getting class by id: ${error}`);
+      next(error);
+    }
+  };
 
-            delete staffExists.password
+  getClassByTeacherId = async (req, res, next) => {
+    const { id } = req.params;
+    try {
+      const _class = await Class.find({ staff: id });
+      if (!_class) throw new CustomError('Class not found', 404);
+      res.status(200).json(_class);
+    } catch (error) {
+      console.error(`Error getting class by staff id: ${error}`);
+      next(error);
+    }
+  };
 
-            if (!staffExists) {
-                throw new CustomError('Staff with the provided staff_id not found.', 404);
-            }
+  updateClass = async (req, res, next) => {
+    const { id } = req.params;
+    const { name, description } = req.body;
+    try {
+      const _class = await Class.findByIdAndUpdate(id, { name, description }, { new: true });
+      if (!_class) throw new CustomError('Class not found', 404);
+      res.status(200).json(_class);
+    } catch (error) {
+      console.error(`Error updating class: ${error}`);
+      next(error);
+    }
+  };
 
-            // Create the class and reference the staff_id
-            const createdClass = await this.class.createClass(classData, staffID);
+  deleteClass = async (req, res, next) => {
+    const { id } = req.params;
+    try {
+      const _class = await Class.findByIdAndDelete(id);
+      if (!_class) throw new CustomError('Class not found', 404);
+      res.status(200).json({ message: 'Class deleted successfully' });
+    } catch (error) {
+      console.error(`Error deleting class: ${error}`);
+      next(error);
+    }
+  };
 
-            const response = {
-                class: createdClass,
-                staff: staffExists,
-            };
-            res.status(201).json(response);
-        } catch (error) {
-            console.error(`Error creating class and referencing staff: ${error}`);
-            throw new CustomError('Cannot create a class.', 500);
+  addCourseToClass = async (req, res, next) => {
+    const { _class, course, staff } = req.body;
+    const session = await mongoose.startSession();
+    try {
+      await session.withTransaction(async () => {
+        await checkIfCourseAlreadyAdded(_class, course, session);
+        await addStaffToCourse(course, staff, session);
+        const newClass = await Class.findByIdAndUpdate(
+          _class,
+          { $push: { courses: { course, staff } } },
+          { new: true }
+        ).session(session);
+        if (!newClass) {
+          throw new CustomError('Fail to add course in class', 400);
         }
-    };
+        res.status(200).json(newClass);
+      });
+    } catch (error) {
+      console.error(`Error adding course to class: ${error}`);
+      next(error);
+    } finally {
+      session.endSession();
+    }
+  };
 
-    // get all classes
-    getAllClasses = async (req, res, next) => {
-        try {
-            const classes = await this.class.getAllClasses();
-            if (!classes) {
-                throw new CustomError('Cannot find  classes.', 404);
-            }
-            res.status(200).json(classes);
-        } catch (error) {
-            console.error('Error getting all classes:', error);
-
-        }
-    };
-
-    // Get single class
-    getSingleClass = async (req, res, next) => {
-        const classID = req.params.classID;
-        try {
-            const classData = await this.class.getClassById(classID);
-            if (classData) {
-                throw new CustomError('Class not found.', 404);
-            }
-            res.status(200).json({ class: classData, });
-        } catch (error) {
-            console.error(`Error CourseID number ${classID}: ${error}`);
-            next(error);
-        }
-    };
-
-
-    // Delete class by ID
-    deleteClassByID = async (req, res, next) => {
-        try {
-            const classID = req.params.classID;
-            if (!classID) {
-                throw new CustomError("This class with this id doesn't exist.", 404);
-            }
-
-            const deletedClass = await this.class.deleteClass(classID);
-
-            res.status(204).json({ message: 'Deleted successfully' })
-
-        } catch (error) {
-            console.error(`Error deleting student with registration number ${req.body.classID}: ${error}`);
-            next(error);
-        }
-    };
-
-    updateClassByID = async (req, res, next) => {
-        try {
-            const classID = req.params.classID; // Get the class ID from the request params
-            const updatedData = req.body; // Updated data from the request body
-
-            const updatedClass = await this.class.updateClass(classID, updatedData);
-
-            if (!updatedClass) {
-                throw new CustomError('Class not found.', 404);
-            }
-
-            res.status(200).json(updatedClass);
-        } catch (error) {
-            console.error(`Error updating class: ${error}`);
-            next(error);
-        }
-    };
-
-
-
+  removeCourseFromClass = async (req, res, next) => {
+    const { _class, course } = req.body;
+    try {
+      const newClass = await Class.findByIdAndUpdate(
+        _class,
+        { $pull: { courses: { course } } },
+        { new: true }
+      );
+      if (!newClass) {
+        throw new CustomError('Fail to remove course from class', 400);
+      }
+      res.status(200).json(newClass);
+    } catch (error) {
+      console.error(`Error removing course from class: ${error}`);
+      next(error);
+    }
+  };
 }
 
 module.exports = ClassController;
+

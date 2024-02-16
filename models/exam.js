@@ -1,40 +1,39 @@
-const { Schema, Model, SchemaTypes } = require("firefose");
-const { String, Number } = SchemaTypes;
+const mongoose = require('mongoose');
 
-const examSchema = new Schema(
-  {
-    name: {
-      type: String,
-      required: true,
-    },
-    description: {
-      type: String,
-      required: true,
-    },
-    staff_id: {
-      type: String,
-      required: true,
-    },
-    max_score: {
-      type: Number,
-      required: true,
-    },
-    time_limit: {
-      type: String,
-      required: true,
-    },
-    start_date: {
-      type: String,
-      required: true,
-    },
-    end_date: {
-      type: String,
-      required: true,
-    },
+const examSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
   },
-  { timestamp: true }
-);
+  description: {
+    type: String,
+    required: true,
+  },
+  max_score: {
+    type: Number,
+    required: true,
+  },
+  time_limit: {
+    type: String,
+    required: true,
+  },
+  start_date: {
+    type: String,
+    required: true,
+  },
+  end_date: {
+    type: String,
+    required: true,
+  },
+  creator_id: {
+    type: String,
+    required: true,
+  },
+  course: { type: mongoose.Schema.Types.ObjectId, ref: 'Course', required: true },
+  questions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Question' }],
+  classes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Class' }],
+});
 
-const Exam = new Model("exams", examSchema);
+const ExamModel = mongoose.model('Exam', examSchema);
 
-module.exports = Exam;
+module.exports = ExamModel;
