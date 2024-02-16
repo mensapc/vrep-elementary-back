@@ -14,6 +14,7 @@ const optionRoutes = require('./routes/option.routes');
 const answerRoutes = require('./routes/answer.routes');
 const gradeRoutes = require('./routes/grade.routes');
 const attendanceRoutes = require('./routes/attendance.routes');
+const timetableRoutes = require('./routes/timetable.routes');
 
 const app = express();
 
@@ -39,6 +40,7 @@ app.use('/api/v1', optionRoutes);
 app.use('/api/v1', answerRoutes);
 app.use('/api/v1', gradeRoutes);
 app.use('/api/v1', attendanceRoutes);
+app.use('/api/v1', timetableRoutes);
 
 app.use(errorMiddleware);
 
