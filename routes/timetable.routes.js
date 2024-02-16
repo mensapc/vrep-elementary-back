@@ -21,10 +21,17 @@ router.get(
 );
 
 router.post(
-  '/timetable/search',
+  '/timetables/search',
   validateToken,
   authorize(['getAllTimetables']),
   timetableController.getTimeTableBySearch
+);
+
+router.put(
+  '/timetables/:id',
+  validateToken,
+  authorize(['createTimetable']),
+  timetableController.updateTimetable
 );
 
 module.exports = router;

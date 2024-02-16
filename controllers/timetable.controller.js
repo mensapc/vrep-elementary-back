@@ -32,6 +32,25 @@ class TimetableController {
       next(error);
     }
   };
+
+  updateTimetable = async (req, res, next) => {
+    const { id } = req.params;
+    const data = req.body;
+    try {
+      const timetable = await Timetable.findOneAndUpdate(
+        {
+          _id: id,
+        },
+        data,
+        { new: true }
+      );
+      if (!timetable) throw new CustomError('Timetable not found', 404);
+      res.status(200).json(timetable);
+    } catch (error) {
+      console.error(`Error updating timetable: ${error.message}`);
+      next(error);
+    }
+  };
 }
 
 module.exports = TimetableController;
