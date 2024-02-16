@@ -8,6 +8,11 @@ const gradeController = new GradeController();
 
 router.post('/grade', validateToken, gradeController.createGrade);
 // router.get("/grades/students/:student_id", validateToken, gradeController.getGradesByStudent);
-// router.get("/grades/exams/:exam_id", validateToken, gradeController.getGradesByExam);
+router.get(
+  '/grades/search',
+  validateToken,
+  authorize(['searchGrade']),
+  gradeController.getGradesBySearch
+);
 
 module.exports = router;

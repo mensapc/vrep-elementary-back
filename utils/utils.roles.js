@@ -30,6 +30,7 @@ const userRoles = {
     'getExamSummary',
     'teacherCourse',
     'courseClass',
+    'searchGrade',
   ],
   staff: [
     'searchStudent',
@@ -54,6 +55,7 @@ const userRoles = {
     'createAttendance',
     'createUserRole',
     'getExamSummary',
+    'searchGrade',
   ],
   pupil: ['readStudent', 'createAnswer', 'updateAnswer'],
 };
