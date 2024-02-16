@@ -16,6 +16,7 @@ const gradeRoutes = require('./routes/grade.routes');
 const attendanceRoutes = require('./routes/attendance.routes');
 const timetableRoutes = require('./routes/timetable.routes');
 const eventRoutes = require('./routes/event.routes');
+const datacountRoutes = require('./routes/datacount.routes');
 
 const app = express();
 
@@ -43,6 +44,7 @@ app.use('/api/v1', gradeRoutes);
 app.use('/api/v1', attendanceRoutes);
 app.use('/api/v1', timetableRoutes);
 app.use('/api/v1', eventRoutes);
+app.use('/api/v1', datacountRoutes);
 
 app.use(errorMiddleware);
 
