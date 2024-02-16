@@ -31,8 +31,8 @@ const userRoles = {
     'teacherCourse',
     'courseClass',
     'searchGrade',
-    ,
     'updateGrade',
+    'createAttendance',
   ],
   staff: [
     'searchStudent',

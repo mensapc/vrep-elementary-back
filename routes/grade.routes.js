@@ -13,6 +13,6 @@ router.get(
   authorize(['searchGrade']),
   gradeController.getGradesBySearch
 );
-router.put('/grades/:id', validateToken, gradeController.updateGrade);
+router.put('/grades/:id', validateToken, authorize(['updateGrade']), gradeController.updateGrade);
 
 module.exports = router;
