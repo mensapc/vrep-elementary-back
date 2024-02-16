@@ -34,6 +34,10 @@ const userRoles = {
     'updateGrade',
     'createAttendance',
     'updateAttendance',
+    'createTimetable',
+    'getAllTimetables',
+    'updateTimetable',
+    'deleteTimetable',
   ],
   staff: [
     'searchStudent',
@@ -61,6 +65,10 @@ const userRoles = {
     'searchGrade',
     'updateGrade',
     'updateAttendance',
+    'createTimetable',
+    'getAllTimetables',
+    'updateTimetable',
+    'deleteTimetable',
   ],
   pupil: ['readStudent', 'createAnswer', 'updateAnswer'],
 };
