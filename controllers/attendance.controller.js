@@ -1,5 +1,4 @@
-const { Query } = require("firefose");
-const Attendance = require("../models/attendance");
+const Attendance = require('../models/attendance');
 
 class AttendanceController {
   createAttendance = async (req, res, next) => {
@@ -7,7 +6,7 @@ class AttendanceController {
 
     try {
       const newAttendance = await Attendance.create(attendanceData);
-      res.status(200).json({ attendance: newAttendance });
+      res.status(200).json(newAttendance);
     } catch (error) {
       console.error(`Error creating attendance: ${error}`);
       next(error);
@@ -17,7 +16,7 @@ class AttendanceController {
   getAttendanceByStudent = async (req, res, next) => {
     const { student_id } = req.params;
     try {
-      const query = new Query().where("student_id", "==", student_id);
+      const query = new Query().where('student_id', '==', student_id);
       const attendance = await Attendance.find(query);
       res.status(200).json({ attendance });
     } catch (error) {
@@ -29,7 +28,7 @@ class AttendanceController {
   getAttendanceByCourse = async (req, res, next) => {
     const { course_id } = req.params;
     try {
-      const query = new Query().where("course_id", "==", course_id);
+      const query = new Query().where('course_id', '==', course_id);
       const attendance = await Attendance.find(query);
       res.status(200).json({ attendance });
     } catch (error) {
