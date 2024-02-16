@@ -30,22 +30,9 @@ class GradeController {
     }
   };
 
-  getGradesByStudent = async (req, res, next) => {
-    const { student_id } = req.params;
+  getGradesBySearch = async (req, res, next) => {
+    const query = req.query;
     try {
-      const query = new Query().where('student_id', '==', student_id);
-      const grades = await Grade.find(query);
-      res.status(200).json({ grades });
-    } catch (error) {
-      console.error(`Error getting grades: ${error}`);
-      next(error);
-    }
-  };
-
-  getGradesByExam = async (req, res, next) => {
-    const { exam_id } = req.params;
-    try {
-      const query = new Query().where('exam_id', '==', exam_id);
       const grades = await Grade.find(query);
       res.status(200).json({ grades });
     } catch (error) {
