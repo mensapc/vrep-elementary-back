@@ -4,8 +4,10 @@ const Exam = require('../models/exam');
 const CalculateResults = (exam, answers) => {
   const questionMap = new Map();
   const { questions, ...examData } = exam._doc;
+  const student_class = answers[0].class;
   const result = {
     ...examData,
+    student_class,
     totalMarks: 0,
     scoredMarks: 0,
     percentage: 0,
@@ -47,21 +49,18 @@ const CalculateResults = (exam, answers) => {
   return result;
 };
 
-const ExamDetailsAndAnswers = async (examId, studentId, session) => {
-  const exam = await Exam.findById(examId)
-    .populate({
-      path: 'questions',
-      populate: { path: 'options' },
-    })
-    .session(session);
+const ExamDetailsAndAnswers = async (examId, studentId) => {
+  const exam = await Exam.findById(examId).populate({
+    path: 'questions',
+    populate: { path: 'options' },
+  });
   if (!exam) {
     throw new CustomError('Exam not found', 404);
   }
 
   const answers = await Answer.find({ student: studentId, exam: examId })
     .populate({ path: 'question', select: '_id points' })
-    .populate('chosen_option')
-    .session(session);
+    .populate('chosen_option');
 
   if (!answers.length) {
     throw new CustomError('No answers found for this exam', 404);

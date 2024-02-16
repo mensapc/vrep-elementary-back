@@ -51,7 +51,6 @@ const userRoles = {
     'createOption',
     'updateOption',
     'deleteOption',
-    'createGrade',
     'createAttendance',
     'createUserRole',
     'getExamSummary',
