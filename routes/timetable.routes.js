@@ -13,4 +13,11 @@ router.post(
   timetableController.createTimetable
 );
 
+router.get(
+  '/timetables',
+  validateToken,
+  authorize(['getAllTimetables']),
+  timetableController.getAllTimetables
+);
+
 module.exports = router;

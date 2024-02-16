@@ -11,6 +11,16 @@ class TimetableController {
       next(error);
     }
   };
+
+  getAllTimetables = async (req, res, next) => {
+    try {
+      const timetables = await Timetable.find();
+      res.status(200).json(timetables);
+    } catch (error) {
+      console.error(`Error retrieving all timetables `, error);
+      next(error);
+    }
+  };
 }
 
 module.exports = TimetableController;
