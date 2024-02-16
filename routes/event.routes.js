@@ -7,5 +7,6 @@ const router = express.Router();
 const eventController = new EventController();
 
 router.post('/event', validateToken, authorize(['createEvent']), eventController.createEvent);
+router.get('/events', validateToken, authorize(['getAllEvents']), eventController.getAllEvents);
 
 module.exports = router;
