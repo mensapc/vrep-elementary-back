@@ -16,6 +16,11 @@ const answerSchema = new mongoose.Schema({
     ref: 'Student',
     required: true,
   },
+  class: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Class',
+    required: true,
+  },
   chosen_option: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Option',

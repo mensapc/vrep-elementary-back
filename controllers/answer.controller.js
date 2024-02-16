@@ -8,6 +8,7 @@ class AnswerController {
       const answerExist = await Answer.findOne({
         question: answerData.question,
         student: answerData.student,
+        class: answerData.class,
       });
       if (answerExist)
         throw new CustomError(
