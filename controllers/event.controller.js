@@ -51,6 +51,18 @@ class EventController {
       next(error);
     }
   };
+
+  deleteEvent = async (req, res, next) => {
+    const { id } = req.params;
+    try {
+      const event = await Event.findOneAndDelete({ _id: id });
+      if (!event) throw new CustomError('Event not found', 404);
+      res.status(200).json({ message: 'Event deleted successfully' });
+    } catch (error) {
+      console.error(`Error deleting event: ${error.message}`);
+      next(error);
+    }
+  };
 }
 
 module.exports = EventController;

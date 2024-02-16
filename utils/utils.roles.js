@@ -41,6 +41,7 @@ const userRoles = {
     'createEvent',
     'getAllEvents',
     'updateEvent',
+    'deleteEvent',
   ],
   staff: [
     'searchStudent',

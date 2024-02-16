@@ -15,5 +15,11 @@ router.post(
   eventController.getEventBySearch
 );
 router.put('/events/:id', validateToken, authorize(['updateEvent']), eventController.updateEvent);
+router.delete(
+  '/events/:id',
+  validateToken,
+  authorize(['deleteEvent']),
+  eventController.deleteEvent
+);
 
 module.exports = router;
