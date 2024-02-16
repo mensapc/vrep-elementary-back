@@ -13,7 +13,7 @@ const questionRoutes = require('./routes/question.routes');
 const optionRoutes = require('./routes/option.routes');
 const answerRoutes = require('./routes/answer.routes');
 const gradeRoutes = require('./routes/grade.routes');
-// const attendanceRoutes = require('./routes/attendance.routes');
+const attendanceRoutes = require('./routes/attendance.routes');
 
 const app = express();
 
@@ -38,7 +38,7 @@ app.use('/api/v1', questionRoutes);
 app.use('/api/v1', optionRoutes);
 app.use('/api/v1', answerRoutes);
 app.use('/api/v1', gradeRoutes);
-// app.use('/api/v1', attendanceRoutes);
+app.use('/api/v1', attendanceRoutes);
 
 app.use(errorMiddleware);
 
