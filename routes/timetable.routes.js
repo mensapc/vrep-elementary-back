@@ -20,4 +20,11 @@ router.get(
   timetableController.getAllTimetables
 );
 
+router.post(
+  '/timetable/search',
+  validateToken,
+  authorize(['getAllTimetables']),
+  timetableController.getTimeTableBySearch
+);
+
 module.exports = router;

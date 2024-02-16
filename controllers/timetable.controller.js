@@ -21,6 +21,17 @@ class TimetableController {
       next(error);
     }
   };
+
+  getTimeTableBySearch = async (req, res, next) => {
+    const query = req.query;
+    try {
+      const timetables = await Timetable.find(query);
+      res.status(200).json(timetables);
+    } catch (error) {
+      console.error(`Error retrieving timetable by search`, error);
+      next(error);
+    }
+  };
 }
 
 module.exports = TimetableController;
