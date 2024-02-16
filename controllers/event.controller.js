@@ -11,6 +11,27 @@ class EventController {
       next(error);
     }
   };
+
+  getAllEvents = async (req, res, next) => {
+    try {
+      const events = await Event.find();
+      res.status(200).json(events);
+    } catch (error) {
+      console.error(`Error retrieving all events `, error);
+      next(error);
+    }
+  };
+
+  getEventBySearch = async (req, res, next) => {
+    const query = req.query;
+    try {
+      const events = await Event.find(query);
+      res.status(200).json(events);
+    } catch (error) {
+      console.error(`Error retrieving event by search`, error);
+      next(error);
+    }
+  };
 }
 
 module.exports = EventController;

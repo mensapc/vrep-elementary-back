@@ -8,5 +8,11 @@ const eventController = new EventController();
 
 router.post('/event', validateToken, authorize(['createEvent']), eventController.createEvent);
 router.get('/events', validateToken, authorize(['getAllEvents']), eventController.getAllEvents);
+router.post(
+  '/events/search',
+  validateToken,
+  authorize(['getAllEvents']),
+  eventController.getEventBySearch
+);
 
 module.exports = router;
