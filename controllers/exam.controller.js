@@ -143,19 +143,13 @@ class ExamController {
 
   getExamResults = async (req, res, next) => {
     const { exam_id, student_id } = req.body;
-    const session = await mongoose.startSession();
     try {
-      await session.withTransaction(async () => {
-        const { exam, answers } = await ExamDetailsAndAnswers(exam_id, student_id, session);
-        const results = CalculateResults(exam, answers);
-        res.status(200).json(results);
-      });
+      const { exam, answers } = await ExamDetailsAndAnswers(exam_id, student_id);
+      const results = CalculateResults(exam, answers);
+      res.status(200).json(results);
     } catch (error) {
-      await session.abortTransaction();
       console.error(`Error calculating result: ${error}`);
       next(error);
-    } finally {
-      session.endSession();
     }
   };
 }
