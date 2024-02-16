@@ -38,6 +38,7 @@ const userRoles = {
     'getAllTimetables',
     'updateTimetable',
     'deleteTimetable',
+    'createEvent',
   ],
   staff: [
     'searchStudent',
