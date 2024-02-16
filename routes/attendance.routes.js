@@ -13,10 +13,11 @@ router.post(
   attendanceController.createAttendance
 );
 router.post('/attendance/search', validateToken, attendanceController.getAttendanceBySearch);
-// router.get(
-//   "/attendance/courses/:course_id",
-//   validateToken,
-//   attendanceController.getAttendanceByCourse
-// );
+router.put(
+  '/attendance/:id',
+  validateToken,
+  authorize(['updateAttendance']),
+  attendanceController.updateAttendance
+);
 
 module.exports = router;

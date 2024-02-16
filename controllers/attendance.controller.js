@@ -27,12 +27,16 @@ class AttendanceController {
     }
   };
 
-  getAttendanceByCourse = async (req, res, next) => {
-    const { course_id } = req.params;
+  updateAttendance = async (req, res, next) => {
+    const { id } = req.params;
+    const { attendance_status, comments, reason } = req.body;
     try {
-      const query = new Query().where('course_id', '==', course_id);
-      const attendance = await Attendance.find(query);
-      res.status(200).json({ attendance });
+      const updatedAttendance = await Attendance.findByIdAndUpdate(
+        id,
+        { attendance_status, comments, reason },
+        { new: true }
+      );
+      res.status(200).json(updatedAttendance);
     } catch (error) {
       console.error(`Error getting attendance: ${error}`);
       next(error);
