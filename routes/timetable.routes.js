@@ -30,8 +30,15 @@ router.post(
 router.put(
   '/timetables/:id',
   validateToken,
-  authorize(['createTimetable']),
+  authorize(['updateTimetable']),
   timetableController.updateTimetable
+);
+
+router.delete(
+  '/timetables/:id',
+  validateToken,
+  authorize(['deleteTimetable']),
+  timetableController.deleteTimetable
 );
 
 module.exports = router;

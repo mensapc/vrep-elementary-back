@@ -51,6 +51,18 @@ class TimetableController {
       next(error);
     }
   };
+
+  deleteTimetable = async (req, res, next) => {
+    const { id } = req.params;
+    try {
+      const timetable = await Timetable.findOneAndDelete({ _id: id });
+      if (!timetable) throw new CustomError('Timetable not found', 404);
+      res.status(200).json({ message: 'Timetable deleted successfully' });
+    } catch (error) {
+      console.error(`Error deleting timetable: ${error.message}`);
+      next(error);
+    }
+  };
 }
 
 module.exports = TimetableController;
