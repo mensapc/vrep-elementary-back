@@ -40,6 +40,20 @@ class GradeController {
       next(error);
     }
   };
+
+  updateGrade = async (req, res, next) => {
+    const { id } = req.params;
+    const { grade } = req.body;
+
+    try {
+      const updatedGrade = await Grade.findByIdAndUpdate(id, { $set: { grade } }, { new: true });
+      if (!updatedGrade) throw new CustomError('Grade not found', 404);
+      res.status(200).json(updatedGrade);
+    } catch (error) {
+      console.error(`Error updating grade: ${error}`);
+      next(error);
+    }
+  };
 }
 
 module.exports = GradeController;

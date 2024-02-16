@@ -7,12 +7,12 @@ const router = express.Router();
 const gradeController = new GradeController();
 
 router.post('/grade', validateToken, gradeController.createGrade);
-// router.get("/grades/students/:student_id", validateToken, gradeController.getGradesByStudent);
 router.get(
   '/grades/search',
   validateToken,
   authorize(['searchGrade']),
   gradeController.getGradesBySearch
 );
+router.put('/grades/:id', validateToken, gradeController.updateGrade);
 
 module.exports = router;
