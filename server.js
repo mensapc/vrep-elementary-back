@@ -33,7 +33,7 @@ app.use(
   })
 );
 
-const PORT = process.env.NODE_ENV || 8080;
+const PORT = process.env.PORT || 8080;
 
 app.use('/', adminRoutes);
 app.use('/', studentRoutes);
@@ -55,4 +55,4 @@ app.use(errorMiddleware);
 app.get('/', (req, res) => res.status(200).send('Welcome to the RPMS API'));
 
 connectDB(process.env.MONGODB_URL);
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, '0.0.0.0', () => console.log(`Server running on port ${PORT}`));

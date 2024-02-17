@@ -10,9 +10,7 @@ cloudinary.config({
 
 const uploadImage = async (file) => {
   try {
-    const result = await cloudinary.uploader.upload(file, {
-      folder: 'rpms',
-    });
+    const result = await cloudinary.uploader.upload(file, { folder: 'rpms' });
     if (!result) throw new CustomError('Error uploading image', 500);
     return result.url;
   } catch (error) {
