@@ -69,6 +69,10 @@ const studentSchema = new mongoose.Schema({
     ref: 'Class',
     required: true,
   },
+  photo: {
+    type: String,
+    default: '',
+  },
 });
 
 const StudentModel = mongoose.model('Student', studentSchema);

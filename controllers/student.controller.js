@@ -5,6 +5,7 @@ const CustomError = require('../utils/CustomError.js');
 const RegistrationUtils = require('../utils/utils.registration');
 const generateToken = require('../utils/utils.token');
 const generateRegNumber = require('../utils/utils.registration_number');
+const { uploadImage } = require('../services/cloudinary.js');
 
 class StudentController {
   constructor() {
@@ -14,31 +15,30 @@ class StudentController {
   // Registering Student controller
   register = async (req, res, next) => {
     const userData = req.body;
-    const session = await mongoose.startSession();
     try {
       this.registrationUtils.validateData(userData, 'pupil');
       const regNumber = await this.generateUniqueRegNumber();
 
-      await session.startTransaction();
-      const _class = await Class.findOne({ _id: userData._class }).session(session);
+      const _class = await Class.findOne({ _id: userData._class });
       if (!_class) throw new CustomError('Class with provided id not found', 404);
+
+      if (req.file.path) {
+        const url = await uploadImage(req.file.path);
+        userData.photo = url;
+      }
 
       const newStudent = await Student.create({ ...userData, reg_number: regNumber });
       _class.students.push(newStudent._id);
-      await _class.save({ session });
+      await _class.save();
       const token = generateToken({
         id: newStudent.id,
         email: newStudent.email,
         role: newStudent.role,
       });
-      await session.commitTransaction();
       res.status(201).json({ ...newStudent._doc, token });
     } catch (error) {
-      await session.abortTransaction();
       console.error(`Error registering Student: ${error}`);
       next(error);
-    } finally {
-      session.endSession();
     }
   };
 
@@ -125,13 +125,17 @@ class StudentController {
 
   // An Update Student controller
   updateStudent = async (req, res, next) => {
+    const { id } = req.params;
+    const data = req.body;
+    delete data.reg_number;
+    delete data._id;
     const session = await mongoose.startSession();
     session.startTransaction();
     try {
-      const { id } = req.params;
-      const data = req.body;
-      delete data.reg_number;
-      delete data._id;
+      if (req.file.path) {
+        const url = await uploadImage(req.file.path);
+        data.photo = url;
+      }
 
       if (data._class) {
         await this.updateStudentClass(id, data, session, res);
@@ -150,7 +154,7 @@ class StudentController {
   };
 
   updateStudentClass = async (id, data, session, res) => {
-    const student = await Student.findById(id).session(session).session(session);
+    const student = await Student.findById(id).session(session);
     const _class = await Class.findOne({ _id: data._class }).session(session);
     if (!_class) throw new CustomError('Class with provided id not found', 404);
 
