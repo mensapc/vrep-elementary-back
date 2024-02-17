@@ -25,7 +25,11 @@ app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
     credentials: true,
-    origin: ['http://localhost:3000', 'https://rpms-web-server.onrender.com'],
+    origin: [
+      'http://localhost:3000',
+      'http://127.0.0.1:5500',
+      'https://rpms-web-server.onrender.com',
+    ],
   })
 );
 
