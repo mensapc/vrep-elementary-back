@@ -13,7 +13,6 @@ const uploadImage = async (file) => {
     const result = await cloudinary.uploader.upload(file, {
       folder: 'rpms',
     });
-    console.log('Image uploaded:', result);
     if (!result) throw new CustomError('Error uploading image', 500);
     return result.url;
   } catch (error) {
