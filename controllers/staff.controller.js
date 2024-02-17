@@ -3,6 +3,7 @@ const CustomError = require('../utils/CustomError');
 const generateToken = require('../utils/utils.token');
 const BcryptPassword = require('../utils/utils.bcrypt.password');
 const registrationUtils = require('../utils/utils.registration');
+const { uploadImage } = require('../services/cloudinary');
 
 class StaffController {
   constructor() {
@@ -18,6 +19,11 @@ class StaffController {
       const staff = await Staff.findOne({ email: userData.email });
       if (staff) throw new CustomError('staff already exists', 400);
       const hashedPassword = await this.bcryptPassword.HashPassword(userData.password);
+
+      if (req.file.path) {
+        const url = await uploadImage(req.file.path);
+        userData.photo = url;
+      }
 
       const newStaff = await Staff.create({ ...userData, password: hashedPassword });
       delete newStaff._doc.password;
@@ -90,6 +96,11 @@ class StaffController {
       const data = req.body;
       delete data.password;
       delete data._id;
+
+      if (req.file.path) {
+        const url = await uploadImage(req.file.path);
+        data.photo = url;
+      }
 
       const updatedStaff = await Staff.findByIdAndUpdate(req.params.id, data, { new: true });
       res.status(201).json({ ...updatedStaff._doc });
