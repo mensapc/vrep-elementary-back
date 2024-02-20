@@ -29,6 +29,7 @@ app.use(
       'http://localhost:3000',
       'http://127.0.0.1:5500',
       'https://rpsad.rulerspalacemontessori.com.ng',
+      'https://rpms-admin-m6mc55ooj-mpcircle.vercel.app'
       
     ],
   })
