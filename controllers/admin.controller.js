@@ -19,7 +19,7 @@ class AdminController {
       const admin = await Admin.findOne({ email: userData.email });
       if (admin) throw new CustomError('Admin already exists', 400);
 
-      if (req.file.path) {
+      if (req.file?.path) {
         const url = await uploadImage(req.file.path);
         userData.photo = url;
       }
