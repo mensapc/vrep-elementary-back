@@ -57,7 +57,12 @@ class StaffController {
   //get all staff
   getAll = async (req, res, next) => {
     try {
-      const staff = await Staff.find().select('-password');
+      const staff = await Staff.find()
+        .populate([
+          { path: '_class', select: 'name' },
+          { path: 'course', select: 'name' },
+        ])
+        .select('-password');
       res.status(200).json(staff);
     } catch (error) {
       console.error(`Error retrieving all staff `, error);
