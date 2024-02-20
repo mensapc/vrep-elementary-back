@@ -58,9 +58,9 @@ class ClassController {
 
   updateClass = async (req, res, next) => {
     const { id } = req.params;
-    const { name, description } = req.body;
+    const { name, description, staff } = req.body;
     try {
-      const _class = await Class.findByIdAndUpdate(id, { name, description }, { new: true });
+      const _class = await Class.findByIdAndUpdate(id, { name, description, staff }, { new: true });
       if (!_class) throw new CustomError('Class not found', 404);
       res.status(200).json(_class);
     } catch (error) {

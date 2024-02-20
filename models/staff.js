@@ -51,6 +51,7 @@ const staffSchema = new mongoose.Schema({
   photo: {
     type: String,
   },
+  _class: { type: mongoose.Schema.Types.ObjectId, ref: 'Class' },
 });
 
 const StaffModel = mongoose.model('Staff', staffSchema);

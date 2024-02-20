@@ -20,7 +20,7 @@ class StaffController {
       if (staff) throw new CustomError('staff already exists', 400);
       const hashedPassword = await this.bcryptPassword.HashPassword(userData.password);
 
-      if (req.file.path) {
+      if (req.file?.path) {
         const url = await uploadImage(req.file.path);
         userData.photo = url;
       }
@@ -97,13 +97,13 @@ class StaffController {
       delete data.password;
       delete data._id;
 
-      if (req.file.path) {
+      if (req.file?.path) {
         const url = await uploadImage(req.file.path);
         data.photo = url;
       }
 
       const updatedStaff = await Staff.findByIdAndUpdate(req.params.id, data, { new: true });
-      res.status(201).json({ ...updatedStaff._doc });
+      res.status(201).json(updatedStaff);
     } catch (error) {
       console.error(`Error updating staff: ${error}`);
       next(error);
