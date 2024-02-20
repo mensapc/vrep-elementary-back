@@ -71,7 +71,6 @@ const studentSchema = new mongoose.Schema({
   },
   photo: {
     type: String,
-    default: '',
   },
 });
 
