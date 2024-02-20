@@ -93,7 +93,10 @@ class StudentController {
   // Get All students controller
   getAll = async (req, res, next) => {
     try {
-      const students = await Student.find();
+      const students = await Student.find().populate({
+        path: '_class',
+        select: '-students -courses',
+      });
       res.status(200).json(students);
     } catch (error) {
       console.error(`Error retrieving all students `, error);
