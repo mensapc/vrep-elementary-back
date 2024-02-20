@@ -103,7 +103,7 @@ class StaffController {
       }
 
       const updatedStaff = await Staff.findByIdAndUpdate(req.params.id, data, { new: true });
-      res.status(201).json({ ...updatedStaff._doc });
+      res.status(201).json(updatedStaff);
     } catch (error) {
       console.error(`Error updating staff: ${error}`);
       next(error);

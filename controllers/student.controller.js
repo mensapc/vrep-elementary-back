@@ -96,6 +96,7 @@ class StudentController {
       const students = await Student.find().populate({
         path: '_class',
         select: '-students -courses',
+        populate: { path: 'staff', select: '_id first_name last_name email role ' },
       });
       res.status(200).json(students);
     } catch (error) {
