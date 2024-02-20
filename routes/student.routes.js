@@ -24,6 +24,13 @@ router.post(
   studentController.getBySearch
 );
 
+router.post(
+  '/students/recently-added',
+  validateToken,
+  authorize(['readStudents']),
+  studentController.getRecentlyAdded
+);
+
 router.get('/students', validateToken, authorize(['readStudents']), studentController.getAll);
 
 router.delete(

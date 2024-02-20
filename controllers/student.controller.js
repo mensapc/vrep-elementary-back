@@ -4,7 +4,7 @@ const Class = require('../models/class.js');
 const CustomError = require('../utils/CustomError.js');
 const RegistrationUtils = require('../utils/utils.registration');
 const generateToken = require('../utils/utils.token');
-const generateRegNumber = require('../utils/utils.registration_number');
+const { generateUniqueRegNumber } = require('../utils/utils.student.js');
 const { uploadImage } = require('../services/cloudinary.js');
 
 class StudentController {
@@ -17,12 +17,12 @@ class StudentController {
     const userData = req.body;
     try {
       this.registrationUtils.validateData(userData, 'pupil');
-      const regNumber = await this.generateUniqueRegNumber();
+      const regNumber = await generateUniqueRegNumber();
 
       const _class = await Class.findOne({ _id: userData._class });
       if (!_class) throw new CustomError('Class with provided id not found', 404);
 
-      if (req.file.path) {
+      if (req.file?.path) {
         const url = await uploadImage(req.file.path);
         userData.photo = url;
       }
@@ -132,7 +132,7 @@ class StudentController {
     const session = await mongoose.startSession();
     session.startTransaction();
     try {
-      if (req.file.path) {
+      if (req.file?.path) {
         const url = await uploadImage(req.file.path);
         data.photo = url;
       }
@@ -168,20 +168,13 @@ class StudentController {
     res.status(200).json(updatedStudent);
   };
 
-  // Generate Unique Registration Number
-  generateUniqueRegNumber = () => {
-    const regNumber = generateRegNumber();
-    return this.checkStudentRegNumber(regNumber);
-  };
-
-  // Check if Registration Number is Unique
-  checkStudentRegNumber = async (reg_number) => {
+  getRecentlyAdded = async (req, res, next) => {
     try {
-      const student = await Student.findOne({ reg_number });
-      if (student) return this.generateUniqueRegNumber();
-      return reg_number;
+      const students = await Student.find().sort({ created_at: -1 }).limit(5);
+      res.status(200).json(students);
     } catch (error) {
-      throw new Error('Failed to find student by reg number.');
+      console.error(`Error retrieving recent students `, error);
+      next(error);
     }
   };
 }
