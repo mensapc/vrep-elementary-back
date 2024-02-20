@@ -28,7 +28,8 @@ app.use(
     origin: [
       'http://localhost:3000',
       'http://127.0.0.1:5500',
-      'https://rpms-web-server.onrender.com',
+      'https://rpsad.rulerspalacemontessori.com.ng',
+      
     ],
   })
 );
