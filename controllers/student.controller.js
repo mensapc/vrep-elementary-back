@@ -170,7 +170,13 @@ class StudentController {
 
   getRecentlyAdded = async (req, res, next) => {
     try {
-      const students = await Student.find().sort({ created_at: -1 }).limit(5);
+      const students = await Student.find()
+        .populate({
+          path: '_class',
+          select: '-students -courses',
+        })
+        .sort({ created_at: -1 })
+        .limit(5);
       res.status(200).json(students);
     } catch (error) {
       console.error(`Error retrieving recent students `, error);
