@@ -52,6 +52,7 @@ const staffSchema = new mongoose.Schema({
     type: String,
   },
   _class: { type: mongoose.Schema.Types.ObjectId, ref: 'Class' },
+  course: { type: mongoose.Schema.Types.ObjectId, ref: 'Course' },
 });
 
 const StaffModel = mongoose.model('Staff', staffSchema);
