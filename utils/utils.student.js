@@ -1,4 +1,6 @@
 const Student = require('../models/student');
+const Class = require('../models/class');
+const CustomError = require('./CustomError');
 
 function generateRegNumber() {
   const min = 10000000000;
@@ -39,4 +41,11 @@ const sortStudentsActions = (sortby) => {
   }
 };
 
-module.exports = { generateUniqueRegNumber, sortStudentsActions };
+const perfomStudentDeletion = async (id, session) => {
+  console.log('id', id);
+  const student = await Student.findOne({ _id: id }).session(session);
+  await Class.updateOne({ _id: student._class }, { $pull: { students: id } }).session(session);
+  await Student.findByIdAndDelete({ _id: id }).session(session);
+};
+
+module.exports = { generateUniqueRegNumber, sortStudentsActions, perfomStudentDeletion };

@@ -40,6 +40,13 @@ router.delete(
   studentController.deleteStudent
 );
 
+router.post(
+  '/students/delete-many',
+  validateToken,
+  authorize(['deleteStudent']),
+  studentController.deleteMultipleStudents
+);
+
 router.put(
   '/students/:id',
   validateToken,

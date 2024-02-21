@@ -4,7 +4,11 @@ const Class = require('../models/class.js');
 const CustomError = require('../utils/CustomError.js');
 const RegistrationUtils = require('../utils/utils.registration');
 const generateToken = require('../utils/utils.token');
-const { generateUniqueRegNumber, sortStudentsActions } = require('../utils/utils.student.js');
+const {
+  generateUniqueRegNumber,
+  sortStudentsActions,
+  perfomStudentDeletion,
+} = require('../utils/utils.student.js');
 const { uploadImage } = require('../services/cloudinary.js');
 
 class StudentController {
@@ -110,17 +114,13 @@ class StudentController {
     const { id } = req.params;
     const session = await mongoose.startSession();
     try {
-      await session.startTransaction();
-      const student = await Student.findOne({ _id: id }).session(session);
-      if (!student) throw new CustomError('Student not found', 404);
-
-      await Class.updateOne({ _id: student._class }, { $pull: { students: id } }).session(session);
-      await Student.findByIdAndDelete({ _id: id }).session(session);
+      session.startTransaction();
+      await perfomStudentDeletion(id, session);
       res.status(200).json({ message: 'Student deleted successfully' });
       await session.commitTransaction();
     } catch (error) {
-      await session.abortTransaction();
       console.error(`Error deleting student: ${error}`);
+      await session.abortTransaction();
       next(error);
     } finally {
       session.endSession();
@@ -188,6 +188,25 @@ class StudentController {
     } catch (error) {
       console.error(`Error retrieving sorted students `, error);
       next(error);
+    }
+  };
+
+  deleteMultipleStudents = async (req, res, next) => {
+    const { data } = req.body;
+    const session = await mongoose.startSession();
+    try {
+      session.startTransaction();
+      for (const id of data) {
+        await perfomStudentDeletion(id, session);
+      }
+      res.status(200).json({ message: 'Students deleted successfully' });
+      await session.commitTransaction();
+    } catch (error) {
+      console.error(`Error deleting multiple students: ${error}`);
+      await session.abortTransaction();
+      next(error);
+    } finally {
+      session.endSession();
     }
   };
 }
