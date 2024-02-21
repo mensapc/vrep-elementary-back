@@ -25,10 +25,10 @@ router.post(
 );
 
 router.post(
-  '/students/recently-added',
+  '/students/sort',
   validateToken,
   authorize(['readStudents']),
-  studentController.getRecentlyAdded
+  studentController.studentsBySort
 );
 
 router.get('/students', validateToken, authorize(['readStudents']), studentController.getAll);

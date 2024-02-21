@@ -4,7 +4,7 @@ const Class = require('../models/class.js');
 const CustomError = require('../utils/CustomError.js');
 const RegistrationUtils = require('../utils/utils.registration');
 const generateToken = require('../utils/utils.token');
-const { generateUniqueRegNumber } = require('../utils/utils.student.js');
+const { generateUniqueRegNumber, sortStudentsActions } = require('../utils/utils.student.js');
 const { uploadImage } = require('../services/cloudinary.js');
 
 class StudentController {
@@ -172,18 +172,21 @@ class StudentController {
     res.status(200).json(updatedStudent);
   };
 
-  getRecentlyAdded = async (req, res, next) => {
+  studentsBySort = async (req, res, next) => {
+    const { sortby } = req.query;
+    const sortAction = sortStudentsActions(sortby);
+
     try {
       const students = await Student.find()
         .populate({
           path: '_class',
           select: '-students -courses',
+          populate: { path: 'staff', select: '_id first_name last_name email' },
         })
-        .sort({ created_at: -1 })
-        .limit(5);
+        .sort(sortAction);
       res.status(200).json(students);
     } catch (error) {
-      console.error(`Error retrieving recent students `, error);
+      console.error(`Error retrieving sorted students `, error);
       next(error);
     }
   };

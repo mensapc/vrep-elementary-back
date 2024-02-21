@@ -26,4 +26,17 @@ async function checkStudentRegNumber(reg_number) {
   }
 }
 
-module.exports = { generateUniqueRegNumber };
+const sortStudentsActions = (sortby) => {
+  switch (sortby) {
+    case 'age':
+      return (sortAction = { age: 1 });
+    case 'date':
+      return (sortAction = { created_at: -1 });
+    case 'name':
+      return (sortAction = { first_name: 1 });
+    default:
+      return (sortAction = { created_at: 1 });
+  }
+};
+
+module.exports = { generateUniqueRegNumber, sortStudentsActions };
