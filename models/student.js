@@ -12,11 +12,6 @@ const studentSchema = new mongoose.Schema({
     default: 'pupil',
   },
 
-  email: {
-    type: String,
-    required: true,
-  },
-
   first_name: {
     type: String,
     required: true,
@@ -28,20 +23,26 @@ const studentSchema = new mongoose.Schema({
     required: true,
     trim: true,
   },
-
+  dob: {
+    type: Date,
+    required: true,
+  },
+  place_of_birth: {
+    type: String,
+    required: true,
+  },
   age: {
     type: Number,
     required: true,
     trim: true,
   },
-
-  address: {
+  gender: {
     type: String,
     required: true,
     trim: true,
   },
 
-  health_condition: {
+  address: {
     type: String,
     required: true,
     trim: true,
@@ -59,10 +60,30 @@ const studentSchema = new mongoose.Schema({
     trim: true,
   },
 
+  parent_nationality: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+
   parent_occupation: {
     type: String,
     required: true,
     trim: true,
+  },
+  parent_gender: {
+    type: String,
+    required: true,
+  },
+  parent_address: {
+    type: String,
+    required: true,
+  },
+  parent_place_of_birth: {
+    type: String,
+  },
+  parent_relationship: {
+    type: String,
   },
   _class: {
     type: mongoose.Schema.Types.ObjectId,

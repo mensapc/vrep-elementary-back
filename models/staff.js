@@ -41,7 +41,14 @@ const staffSchema = new mongoose.Schema({
     required: true,
     trim: true,
   },
-
+  dob: {
+    type: Date,
+    required: true,
+  },
+  place_of_birth: {
+    type: String,
+    required: true,
+  },
   address: {
     type: String,
     required: true,
@@ -50,6 +57,26 @@ const staffSchema = new mongoose.Schema({
 
   photo: {
     type: String,
+  },
+  university_name: {
+    type: String,
+    required: true,
+  },
+  degree: {
+    type: String,
+    required: true,
+  },
+  university_location: {
+    type: String,
+    required: true,
+  },
+  start_date: {
+    type: Date,
+    required: true,
+  },
+  end_date: {
+    type: Date,
+    required: true,
   },
   _class: { type: mongoose.Schema.Types.ObjectId, ref: 'Class' },
   course: { type: mongoose.Schema.Types.ObjectId, ref: 'Course' },
