@@ -25,10 +25,10 @@ router.post(
 );
 
 router.post(
-  '/students/recently-added',
+  '/students/sort',
   validateToken,
   authorize(['readStudents']),
-  studentController.getRecentlyAdded
+  studentController.studentsBySort
 );
 
 router.get('/students', validateToken, authorize(['readStudents']), studentController.getAll);
@@ -38,6 +38,13 @@ router.delete(
   validateToken,
   authorize(['deleteStudent']),
   studentController.deleteStudent
+);
+
+router.post(
+  '/students/delete-many',
+  validateToken,
+  authorize(['deleteStudent']),
+  studentController.deleteMultipleStudents
 );
 
 router.put(
