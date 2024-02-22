@@ -28,19 +28,6 @@ async function checkStudentRegNumber(reg_number) {
   }
 }
 
-const sortStudentsActions = (sortby) => {
-  switch (sortby) {
-    case 'age':
-      return (sortAction = { age: 1 });
-    case 'date':
-      return (sortAction = { created_at: -1 });
-    case 'name':
-      return (sortAction = { first_name: 1 });
-    default:
-      return (sortAction = { created_at: 1 });
-  }
-};
-
 const perfomStudentDeletion = async (id, session) => {
   console.log('id', id);
   const student = await Student.findOne({ _id: id }).session(session);
@@ -48,4 +35,4 @@ const perfomStudentDeletion = async (id, session) => {
   await Student.findByIdAndDelete({ _id: id }).session(session);
 };
 
-module.exports = { generateUniqueRegNumber, sortStudentsActions, perfomStudentDeletion };
+module.exports = { generateUniqueRegNumber, perfomStudentDeletion };

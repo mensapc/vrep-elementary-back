@@ -4,6 +4,7 @@ const generateToken = require('../utils/utils.token');
 const BcryptPassword = require('../utils/utils.bcrypt.password');
 const registrationUtils = require('../utils/utils.registration');
 const { uploadImage } = require('../services/cloudinary');
+const { sortActions } = require('../utils/utils.common');
 
 class StaffController {
   constructor() {
@@ -79,6 +80,26 @@ class StaffController {
       res.status(200).json(staff);
     } catch (error) {
       console.error('Fail to retrieve Staff:', error);
+      next(error);
+    }
+  };
+
+  // get staff by sort
+  sfaffBySort = async (req, res, next) => {
+    const { sortby } = req.query;
+    const sortAction = sortActions(sortby);
+
+    try {
+      const staff = await Staff.find()
+        .populate([
+          { path: '_class', select: 'name' },
+          { path: 'course', select: 'name' },
+        ])
+        .select('-password')
+        .sort(sortAction);
+      res.status(200).json(staff);
+    } catch (error) {
+      console.error(`Error retrieving sorted staff `, error);
       next(error);
     }
   };

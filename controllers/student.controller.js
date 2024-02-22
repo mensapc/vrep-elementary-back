@@ -10,6 +10,7 @@ const {
   perfomStudentDeletion,
 } = require('../utils/utils.student.js');
 const { uploadImage } = require('../services/cloudinary.js');
+const { sortActions } = require('../utils/utils.common.js');
 
 class StudentController {
   constructor() {
@@ -174,7 +175,7 @@ class StudentController {
 
   studentsBySort = async (req, res, next) => {
     const { sortby } = req.query;
-    const sortAction = sortStudentsActions(sortby);
+    const sortAction = sortActions(sortby);
 
     try {
       const students = await Student.find()

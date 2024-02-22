@@ -8,7 +8,7 @@ class RegistrationUtils {
   validateData = (data, userType) => {
     const { email, password, first_name, last_name, age } = data;
     try {
-      if (!first_name || !last_name || !age) {
+      if (!first_name || !last_name) {
         throw new CustomError('First name, last name, and age are required', 400);
       }
 
@@ -21,9 +21,6 @@ class RegistrationUtils {
           throw new CustomError('Password must be at least 8 characters', 400);
         }
 
-        if (age < 18) {
-          throw new CustomError('User must be older than 18', 400);
-        }
         // Email format validation
         const emailRegex = /^\S+@\S+\.\S+$/;
         if (!emailRegex.test(email)) {
@@ -33,8 +30,8 @@ class RegistrationUtils {
 
       if (userType === 'pupil') {
         const { _class, address, parent_name, parent_phone } = data;
-        if (!_class || !address || !parent_name || !parent_phone) {
-          throw new CustomError('Address, parent name, and parent phone are required', 400);
+        if (!_class || !address || !parent_name || !parent_phone || !age) {
+          throw new CustomError('Address, parent name, age, and parent phone are required', 400);
         }
       }
 

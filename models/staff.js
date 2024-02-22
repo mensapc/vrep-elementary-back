@@ -30,12 +30,6 @@ const staffSchema = new mongoose.Schema({
     trim: true,
   },
 
-  age: {
-    type: Number,
-    required: true,
-    trim: true,
-  },
-
   phone_number: {
     type: String,
     required: true,
