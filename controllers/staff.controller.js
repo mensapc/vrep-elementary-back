@@ -59,10 +59,7 @@ class StaffController {
   getAll = async (req, res, next) => {
     try {
       const staff = await Staff.find()
-        .populate([
-          { path: '_class', select: 'name' },
-          { path: 'course', select: 'name' },
-        ])
+        .populate({ path: '_class', select: 'name' })
         .select('-password');
       res.status(200).json(staff);
     } catch (error) {
@@ -85,16 +82,13 @@ class StaffController {
   };
 
   // get staff by sort
-  sfaffBySort = async (req, res, next) => {
+  staffBySort = async (req, res, next) => {
     const { sortby } = req.query;
     const sortAction = sortActions(sortby);
 
     try {
       const staff = await Staff.find()
-        .populate([
-          { path: '_class', select: 'name' },
-          { path: 'course', select: 'name' },
-        ])
+        .populate({ path: '_class', select: 'name' })
         .select('-password')
         .sort(sortAction);
       res.status(200).json(staff);

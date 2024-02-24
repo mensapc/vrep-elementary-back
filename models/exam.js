@@ -13,6 +13,15 @@ const examSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  academic_year: {
+    type: String,
+    required: true,
+  },
+  school_term: {
+    type: String,
+    required: true,
+    enum: ['1stterm', '2ndterm', '3rdterm'],
+  },
   time_limit: {
     type: String,
     required: true,
@@ -25,13 +34,10 @@ const examSchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
-  creator_id: {
-    type: String,
-    required: true,
-  },
+  staff: { type: mongoose.Schema.Types.ObjectId, ref: 'Staff', required: true },
   course: { type: mongoose.Schema.Types.ObjectId, ref: 'Course', required: true },
+  _class: { type: mongoose.Schema.Types.ObjectId, ref: 'Class' },
   questions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Question' }],
-  classes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Class' }],
 });
 
 const ExamModel = mongoose.model('Exam', examSchema);

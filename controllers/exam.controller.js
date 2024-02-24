@@ -2,15 +2,13 @@ const mongoose = require('mongoose');
 const Exam = require('../models/exam');
 const Option = require('../models/option');
 const Question = require('../models/question');
-const Answer = require('../models/answer');
 const {
-  CalculateResults,
   checkExamAvailability,
   examDuration,
   validateExamDuration,
-  ExamDetailsAndAnswers,
 } = require('../utils/utils.exam');
 const CustomError = require('../utils/CustomError');
+const { sortActions } = require('../utils/utils.common');
 
 class ExamController {
   createExam = async (req, res, next) => {
@@ -141,14 +139,16 @@ class ExamController {
     }
   };
 
-  getExamResults = async (req, res, next) => {
-    const { exam_id, student_id } = req.body;
+  sortExams = async (req, res, next) => {
+    const { sortby } = req.query;
+    const sortAction = sortActions(sortby);
     try {
-      const { exam, answers } = await ExamDetailsAndAnswers(exam_id, student_id);
-      const results = CalculateResults(exam, answers);
-      res.status(200).json(results);
+      const exams = await Exam.find().sort(sortAction);
+      res.status(200).json(exams).populate({
+        path: '_class',
+      });
     } catch (error) {
-      console.error(`Error calculating result: ${error}`);
+      console.error(`Error getting exams: ${error}`);
       next(error);
     }
   };

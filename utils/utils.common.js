@@ -11,4 +11,10 @@ const sortActions = (sortby) => {
   }
 };
 
-module.exports = { sortActions };
+const convertSchoolTerms = (term) => {
+  const numeric = term.split('term');
+  const formattedTerm = numeric[0].concat(' ', 'Term');
+  return formattedTerm;
+};
+
+module.exports = { sortActions, convertSchoolTerms };

@@ -28,7 +28,7 @@ router.put(
   staffController.updateStaff
 );
 
-router.post('/staff/sort', validateToken, authorize(['readStaff']), staffController.sfaffBySort);
+router.post('/staff/sort', validateToken, authorize(['readStaff']), staffController.staffBySort);
 
 router.delete('/staff/:id', validateToken, authorize(['deleteStaff']), staffController.deleteStaff);
 

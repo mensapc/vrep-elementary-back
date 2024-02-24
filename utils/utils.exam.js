@@ -1,13 +1,12 @@
 const Answer = require('../models/answer');
 const Exam = require('../models/exam');
+const CustomError = require('./CustomError');
 
 const CalculateResults = (exam, answers) => {
   const questionMap = new Map();
   const { questions, ...examData } = exam._doc;
-  const student_class = answers[0].class;
   const result = {
     ...examData,
-    student_class,
     totalMarks: 0,
     scoredMarks: 0,
     percentage: 0,
@@ -54,6 +53,7 @@ const ExamDetailsAndAnswers = async (examId, studentId) => {
     path: 'questions',
     populate: { path: 'options' },
   });
+
   if (!exam) {
     throw new CustomError('Exam not found', 404);
   }
@@ -61,7 +61,6 @@ const ExamDetailsAndAnswers = async (examId, studentId) => {
   const answers = await Answer.find({ student: studentId, exam: examId })
     .populate({ path: 'question', select: '_id points' })
     .populate('chosen_option');
-
   if (!answers.length) {
     throw new CustomError('No answers found for this exam', 404);
   }
