@@ -13,7 +13,6 @@ const classSchema = new mongoose.Schema({
   courses: [
     {
       course: { type: mongoose.Schema.Types.ObjectId, ref: 'Course' },
-      staff: { type: mongoose.Schema.Types.ObjectId, ref: 'Staff' },
     },
   ],
 });

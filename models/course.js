@@ -11,9 +11,9 @@ const courseSchema = new mongoose.Schema({
   },
   duration: {
     type: String,
-    required: true,
   },
-  staff: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Staff' }],
+  staff: { type: mongoose.Schema.Types.ObjectId, ref: 'Staff' },
+  _class: { type: mongoose.Schema.Types.ObjectId, ref: 'Class' },
 });
 
 const Course = mongoose.model('Course', courseSchema);
