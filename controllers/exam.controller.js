@@ -2,13 +2,10 @@ const mongoose = require('mongoose');
 const Exam = require('../models/exam');
 const Option = require('../models/option');
 const Question = require('../models/question');
-const Answer = require('../models/answer');
 const {
-  CalculateResults,
   checkExamAvailability,
   examDuration,
   validateExamDuration,
-  ExamDetailsAndAnswers,
 } = require('../utils/utils.exam');
 const CustomError = require('../utils/CustomError');
 const { sortActions } = require('../utils/utils.common');
