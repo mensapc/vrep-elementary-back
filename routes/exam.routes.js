@@ -10,8 +10,8 @@ router.post('/exam', validateToken, authorize(['createExam']), examController.cr
 router.get('/exams', validateToken, authorize(['getExams']), examController.getExams);
 router.get('/exams/:id', validateToken, authorize(['getExamSummary']), examController.getExam);
 router.get('/exams/:id/full', validateToken, examController.getExamWithQustionsAndOptions);
-router.post('/exam/result', validateToken, examController.getExamResults);
 router.put('/exams/:id', validateToken, authorize(['updateExam']), examController.updateExam);
 router.delete('/exams/:id', validateToken, authorize(['deleteExam']), examController.deleteExam);
+router.post('/exams/sort', validateToken, authorize(['getExams']), examController.sortExams);
 
 module.exports = router;
