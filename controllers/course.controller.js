@@ -4,8 +4,8 @@ const CustomError = require('../utils/CustomError');
 class CourseController {
   createCourse = async (req, res, next) => {
     try {
-      const { name, description, duration } = req.body;
-      const course = await Course.create({ name, description, duration });
+      const { name, description, duration, staff, _class } = req.body;
+      const course = await Course.create({ name, description, duration, staff, _class });
       res.status(200).json(course);
     } catch (error) {
       console.error(`Error creating course and referencing class: ${error}`);
