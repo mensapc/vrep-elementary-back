@@ -90,10 +90,6 @@ const studentSchema = new mongoose.Schema({
     ref: 'Class',
     required: true,
   },
-  academic_year: {
-    type: String,
-    required: true,
-  },
   photo: {
     type: String,
   },
