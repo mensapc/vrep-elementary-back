@@ -18,4 +18,24 @@ const groupedStudentsResults = (results) => {
   return uniqueResults;
 };
 
-module.exports = { checkResultExistence, groupedStudentsResults };
+const findResultMarks = (results) => {
+  const hash = {};
+  results.forEach((result) => {
+    if (hash[result.course._id]) {
+      hash[result.course._id].score += Number(result.score);
+      hash[result.course._id].total += Number(result.total);
+      const percentage = (hash[result.course._id].score / hash[result.course._id].total) * 100;
+      hash[result.course._id].percentage = parseFloat(percentage.toFixed(1));
+    } else {
+      hash[result.course._id] = {
+        course: result.course.name,
+        score: result.score,
+        total: result.total,
+        percentage: parseFloat(((result.score / result.total) * 100).toFixed(1)),
+      };
+    }
+  });
+  return Object.values(hash);
+};
+
+module.exports = { checkResultExistence, groupedStudentsResults, findResultMarks };
