@@ -2,7 +2,11 @@ const Result = require('../models/result');
 const CustomError = require('../utils/CustomError');
 const { convertSchoolTerms } = require('../utils/utils.common');
 const { ExamDetailsAndAnswers, CalculateResults } = require('../utils/utils.exam');
-const { checkResultExistence, groupedStudentsResults } = require('../utils/utils.result');
+const {
+  checkResultExistence,
+  groupedStudentsResults,
+  findResultMarks,
+} = require('../utils/utils.result');
 
 class ResultController {
   createResult = async (req, res, next) => {
@@ -74,6 +78,45 @@ class ResultController {
       res.status(200).json(updatedResult);
     } catch (error) {
       console.error(`Error updating result: ${error}`);
+      next(error);
+    }
+  };
+
+  generateStudentReport = async (req, res, next) => {
+    const { _class, school_term, academic_year, student } = req.body;
+
+    try {
+      const results = await Result.find({
+        _class: _class,
+        school_term,
+        academic_year,
+        student: student,
+      }).populate([
+        {
+          path: 'student',
+          select: '-_class',
+        },
+        { path: '_class', select: 'name' },
+        { path: 'course', select: 'name' },
+      ]);
+
+      if (!results.length) throw new CustomError('No Exam results found', 404);
+
+      const formatSchoolTerm = convertSchoolTerms(results[0].school_term);
+      const formatAcademicYear = `${results[0].academic_year}/${
+        Number(results[0].academic_year) + 1
+      }`;
+      const marks = findResultMarks(results);
+
+      res.status(200).json({
+        _class: results[0]._class,
+        student: results[0].student,
+        school_term: formatSchoolTerm,
+        academic_year: formatAcademicYear,
+        student_marks: marks,
+      });
+    } catch (error) {
+      console.error(`Error generating report: ${error}`);
       next(error);
     }
   };

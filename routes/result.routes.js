@@ -19,6 +19,7 @@ router.post(
   authorize(['examResult']),
   resultController.getStudentsDoneExams
 );
+router.post('/result/student-report', validateToken, resultController.generateStudentReport);
 
 router.put('/result/:id', validateToken, authorize(['examResult']), resultController.updateResults);
 
