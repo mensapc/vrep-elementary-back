@@ -72,7 +72,10 @@ class StudentController {
   getById = async (req, res, next) => {
     const { id } = req.params;
     try {
-      const student = await Student.findOne({ _id: id });
+      const student = await Student.findOne({ _id: id }).populate({
+        path: '_class',
+        select: 'name',
+      });
       if (!student) throw new CustomError('Student not found', 404);
       res.status(200).json(student);
     } catch (error) {
