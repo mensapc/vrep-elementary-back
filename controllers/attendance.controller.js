@@ -1,5 +1,6 @@
 const Attendance = require('../models/attendance');
 const CustomError = require('../utils/CustomError');
+const { calculateAttendance } = require('../utils/utils.attendance');
 
 class AttendanceController {
   createAttendance = async (req, res, next) => {
@@ -20,7 +21,12 @@ class AttendanceController {
     try {
       const attendance = await Attendance.find(query);
       if (!attendance) throw new CustomError('Attendance not found', 404);
-      res.status(200).json(attendance);
+
+      const attendanceCount = calculateAttendance(attendance);
+      res.status(200).json({
+        ...attendanceCount,
+        details: attendance,
+      });
     } catch (error) {
       console.error(`Error getting attendance: ${error}`);
       next(error);
