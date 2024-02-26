@@ -32,6 +32,8 @@ app.use(
       'https://rpms-admin.vercel.app',
       'https://pupils.rulerspalacemontessori.com.ng',
       'https://rpms-pupil.vercel.app',
+      'https://rpms-teachers.vercel.app',
+      'https://rpmsteachersaccess.rulerspalacemontessori.com.ng',
     ],
   })
 );
