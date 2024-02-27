@@ -4,6 +4,7 @@ const generateToken = require('../utils/utils.token');
 const BcryptPassword = require('../utils/utils.bcrypt.password');
 const registrationUtils = require('../utils/utils.registration');
 const { uploadImage } = require('../services/cloudinary');
+const { createActivity } = require('./activity.controller');
 
 class AdminController {
   constructor() {
@@ -29,7 +30,18 @@ class AdminController {
       const newAdmin = await Admin.create({ ...userData, password: hashedPassword });
       delete newAdmin._doc.password;
 
-      const token = generateToken({ id: newAdmin._id, email: newAdmin.email, role: newAdmin.role });
+      const token = generateToken({
+        id: newAdmin._id,
+        email: newAdmin.email,
+        first_name: newAdmin.first_name,
+        last_name: newAdmin.last_name,
+        role: newAdmin.role,
+      });
+
+      createActivity(
+        `New Admin ${newAdmin.first_name} ${newAdmin.last_name} registered successfully`
+      );
+
       res.status(200).json({ ...newAdmin._doc, token });
     } catch (error) {
       console.error(`Error registering admin: ${error}`);

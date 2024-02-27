@@ -27,7 +27,9 @@ class ExamController {
 
       const newExam = await Exam.create(examData);
       console.log(req.user);
-      await createActivity(`New exam ${newExam.name} created!`);
+      await createActivity(
+        `New exam ${newExam.name} created by ${req.user.first_name} ${req.user.last_name}`
+      );
       res.status(200).json(newExam);
     } catch (error) {
       console.error(`Error creating exam: ${error}`);
@@ -107,7 +109,9 @@ class ExamController {
 
       const updatedExam = await Exam.findByIdAndUpdate(id, examData, { new: true });
 
-      createActivity(`Exam ${updatedExam.name} updated!`);
+      createActivity(
+        `Exam ${updatedExam.name} updated by ${req.user.first_name} ${req.user.last_name}`
+      );
       res.status(200).json(updatedExam);
     } catch (error) {
       console.error(`Error updating exam: ${error}`);
@@ -134,7 +138,9 @@ class ExamController {
       await examToDelete.deleteOne({ session });
       await session.commitTransaction();
 
-      createActivity(`Exam ${examToDelete.name} deleted!`);
+      createActivity(
+        `Exam ${examToDelete.name} deleted by ${req.user.first_name} ${req.user.last_name}`
+      );
       return res.status(200).json({ message: 'Exam deleted successfully' });
     } catch (error) {
       await session.abortTransaction();
