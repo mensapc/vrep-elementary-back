@@ -18,6 +18,7 @@ const timetableRoutes = require('./routes/timetable.routes');
 const eventRoutes = require('./routes/event.routes');
 const datacountRoutes = require('./routes/datacount.routes');
 const resultRoutes = require('./routes/result.routes');
+const activityRoutes = require('./routes/activity.routes');
 
 const app = express();
 
@@ -55,6 +56,7 @@ app.use('/api/v1', timetableRoutes);
 app.use('/api/v1', eventRoutes);
 app.use('/api/v1', datacountRoutes);
 app.use('/api/v1', resultRoutes);
+app.use('/api/v1', activityRoutes);
 
 app.use(errorMiddleware);
 
