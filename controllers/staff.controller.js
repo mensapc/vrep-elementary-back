@@ -5,6 +5,7 @@ const BcryptPassword = require('../utils/utils.bcrypt.password');
 const registrationUtils = require('../utils/utils.registration');
 const { uploadImage } = require('../services/cloudinary');
 const { sortActions } = require('../utils/utils.common');
+const { createActivity } = require('./activity.controller');
 
 class StaffController {
   constructor() {
@@ -30,6 +31,8 @@ class StaffController {
       delete newStaff._doc.password;
 
       const token = generateToken({ id: newStaff._id, email: newStaff.email, role: newStaff.role });
+      await createActivity(`New Teacher ${newStaff.first_name} ${newStaff.last_name} registered`);
+
       res.status(200).json({ ...newStaff._doc, token });
     } catch (error) {
       console.error(`Error registering staff: ${error}`);
@@ -103,6 +106,7 @@ class StaffController {
     const { id } = req.params;
     try {
       await Staff.findByIdAndDelete({ _id: id });
+      await createActivity(`Teacher with id ${id} deleted`);
       res.status(200).json({ message: 'Staff deleted successfully' });
     } catch (error) {
       console.error(`Error deleting Staff: ${error}`);
@@ -123,6 +127,9 @@ class StaffController {
       }
 
       const updatedStaff = await Staff.findByIdAndUpdate(req.params.id, data, { new: true });
+      await createActivity(
+        `Teacher ${updatedStaff.first_name} ${updatedStaff.last_name} details updated`
+      );
       res.status(201).json(updatedStaff);
     } catch (error) {
       console.error(`Error updating staff: ${error}`);

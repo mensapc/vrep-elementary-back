@@ -27,6 +27,9 @@ const getActivities = async (req, res, next) => {
           },
         },
       },
+      {
+        $sort: { created_at: -1 },
+      },
     ]);
     const groupedActivities = groupActivitiesByDays(activities);
     res.json(groupedActivities);

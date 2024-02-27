@@ -11,6 +11,7 @@ const {
 } = require('../utils/utils.student.js');
 const { uploadImage } = require('../services/cloudinary.js');
 const { sortActions } = require('../utils/utils.common.js');
+const { createActivity } = require('./activity.controller.js');
 
 class StudentController {
   constructor() {
@@ -40,6 +41,10 @@ class StudentController {
         email: newStudent.email,
         role: newStudent.role,
       });
+
+      await createActivity(
+        `New student ${newStudent.first_name} ${newStudent.last_name} registered`
+      );
       res.status(201).json({ ...newStudent._doc, token });
     } catch (error) {
       console.error(`Error registering Student: ${error}`);
@@ -120,6 +125,7 @@ class StudentController {
     try {
       session.startTransaction();
       await perfomStudentDeletion(id, session);
+      await createActivity(`Student with id ${id} deleted`);
       res.status(200).json({ message: 'Student deleted successfully' });
       await session.commitTransaction();
     } catch (error) {
@@ -148,6 +154,7 @@ class StudentController {
       if (data._class) {
         await this.updateStudentClass(id, data, session, res);
       } else {
+        await createActivity(`Student with id ${id} updated`);
         const info = await Student.findByIdAndUpdate(id, data, { new: true }).session(session);
         res.status(201).json(info);
       }
@@ -203,6 +210,7 @@ class StudentController {
       for (const id of data) {
         await perfomStudentDeletion(id, session);
       }
+      await createActivity('Multiple students deleted');
       res.status(200).json({ message: 'Students deleted successfully' });
       await session.commitTransaction();
     } catch (error) {
