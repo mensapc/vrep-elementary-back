@@ -4,11 +4,7 @@ const Class = require('../models/class.js');
 const CustomError = require('../utils/CustomError.js');
 const RegistrationUtils = require('../utils/utils.registration');
 const generateToken = require('../utils/utils.token');
-const {
-  generateUniqueRegNumber,
-  sortStudentsActions,
-  perfomStudentDeletion,
-} = require('../utils/utils.student.js');
+const { generateUniqueRegNumber, perfomStudentDeletion } = require('../utils/utils.student.js');
 const { uploadImage } = require('../services/cloudinary.js');
 const { sortActions } = require('../utils/utils.common.js');
 const { createActivity } = require('./activity.controller.js');
@@ -39,11 +35,13 @@ class StudentController {
       const token = generateToken({
         id: newStudent.id,
         email: newStudent.email,
+        first_name: newStudent.first_name,
+        last_name: newStudent.last_name,
         role: newStudent.role,
       });
 
       await createActivity(
-        `New student ${newStudent.first_name} ${newStudent.last_name} registered`
+        `New student ${newStudent.first_name} ${newStudent.last_name} registered by ${req.user.first_name} ${req.user.last_name}`
       );
       res.status(201).json({ ...newStudent._doc, token });
     } catch (error) {
@@ -64,6 +62,8 @@ class StudentController {
       const token = generateToken({
         id: student.id,
         email: student.email,
+        first_name: student.first_name,
+        last_name: student.last_name,
         role: student.role,
       });
       res.status(200).json({ ...student._doc, token });
@@ -94,7 +94,10 @@ class StudentController {
     const query = req.query;
 
     try {
-      let student = await Student.find(query);
+      let student = await Student.find(query).populate({
+        path: '_class',
+        select: 'name',
+      });
       if (!student) throw new CustomError('Student not found', 404);
       res.status(200).json(student);
     } catch (error) {
@@ -124,8 +127,10 @@ class StudentController {
     const session = await mongoose.startSession();
     try {
       session.startTransaction();
-      await perfomStudentDeletion(id, session);
-      await createActivity(`Student with id ${id} deleted`);
+      const deletedUser = await perfomStudentDeletion(id, session);
+      await createActivity(
+        `Student ${deletedUser.first_name} ${deletedUser.last_name} deleted by ${req.user.first_name} ${req.user.last_name}`
+      );
       res.status(200).json({ message: 'Student deleted successfully' });
       await session.commitTransaction();
     } catch (error) {
@@ -154,8 +159,10 @@ class StudentController {
       if (data._class) {
         await this.updateStudentClass(id, data, session, res);
       } else {
-        await createActivity(`Student with id ${id} updated`);
         const info = await Student.findByIdAndUpdate(id, data, { new: true }).session(session);
+        await createActivity(
+          `Student ${info.first_name} ${info.last_name} updated by ${req.user.first_name} ${req.user.last_name}`
+        );
         res.status(201).json(info);
       }
       await session.commitTransaction();
@@ -210,7 +217,9 @@ class StudentController {
       for (const id of data) {
         await perfomStudentDeletion(id, session);
       }
-      await createActivity('Multiple students deleted');
+      await createActivity(
+        `Multiple students deleted by ${req.user.first_name} ${req.user.last_name}`
+      );
       res.status(200).json({ message: 'Students deleted successfully' });
       await session.commitTransaction();
     } catch (error) {

@@ -33,6 +33,7 @@ const perfomStudentDeletion = async (id, session) => {
   const student = await Student.findOne({ _id: id }).session(session);
   await Class.updateOne({ _id: student._class }, { $pull: { students: id } }).session(session);
   await Student.findByIdAndDelete({ _id: id }).session(session);
+  return student;
 };
 
 module.exports = { generateUniqueRegNumber, perfomStudentDeletion };

@@ -30,8 +30,16 @@ class StaffController {
       const newStaff = await Staff.create({ ...userData, password: hashedPassword });
       delete newStaff._doc.password;
 
-      const token = generateToken({ id: newStaff._id, email: newStaff.email, role: newStaff.role });
-      await createActivity(`New Teacher ${newStaff.first_name} ${newStaff.last_name} registered`);
+      const token = generateToken({
+        id: newStaff._id,
+        email: newStaff.email,
+        first_name: newStaff.first_name,
+        last_name: newStaff.last_name,
+        role: newStaff.role,
+      });
+      await createActivity(
+        `New Teacher ${newStaff.first_name} ${newStaff.last_name} registered by ${req.user.first_name} ${req.user.last_name}`
+      );
 
       res.status(200).json({ ...newStaff._doc, token });
     } catch (error) {
@@ -50,7 +58,13 @@ class StaffController {
       if (!comparedPassword) throw new CustomError('Invalid credentials', 400);
       delete staff._doc.password;
 
-      const token = generateToken({ id: staff._id, email: staff.email, role: staff.role });
+      const token = generateToken({
+        id: staff._id,
+        email: staff.email,
+        first_name: staff.first_name,
+        last_name: staff.last_name,
+        role: staff.role,
+      });
       res.status(200).json({ ...staff._doc, token });
     } catch (error) {
       console.error('Error logging in staff:', error);
@@ -105,8 +119,10 @@ class StaffController {
   deleteStaff = async (req, res, next) => {
     const { id } = req.params;
     try {
-      await Staff.findByIdAndDelete({ _id: id });
-      await createActivity(`Teacher with id ${id} deleted`);
+      const deletedStaff = await Staff.findByIdAndDelete({ _id: id });
+      await createActivity(
+        `Teacher ${deletedStaff.first_name} ${deletedStaff.last_name} deleted by ${req.user.first_name} ${req.user.last_name}`
+      );
       res.status(200).json({ message: 'Staff deleted successfully' });
     } catch (error) {
       console.error(`Error deleting Staff: ${error}`);
@@ -128,7 +144,7 @@ class StaffController {
 
       const updatedStaff = await Staff.findByIdAndUpdate(req.params.id, data, { new: true });
       await createActivity(
-        `Teacher ${updatedStaff.first_name} ${updatedStaff.last_name} details updated`
+        `Teacher ${updatedStaff.first_name} ${updatedStaff.last_name} details updated by ${req.user.first_name} ${req.user.last_name}`
       );
       res.status(201).json(updatedStaff);
     } catch (error) {
