@@ -94,7 +94,10 @@ class StudentController {
     const query = req.query;
 
     try {
-      let student = await Student.find(query);
+      let student = await Student.find(query).populate({
+        path: '_class',
+        select: 'name',
+      });
       if (!student) throw new CustomError('Student not found', 404);
       res.status(200).json(student);
     } catch (error) {
