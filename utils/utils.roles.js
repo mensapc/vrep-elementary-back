@@ -43,6 +43,7 @@ const userRoles = {
     'updateEvent',
     'deleteEvent',
     'examResult',
+    'activities',
   ],
   staff: [
     'searchStudent',

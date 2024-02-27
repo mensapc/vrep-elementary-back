@@ -9,6 +9,7 @@ const {
 } = require('../utils/utils.exam');
 const CustomError = require('../utils/CustomError');
 const { sortActions } = require('../utils/utils.common');
+const { createActivity } = require('./activity.controller');
 
 class ExamController {
   createExam = async (req, res, next) => {
@@ -25,6 +26,8 @@ class ExamController {
       examData.time_limit = duration.duration;
 
       const newExam = await Exam.create(examData);
+      console.log(req.user);
+      await createActivity(`New exam ${newExam.name} created!`);
       res.status(200).json(newExam);
     } catch (error) {
       console.error(`Error creating exam: ${error}`);
@@ -103,6 +106,8 @@ class ExamController {
       }
 
       const updatedExam = await Exam.findByIdAndUpdate(id, examData, { new: true });
+
+      createActivity(`Exam ${updatedExam.name} updated!`);
       res.status(200).json(updatedExam);
     } catch (error) {
       console.error(`Error updating exam: ${error}`);
@@ -129,6 +134,7 @@ class ExamController {
       await examToDelete.deleteOne({ session });
       await session.commitTransaction();
 
+      createActivity(`Exam ${examToDelete.name} deleted!`);
       return res.status(200).json({ message: 'Exam deleted successfully' });
     } catch (error) {
       await session.abortTransaction();
