@@ -59,7 +59,13 @@ class AdminController {
       if (!comparedPassword) throw new CustomError('Invalid credentials', 400);
       delete admin._doc.password;
 
-      const token = generateToken({ id: admin._id, email: admin.email, role: admin.role });
+      const token = generateToken({
+        id: admin._id,
+        email: admin.email,
+        first_name: admin.first_name,
+        last_name: admin.last_name,
+        role: admin.role,
+      });
       res.status(200).json({ ...admin._doc, token });
     } catch (error) {
       console.error('Error logging in admin:', error);

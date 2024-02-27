@@ -62,6 +62,8 @@ class StudentController {
       const token = generateToken({
         id: student.id,
         email: student.email,
+        first_name: student.first_name,
+        last_name: student.last_name,
         role: student.role,
       });
       res.status(200).json({ ...student._doc, token });

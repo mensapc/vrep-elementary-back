@@ -58,7 +58,13 @@ class StaffController {
       if (!comparedPassword) throw new CustomError('Invalid credentials', 400);
       delete staff._doc.password;
 
-      const token = generateToken({ id: staff._id, email: staff.email, role: staff.role });
+      const token = generateToken({
+        id: staff._id,
+        email: staff.email,
+        first_name: staff.first_name,
+        last_name: staff.last_name,
+        role: staff.role,
+      });
       res.status(200).json({ ...staff._doc, token });
     } catch (error) {
       console.error('Error logging in staff:', error);
