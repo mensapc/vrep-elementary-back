@@ -48,41 +48,78 @@ const studentSchema = new mongoose.Schema({
     trim: true,
   },
 
-  parent_name: {
+  father_name: {
     type: String,
     required: true,
     trim: true,
   },
 
-  parent_phone: {
+  father_phone: {
     type: String,
     required: true,
     trim: true,
   },
 
-  parent_nationality: {
+  father_nationality: {
     type: String,
     required: true,
     trim: true,
   },
 
-  parent_occupation: {
+  father_occupation: {
     type: String,
     required: true,
     trim: true,
   },
-  parent_gender: {
+  father_gender: {
     type: String,
     required: true,
   },
-  parent_address: {
+  father_address: {
     type: String,
     required: true,
   },
-  parent_place_of_birth: {
+  father_place_of_birth: {
     type: String,
   },
-  parent_relationship: {
+  father_relationship: {
+    type: String,
+  },
+  mother_name: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+
+  mother_phone: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+
+  mother_nationality: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+
+  mother_occupation: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+  mother_gender: {
+    type: String,
+    required: true,
+  },
+  mother_address: {
+    type: String,
+    required: true,
+  },
+  mother_place_of_birth: {
+    type: String,
+  },
+  mother_relationship: {
     type: String,
   },
   _class: {

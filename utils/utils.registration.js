@@ -28,13 +28,6 @@ class RegistrationUtils {
         }
       }
 
-      if (userType === 'pupil') {
-        const { _class, address, parent_name, parent_phone } = data;
-        if (!_class || !address || !parent_name || !parent_phone || !age) {
-          throw new CustomError('Address, parent name, age, and parent phone are required', 400);
-        }
-      }
-
       if (first_name.length < 3 || last_name.length < 3) {
         throw new CustomError('firt name or last name should be at least 3 characters');
       }
