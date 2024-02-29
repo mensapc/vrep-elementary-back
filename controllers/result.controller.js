@@ -6,6 +6,7 @@ const {
   checkResultExistence,
   groupedStudentsResults,
   findResultMarks,
+  uniqueResultsCourses,
 } = require('../utils/utils.result');
 
 class ResultController {
@@ -67,6 +68,28 @@ class ResultController {
       });
     } catch (error) {
       console.error(`Error getting students done exams: ${error}`);
+      next(error);
+    }
+  };
+
+  getStudentExamResults = async (req, res, next) => {
+    const { student_id } = req.params;
+    try {
+      const results = await Result.find({ student: student_id }).populate([
+        { path: 'student' },
+        { path: '_class', select: 'name' },
+        { path: 'course', select: 'name' },
+      ]);
+      if (!results.length) throw new CustomError('No results found', 404);
+      const uniqueCourses = uniqueResultsCourses(results);
+
+      res.status(200).json({
+        total_courses: uniqueCourses,
+        attempt: results.length,
+        results,
+      });
+    } catch (error) {
+      console.error(`Error getting student results: ${error}`);
       next(error);
     }
   };
