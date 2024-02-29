@@ -38,4 +38,23 @@ const findResultMarks = (results) => {
   return Object.values(hash);
 };
 
-module.exports = { checkResultExistence, groupedStudentsResults, findResultMarks };
+const uniqueResultsCourses = (results) => {
+  let classCount = 0;
+  const hash = {};
+
+  results.forEach((result) => {
+    const course = result.course;
+    if (!hash[course._id]) {
+      classCount += 1;
+      hash[course._id] = 1;
+    }
+  });
+  return classCount;
+};
+
+module.exports = {
+  checkResultExistence,
+  groupedStudentsResults,
+  findResultMarks,
+  uniqueResultsCourses,
+};
