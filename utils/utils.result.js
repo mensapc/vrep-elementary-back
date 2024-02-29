@@ -52,9 +52,23 @@ const uniqueResultsCourses = (results) => {
   return classCount;
 };
 
+const findFailedAndPassExams = (results) => {
+  let pass_count = 0;
+  let fail_count = 0;
+  results.forEach((result) => {
+    if (result.score < 70) {
+      fail_count += 1;
+    } else {
+      pass_count += 1;
+    }
+  });
+  return { pass_count, fail_count };
+};
+
 module.exports = {
   checkResultExistence,
   groupedStudentsResults,
   findResultMarks,
   uniqueResultsCourses,
+  findFailedAndPassExams,
 };

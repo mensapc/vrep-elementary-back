@@ -7,6 +7,7 @@ const {
   groupedStudentsResults,
   findResultMarks,
   uniqueResultsCourses,
+  findFailedAndPassExams,
 } = require('../utils/utils.result');
 
 class ResultController {
@@ -29,6 +30,8 @@ class ResultController {
         student: student_id,
         course: results.course,
         _class: results.student_class,
+        start_date: results.start_date,
+        end_date: results.end_date,
         exam: exam_id,
       });
       res.status(200).json(result);
@@ -79,14 +82,18 @@ class ResultController {
         { path: 'student' },
         { path: '_class', select: 'name' },
         { path: 'course', select: 'name' },
+        { path: 'staff', select: 'first_name last_name' },
       ]);
       if (!results.length) throw new CustomError('No results found', 404);
       const uniqueCourses = uniqueResultsCourses(results);
+      const { pass_count, fail_count } = findFailedAndPassExams(results);
 
       res.status(200).json({
         total_courses: uniqueCourses,
         attempt: results.length,
         results,
+        pass_count,
+        fail_count,
       });
     } catch (error) {
       console.error(`Error getting student results: ${error}`);
