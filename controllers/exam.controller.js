@@ -26,7 +26,6 @@ class ExamController {
       examData.time_limit = duration.duration;
 
       const newExam = await Exam.create(examData);
-      console.log(req.user);
       await createActivity(
         `New exam ${newExam.name} created by ${req.user.first_name} ${req.user.last_name}`
       );

@@ -38,4 +38,37 @@ const findResultMarks = (results) => {
   return Object.values(hash);
 };
 
-module.exports = { checkResultExistence, groupedStudentsResults, findResultMarks };
+const uniqueResultsCourses = (results) => {
+  let classCount = 0;
+  const hash = {};
+
+  results.forEach((result) => {
+    const course = result.course;
+    if (!hash[course._id]) {
+      classCount += 1;
+      hash[course._id] = 1;
+    }
+  });
+  return classCount;
+};
+
+const findFailedAndPassExams = (results) => {
+  let pass_count = 0;
+  let fail_count = 0;
+  results.forEach((result) => {
+    if (result.score < 70) {
+      fail_count += 1;
+    } else {
+      pass_count += 1;
+    }
+  });
+  return { pass_count, fail_count };
+};
+
+module.exports = {
+  checkResultExistence,
+  groupedStudentsResults,
+  findResultMarks,
+  uniqueResultsCourses,
+  findFailedAndPassExams,
+};

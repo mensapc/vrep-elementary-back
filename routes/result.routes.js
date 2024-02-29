@@ -22,5 +22,10 @@ router.post(
 router.post('/result/student-report', validateToken, resultController.generateStudentReport);
 
 router.put('/result/:id', validateToken, authorize(['examResult']), resultController.updateResults);
+router.get(
+  '/result/student-exam-results/:student_id',
+  validateToken,
+  resultController.getStudentExamResults
+);
 
 module.exports = router;
