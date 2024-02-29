@@ -16,11 +16,9 @@ const CalculateResults = (exam, answers) => {
   for (const question of exam.questions) {
     questionMap.set(question._id.toString(), {
       content: question.content,
-      points: question.points,
       correctOption: question.options.find((opt) => opt.is_correct),
     });
-
-    result.totalMarks += question.points;
+    result.totalMarks += exam.marks_per_question;
   }
 
   for (const answer of answers) {
@@ -28,14 +26,13 @@ const CalculateResults = (exam, answers) => {
     if (!questionInfo) continue;
 
     const isCorrect = answer.chosen_option.is_correct;
-    const scoredMarks = isCorrect ? questionInfo.points : 0;
+    const scoredMarks = isCorrect ? exam.marks_per_question : 0;
 
     result.scoredMarks += scoredMarks;
     result.overview.push({
       question: {
         _id: answer.question._id,
         content: questionInfo.content,
-        points: questionInfo.points,
       },
       correctAnswer: questionInfo.correctOption,
       studentAnswer: answer.chosen_option,

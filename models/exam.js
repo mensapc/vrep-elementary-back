@@ -9,7 +9,7 @@ const examSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  max_score: {
+  marks_per_question: {
     type: Number,
     required: true,
   },
