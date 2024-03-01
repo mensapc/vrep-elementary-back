@@ -33,5 +33,7 @@ router.delete(
   courseController.deleteCourse
 );
 
+router.post('/courses/search', validateToken, courseController.getCoursesBySearch);
+
 module.exports = router;
 

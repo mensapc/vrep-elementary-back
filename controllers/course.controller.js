@@ -4,8 +4,8 @@ const CustomError = require('../utils/CustomError');
 class CourseController {
   createCourse = async (req, res, next) => {
     try {
-      const { name, description, duration, staff, _class } = req.body;
-      const course = await Course.create({ name, description, duration, staff, _class });
+      const { name, staff, _class } = req.body;
+      const course = await Course.create({ name, staff, _class });
       res.status(200).json(course);
     } catch (error) {
       console.error(`Error creating course and referencing class: ${error}`);
@@ -62,6 +62,21 @@ class CourseController {
     }
   };
 
+  // Get courses by search
+  getCoursesBySearch = async (req, res, next) => {
+    const data = req.query;
+    try {
+      const courses = await Course.find(data);
+      if (!courses) {
+        throw new CustomError('No Course found .', 404);
+      }
+      res.status(200).json(courses);
+    } catch (error) {
+      console.error('Error getting courses:', error);
+      next(error);
+    }
+  };
+
   // Get Single Course
   getCourse = async (req, res, next) => {
     const { id } = req.params;
@@ -73,7 +88,7 @@ class CourseController {
       }
       res.status(200).json(course);
     } catch (error) {
-      console.error(`Error CourseID number ${courseId}: ${error}`);
+      console.error(`Error CourseID number ${id}: ${error}`);
       next(error);
     }
   };

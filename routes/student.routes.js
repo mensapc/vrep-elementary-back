@@ -55,4 +55,11 @@ router.put(
   studentController.updateStudent
 );
 
+router.post(
+  '/students/sorted-in-class',
+  validateToken,
+  multerMiddleware,
+  studentController.sortedStudentsInClass
+);
+
 module.exports = router;

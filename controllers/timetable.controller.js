@@ -1,47 +1,54 @@
+const mongoose = require('mongoose');
 const Timetable = require('../models/timetable');
+const CustomError = require('../utils/CustomError');
+const { generateTimetable, formatTimetableData } = require('../utils/utils.timetable');
 
 class TimetableController {
   createTimetable = async (req, res, next) => {
-    const data = req.body;
+    const { staff } = req.body;
     try {
-      const newTimetable = await Timetable.create(data);
-      res.status(201).send(newTimetable);
+      const timetable = await Timetable.find({ staff: staff });
+      if (timetable.length) throw new CustomError('Time Table arleady exist', 400);
+      const newTimetable = await generateTimetable(staff);
+      res.status(200).json(newTimetable);
     } catch (error) {
-      console.error(`Error in creating Timetable: ${error.message}`);
+      console.error(`Error creating timetable: ${error.message}`);
       next(error);
     }
   };
 
-  getAllTimetables = async (req, res, next) => {
+  getTimetableByStaff = async (req, res, next) => {
+    const { id } = req.params;
     try {
-      const timetables = await Timetable.find();
-      res.status(200).json(timetables);
-    } catch (error) {
-      console.error(`Error retrieving all timetables `, error);
-      next(error);
-    }
-  };
+      const timetable = await Timetable.aggregate([
+        { $match: { staff: new mongoose.Types.ObjectId(id) } },
+        { $sort: { day: 1, start_time: 1 } },
+        {
+          $group: {
+            _id: { start_time: '$start_time' },
+            entries: { $push: '$$ROOT' },
+          },
+        },
+      ]);
 
-  getTimeTableBySearch = async (req, res, next) => {
-    const query = req.query;
-    try {
-      const timetables = await Timetable.find(query);
-      res.status(200).json(timetables);
+      if (!timetable) throw new CustomError('Timetable not found', 404);
+
+      const formattedTimetable = formatTimetableData(timetable);
+      res.status(200).json(formattedTimetable);
     } catch (error) {
-      console.error(`Error retrieving timetable by search`, error);
+      console.error(`Error getting timetable: ${error.message}`);
       next(error);
     }
   };
 
   updateTimetable = async (req, res, next) => {
-    const { id } = req.params;
-    const data = req.body;
+    const { id, course } = req.body;
     try {
       const timetable = await Timetable.findOneAndUpdate(
         {
           _id: id,
         },
-        data,
+        { course },
         { new: true }
       );
       if (!timetable) throw new CustomError('Timetable not found', 404);
@@ -52,12 +59,16 @@ class TimetableController {
     }
   };
 
-  deleteTimetable = async (req, res, next) => {
-    const { id } = req.params;
+  removeTimetable = async (req, res, next) => {
+    const { id } = req.body;
     try {
-      const timetable = await Timetable.findOneAndDelete({ _id: id });
+      const timetable = await Timetable.findOneAndUpdate(
+        { _id: id },
+        { course: '' },
+        { new: true }
+      );
       if (!timetable) throw new CustomError('Timetable not found', 404);
-      res.status(200).json({ message: 'Timetable deleted successfully' });
+      res.status(200).json(timetable);
     } catch (error) {
       console.error(`Error deleting timetable: ${error.message}`);
       next(error);

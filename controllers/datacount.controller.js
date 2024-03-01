@@ -1,6 +1,8 @@
 const Student = require('../models/student');
 const Staff = require('../models/staff');
 const Event = require('../models/event');
+const Course = require('../models/course');
+const Exam = require('../models/exam');
 const { getGraphData } = require('../utils/utils.datacount');
 
 const dataCountController = async (req, res, next) => {
@@ -27,4 +29,21 @@ const graphDataController = async (req, res, next) => {
   }
 };
 
-module.exports = { dataCountController, graphDataController };
+const staffDatacountController = async (req, res, next) => {
+  const { staff, _class } = req.body;
+  try {
+    const students = await Student.find({ _class: _class }).countDocuments();
+    const courses = await Course.find({ staff: staff, _class: _class }).countDocuments();
+    const exams = await Exam.find({ staff: staff, _class: _class }).countDocuments();
+    res.json({
+      students,
+      courses,
+      exams,
+    });
+  } catch (error) {
+    console.error('Error counting data:', error);
+    next(error);
+  }
+};
+
+module.exports = { dataCountController, graphDataController, staffDatacountController };
