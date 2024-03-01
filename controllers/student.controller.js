@@ -4,7 +4,10 @@ const Class = require('../models/class.js');
 const CustomError = require('../utils/CustomError.js');
 const RegistrationUtils = require('../utils/utils.registration');
 const generateToken = require('../utils/utils.token');
-const { generateUniqueRegNumber, perfomStudentDeletion } = require('../utils/utils.student.js');
+const {
+  generateUniqueRegNumber,
+  perfomStudentDeletion,
+} = require('../utils/utils.student.js');
 const { uploadImage } = require('../services/cloudinary.js');
 const { sortActions } = require('../utils/utils.common.js');
 const { createActivity } = require('./activity.controller.js');
@@ -22,14 +25,18 @@ class StudentController {
       const regNumber = await generateUniqueRegNumber();
 
       const _class = await Class.findOne({ _id: userData._class });
-      if (!_class) throw new CustomError('Class with provided id not found', 404);
+      if (!_class)
+        throw new CustomError('Class with provided id not found', 404);
 
       if (req.file?.path) {
         const url = await uploadImage(req.file.path);
         userData.photo = url;
       }
 
-      const newStudent = await Student.create({ ...userData, reg_number: regNumber });
+      const newStudent = await Student.create({
+        ...userData,
+        reg_number: regNumber,
+      });
       _class.students.push(newStudent._id);
       await _class.save();
       const token = generateToken({
@@ -112,7 +119,10 @@ class StudentController {
       const students = await Student.find().populate({
         path: '_class',
         select: '-students -courses',
-        populate: { path: 'staff', select: '_id first_name last_name email role ' },
+        populate: {
+          path: 'staff',
+          select: '_id first_name last_name email role ',
+        },
       });
       res.status(200).json(students);
     } catch (error) {
@@ -159,7 +169,9 @@ class StudentController {
       if (data._class) {
         await this.updateStudentClass(id, data, session, res);
       } else {
-        const info = await Student.findByIdAndUpdate(id, data, { new: true }).session(session);
+        const info = await Student.findByIdAndUpdate(id, data, {
+          new: true,
+        }).session(session);
         await createActivity(
           `Student ${info.first_name} ${info.last_name} updated by ${req.user.first_name} ${req.user.last_name}`
         );
@@ -180,13 +192,19 @@ class StudentController {
     const _class = await Class.findOne({ _id: data._class }).session(session);
     if (!_class) throw new CustomError('Class with provided id not found', 404);
 
-    await Class.updateOne({ _id: student._class }, { $pull: { students: id } }).session(session);
+    await Class.updateOne(
+      { _id: student._class },
+      { $pull: { students: id } }
+    ).session(session);
     const updatedStudent = await Student.findByIdAndUpdate(
       id,
       { $set: { _class, ...data } },
       { new: true }
     ).session(session);
-    await Class.updateOne({ _id: _class }, { $addToSet: { students: id } }).session(session);
+    await Class.updateOne(
+      { _id: _class },
+      { $addToSet: { students: id } }
+    ).session(session);
     res.status(200).json(updatedStudent);
   };
 
@@ -233,4 +251,3 @@ class StudentController {
 }
 
 module.exports = StudentController;
-

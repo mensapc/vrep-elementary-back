@@ -6,6 +6,11 @@ const registrationUtils = require('../utils/utils.registration');
 const { uploadImage } = require('../services/cloudinary');
 const { sortActions } = require('../utils/utils.common');
 const { createActivity } = require('./activity.controller');
+const {
+  generateRandomPassword,
+  validatePassword,
+} = require('../utils/utils.password');
+const { sendMal } = require('../utils/utils.mailer');
 
 class StaffController {
   constructor() {
@@ -20,14 +25,19 @@ class StaffController {
       this.registrationUtils.validateData(userData, 'staff');
       const staff = await Staff.findOne({ email: userData.email });
       if (staff) throw new CustomError('staff already exists', 400);
-      const hashedPassword = await this.bcryptPassword.HashPassword(userData.password);
+      const hashedPassword = await this.bcryptPassword.HashPassword(
+        userData.password
+      );
 
       if (req.file?.path) {
         const url = await uploadImage(req.file.path);
         userData.photo = url;
       }
 
-      const newStaff = await Staff.create({ ...userData, password: hashedPassword });
+      const newStaff = await Staff.create({
+        ...userData,
+        password: hashedPassword,
+      });
       delete newStaff._doc.password;
 
       const token = generateToken({
@@ -54,7 +64,10 @@ class StaffController {
     try {
       const staff = await Staff.findOne({ email });
       if (!staff) throw new CustomError('Invalid credentials', 404);
-      const comparedPassword = await this.bcryptPassword.PasswordCompare(password, staff.password);
+      const comparedPassword = await this.bcryptPassword.PasswordCompare(
+        password,
+        staff.password
+      );
       if (!comparedPassword) throw new CustomError('Invalid credentials', 400);
       delete staff._doc.password;
 
@@ -142,7 +155,9 @@ class StaffController {
         data.photo = url;
       }
 
-      const updatedStaff = await Staff.findByIdAndUpdate(req.params.id, data, { new: true });
+      const updatedStaff = await Staff.findByIdAndUpdate(req.params.id, data, {
+        new: true,
+      });
       await createActivity(
         `Teacher ${updatedStaff.first_name} ${updatedStaff.last_name} details updated by ${req.user.first_name} ${req.user.last_name}`
       );
@@ -152,7 +167,70 @@ class StaffController {
       next(error);
     }
   };
+
+  forgetPassowrd = async (req, res, next) => {
+    const { email } = req.body;
+
+    try {
+      const staff = await Staff.findOne({ email });
+      if (!staff) throw new CustomError('Account does not exist', 404);
+
+      const tempPassword = generateRandomPassword(8);
+      const hashedPassword = await this.bcryptPassword.HashPassword(
+        tempPassword
+      );
+
+      staff.password = hashedPassword;
+
+      const mailDetails = {
+        to: email,
+        subject: 'Forgot Password',
+        htmlText: `<p>This is a temporary passoword. Please login with passowrd: <strong>${tempPassword}</strong>. Don't forget to update this password after successful login.</p>`,
+      };
+      const { error } = await sendMal(mailDetails);
+
+      if (error) throw new CustomError('Error sending mail', 400);
+
+      await staff.save();
+
+      res.status(200).json({
+        status: true,
+        message:
+          'Success!!!. Please follow directives of mail sent to your email address',
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  updatePassword = async (req, res, next) => {
+    const { currentPassword, newPassword } = req.body;
+
+    try {
+      validatePassword({ currentPassword, newPassword });
+
+      const staff = await Staff.findById(req.user?.id);
+
+      await this.bcryptPassword.PasswordCompare(
+        currentPassword,
+        staff.password
+      );
+
+      const hashedPassword = await this.bcryptPassword.HashPassword(
+        newPassword
+      );
+
+      staff.password = hashedPassword;
+      await staff.save();
+
+      return res.status(200).json({
+        status: true,
+        message: 'Password successfully updated',
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
 }
 
 module.exports = StaffController;
-

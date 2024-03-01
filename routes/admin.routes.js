@@ -15,5 +15,11 @@ router.post(
   adminController.register
 );
 router.post('/admin/login', adminController.login);
+router.post('/admin/forgot-password', adminController.forgetPassowrd);
+router.put(
+  '/admin/update-password',
+  validateToken,
+  adminController.updatePassword
+);
 
 module.exports = router;

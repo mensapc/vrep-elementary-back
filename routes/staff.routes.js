@@ -16,9 +16,27 @@ router.post(
 
 router.post('/staff/login', staffController.login);
 
-router.get('/staff', validateToken, authorize(['readStaff']), staffController.getAll);
+router.post('/staff/forgot-password', staffController.forgetPassowrd);
 
-router.get('/staff/:id', validateToken, authorize(['readStaff']), staffController.getById);
+router.put(
+  '/staff/update-password',
+  validateToken,
+  staffController.updatePassword
+);
+
+router.get(
+  '/staff',
+  validateToken,
+  authorize(['readStaff']),
+  staffController.getAll
+);
+
+router.get(
+  '/staff/:id',
+  validateToken,
+  authorize(['readStaff']),
+  staffController.getById
+);
 
 router.put(
   '/staff/:id',
@@ -28,9 +46,18 @@ router.put(
   staffController.updateStaff
 );
 
-router.post('/staff/sort', validateToken, authorize(['readStaff']), staffController.staffBySort);
+router.post(
+  '/staff/sort',
+  validateToken,
+  authorize(['readStaff']),
+  staffController.staffBySort
+);
 
-router.delete('/staff/:id', validateToken, authorize(['deleteStaff']), staffController.deleteStaff);
+router.delete(
+  '/staff/:id',
+  validateToken,
+  authorize(['deleteStaff']),
+  staffController.deleteStaff
+);
 
 module.exports = router;
-
