@@ -44,6 +44,7 @@ const userRoles = {
     'deleteEvent',
     'examResult',
     'activities',
+    'teacherData',
   ],
   staff: [
     'searchStudent',
@@ -76,6 +77,7 @@ const userRoles = {
     'updateTimetable',
     'deleteTimetable',
     'examResult',
+    'teacherData',
   ],
   pupil: ['readStudent', 'createAnswer', 'updateAnswer'],
 };
