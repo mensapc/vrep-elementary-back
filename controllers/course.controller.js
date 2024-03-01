@@ -88,7 +88,7 @@ class CourseController {
       }
       res.status(200).json(course);
     } catch (error) {
-      console.error(`Error CourseID number ${courseId}: ${error}`);
+      console.error(`Error CourseID number ${id}: ${error}`);
       next(error);
     }
   };

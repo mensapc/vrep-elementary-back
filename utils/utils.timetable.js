@@ -38,7 +38,7 @@ function formatTimetableData(data) {
             const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
             return days.indexOf(a.day) - days.indexOf(b.day);
           })
-          .map(({ _id, day, course }) => ({ _id, day, course })),
+          .map((data) => (data)),
       };
       return formattedEntry;
     })

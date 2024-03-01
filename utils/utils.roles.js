@@ -54,7 +54,7 @@ const userRoles = {
     'updateCourse',
     'createClass',
     'teacherCourse',
-
+    'createCourse',
     'readClass',
     'updateScheme',
     'getCoursesScheme',
@@ -80,6 +80,7 @@ const userRoles = {
     'examResult',
     'teacherData',
     'getTimetable',
+    'deletecourse',
   ],
   pupil: ['readStudent', 'createAnswer', 'updateAnswer'],
 };
