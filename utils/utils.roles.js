@@ -46,6 +46,7 @@ const userRoles = {
     'activities',
     'teacherData',
     'getTimetable',
+    'studentData',
   ],
   staff: [
     'searchStudent',
@@ -82,7 +83,7 @@ const userRoles = {
     'getTimetable',
     'deletecourse',
   ],
-  pupil: ['readStudent', 'createAnswer', 'updateAnswer'],
+  pupil: ['readStudent', 'createAnswer', 'updateAnswer', 'studentData'],
 };
 
 module.exports = userRoles;
