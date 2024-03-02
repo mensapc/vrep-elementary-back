@@ -1,21 +1,25 @@
 const mongoose = require('mongoose');
 
 const timetableSchema = new mongoose.Schema({
-  duration: {
+  staff: { type: mongoose.Schema.Types.ObjectId, ref: 'Staff' },
+  day: {
     type: String,
     required: true,
+    enum: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
   },
-  subject: {
+  start_time: {
     type: String,
     required: true,
+    enum: ['8:00', '9:00', '10:00', '11:00', '12:00', '13:00', '14:00'],
   },
-  comment: {
+  end_time: {
+    type: String,
+
+    enum: ['9:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00'],
+  },
+  course: {
     type: String,
   },
-  date: { type: Date, required: true },
-  class: { type: mongoose.Schema.Types.ObjectId, ref: 'Class', required: true },
-  course: { type: mongoose.Schema.Types.ObjectId, ref: 'Course', required: true },
-  staff: { type: mongoose.Schema.Types.ObjectId, ref: 'Staff', required: true },
 });
 
 const Timetable = mongoose.model('Timetable', timetableSchema);

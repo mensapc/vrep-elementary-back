@@ -226,6 +226,23 @@ class StudentController {
       next(error);
     }
   };
+  sortedStudentsInClass = async (req, res, next) => {
+    const { sortby, _class } = req.query;
+    const sortAction = sortActions(sortby);
+
+    try {
+      const students = await Student.find({ _class })
+        .populate({
+          path: '_class',
+          select: '-students -courses',
+        })
+        .sort(sortAction);
+      res.status(200).json(students);
+    } catch (error) {
+      console.error(`Error retrieving sorted students `, error);
+      next(error);
+    }
+  };
 
   deleteMultipleStudents = async (req, res, next) => {
     const { data } = req.body;

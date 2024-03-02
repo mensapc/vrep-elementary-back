@@ -5,13 +5,6 @@ const courseSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  description: {
-    type: String,
-    required: true,
-  },
-  duration: {
-    type: String,
-  },
   staff: { type: mongoose.Schema.Types.ObjectId, ref: 'Staff' },
   _class: { type: mongoose.Schema.Types.ObjectId, ref: 'Class' },
 });

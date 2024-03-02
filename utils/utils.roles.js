@@ -44,6 +44,8 @@ const userRoles = {
     'deleteEvent',
     'examResult',
     'activities',
+    'teacherData',
+    'getTimetable',
   ],
   staff: [
     'searchStudent',
@@ -52,7 +54,7 @@ const userRoles = {
     'updateCourse',
     'createClass',
     'teacherCourse',
-
+    'createCourse',
     'readClass',
     'updateScheme',
     'getCoursesScheme',
@@ -76,6 +78,9 @@ const userRoles = {
     'updateTimetable',
     'deleteTimetable',
     'examResult',
+    'teacherData',
+    'getTimetable',
+    'deletecourse',
   ],
   pupil: ['readStudent', 'createAnswer', 'updateAnswer'],
 };

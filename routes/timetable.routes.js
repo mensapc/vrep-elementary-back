@@ -14,31 +14,24 @@ router.post(
 );
 
 router.get(
-  '/timetables',
+  '/timetable/staff/:id',
   validateToken,
-  authorize(['getAllTimetables']),
-  timetableController.getAllTimetables
-);
-
-router.post(
-  '/timetables/search',
-  validateToken,
-  authorize(['getAllTimetables']),
-  timetableController.getTimeTableBySearch
+  authorize(['getTimetable']),
+  timetableController.getTimetableByStaff
 );
 
 router.put(
-  '/timetables/:id',
+  '/timetable/update',
   validateToken,
   authorize(['updateTimetable']),
   timetableController.updateTimetable
 );
 
-router.delete(
-  '/timetables/:id',
+router.put(
+  '/timetable/remove',
   validateToken,
   authorize(['deleteTimetable']),
-  timetableController.deleteTimetable
+  timetableController.removeTimetable
 );
 
 module.exports = router;
