@@ -46,4 +46,8 @@ const staffDatacountController = async (req, res, next) => {
   }
 };
 
+const studentDatacountController = (req, res, next) => {
+  const { id } = req.body;
+};
+
 module.exports = { dataCountController, graphDataController, staffDatacountController };

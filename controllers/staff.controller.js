@@ -6,6 +6,7 @@ const registrationUtils = require('../utils/utils.registration');
 const { uploadImage } = require('../services/cloudinary');
 const { sortActions } = require('../utils/utils.common');
 const { createActivity } = require('./activity.controller');
+const { updateClassStaff } = require('../utils/utils.class');
 
 class StaffController {
   constructor() {
@@ -37,6 +38,9 @@ class StaffController {
         last_name: newStaff.last_name,
         role: newStaff.role,
       });
+
+      await updateClassStaff(newStaff._class, newStaff._id);
+
       await createActivity(
         `New Teacher ${newStaff.first_name} ${newStaff.last_name} registered by ${req.user.first_name} ${req.user.last_name}`
       );
@@ -120,6 +124,9 @@ class StaffController {
     const { id } = req.params;
     try {
       const deletedStaff = await Staff.findByIdAndDelete({ _id: id });
+      if (!deletedStaff) throw new CustomError('Staff not found', 404);
+
+      await updateClassStaff(deletedStaff._class, null);
       await createActivity(
         `Teacher ${deletedStaff.first_name} ${deletedStaff.last_name} deleted by ${req.user.first_name} ${req.user.last_name}`
       );

@@ -28,4 +28,14 @@ const classWithPopulatedData = async (id) => {
     .populate({ path: 'staff', select: 'first_name last_name email phone_number' });
 };
 
-module.exports = { checkIfCourseAlreadyAdded, addStaffToCourse, classWithPopulatedData };
+const updateClassStaff = async (id, staff) => {
+  const updatedClass = await Class.findByIdAndUpdate(id, { staff }, { new: true });
+  return updatedClass;
+};
+
+module.exports = {
+  checkIfCourseAlreadyAdded,
+  addStaffToCourse,
+  classWithPopulatedData,
+  updateClassStaff,
+};
