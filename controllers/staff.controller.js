@@ -10,7 +10,7 @@ const {
   generateRandomPassword,
   validatePassword,
 } = require('../utils/utils.password');
-const { sendMal } = require('../utils/utils.mailer');
+const { sendMail } = require('../utils/utils.mailer');
 
 class StaffController {
   constructor() {
@@ -187,7 +187,7 @@ class StaffController {
         subject: 'Forgot Password',
         htmlText: `<p>This is a temporary passoword. Please login with passowrd: <strong>${tempPassword}</strong>. Don't forget to update this password after successful login.</p>`,
       };
-      const { error } = await sendMal(mailDetails);
+      const { error } = await sendMail(mailDetails);
 
       if (error) throw new CustomError('Error sending mail', 400);
 
