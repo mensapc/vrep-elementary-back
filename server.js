@@ -29,6 +29,7 @@ app.use(
     credentials: true,
     origin: [
       'http://localhost:3000',
+      'http://localhost:3001',
       'http://127.0.0.1:5500',
       'https://rpms-admin.vercel.app',
       'https://pupils.rulerspalacemontessori.com.ng',

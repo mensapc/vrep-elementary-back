@@ -65,25 +65,6 @@ class AttendanceController {
         },
         { $sort: { _id: 1 } },
       ]);
-      // const attendance = await Student.aggregate([
-      //   { $match: { _class: new mongoose.Types.ObjectId(_class) } },
-      //   { $sort: { first_name: 1 } },
-      //   {
-      //     $lookup: {
-      //       from: 'attendances',
-      //       localField: '_id',
-      //       foreignField: 'student',
-      //       as: 'attendance',
-      //     },
-      //   },
-      //   {
-      //     $project: {
-      //       first_name: 1,
-      //       last_name: 1,
-      //       attendance: 1,
-      //     },
-      //   },
-      // ]);
       if (!attendance) throw new CustomError('Attendance not found', 404);
       res.status(200).json(attendance);
     } catch (error) {

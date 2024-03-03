@@ -40,6 +40,7 @@ class StaffController {
       });
 
       await updateClassStaff(newStaff._class, newStaff._id);
+      await generateTimetable(newStaff._id);
 
       await createActivity(
         `New Teacher ${newStaff.first_name} ${newStaff.last_name} registered by ${req.user.first_name} ${req.user.last_name}`
