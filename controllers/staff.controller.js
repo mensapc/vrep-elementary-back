@@ -7,6 +7,7 @@ const { uploadImage } = require('../services/cloudinary');
 const { sortActions } = require('../utils/utils.common');
 const { createActivity } = require('./activity.controller');
 const { updateClassStaff } = require('../utils/utils.class');
+const { generateTimetable } = require('../utils/utils.timetable');
 
 class StaffController {
   constructor() {
