@@ -1,6 +1,8 @@
+const mongoose = require('mongoose');
 const Attendance = require('../models/attendance');
+const Student = require('../models/student');
 const CustomError = require('../utils/CustomError');
-const { calculateAttendance, updateAttendance } = require('../utils/utils.attendance');
+const { updateAttendance } = require('../utils/utils.attendance');
 
 class AttendanceController {
   createAttendance = async (req, res, next) => {
@@ -23,6 +25,73 @@ class AttendanceController {
     }
   };
 
+  getClassAttendance = async (req, res, next) => {
+    const { _class } = req.body;
+    try {
+      const attendance = await Student.aggregate([
+        { $match: { _class: new mongoose.Types.ObjectId(_class) } },
+        { $sort: { first_name: 1 } },
+        {
+          $lookup: {
+            from: 'attendances',
+            localField: '_id',
+            foreignField: 'student',
+            as: 'attendance',
+          },
+        },
+        {
+          $project: {
+            first_name: 1,
+            last_name: 1,
+            attendance: 1,
+          },
+        },
+        {
+          $addFields: {
+            first_name_initial: { $substr: ['$first_name', 0, 1] },
+          },
+        },
+        {
+          $group: {
+            _id: '$first_name_initial',
+            students: {
+              $push: {
+                first_name: '$first_name',
+                last_name: '$last_name',
+                attendance: '$attendance',
+              },
+            },
+          },
+        },
+        { $sort: { _id: 1 } },
+      ]);
+      // const attendance = await Student.aggregate([
+      //   { $match: { _class: new mongoose.Types.ObjectId(_class) } },
+      //   { $sort: { first_name: 1 } },
+      //   {
+      //     $lookup: {
+      //       from: 'attendances',
+      //       localField: '_id',
+      //       foreignField: 'student',
+      //       as: 'attendance',
+      //     },
+      //   },
+      //   {
+      //     $project: {
+      //       first_name: 1,
+      //       last_name: 1,
+      //       attendance: 1,
+      //     },
+      //   },
+      // ]);
+      if (!attendance) throw new CustomError('Attendance not found', 404);
+      res.status(200).json(attendance);
+    } catch (error) {
+      console.error(`Error getting attendance: ${error}`);
+      next(error);
+    }
+  };
+
   getAttendanceBySearch = async (req, res, next) => {
     const query = req.query;
     try {
@@ -34,22 +103,6 @@ class AttendanceController {
         ...attendanceCount,
         details: attendance,
       });
-    } catch (error) {
-      console.error(`Error getting attendance: ${error}`);
-      next(error);
-    }
-  };
-
-  updateAttendance = async (req, res, next) => {
-    const { id } = req.params;
-    const { attendance_status, comments, reason } = req.body;
-    try {
-      const updatedAttendance = await Attendance.findByIdAndUpdate(
-        id,
-        { attendance_status, comments, reason },
-        { new: true }
-      );
-      res.status(200).json(updatedAttendance);
     } catch (error) {
       console.error(`Error getting attendance: ${error}`);
       next(error);
