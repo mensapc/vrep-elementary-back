@@ -1,4 +1,5 @@
 const Attendance = require('../models/attendance');
+const Class = require('../models/class');
 
 const updateAttendance = async (data, _id, res, next) => {
   try {
@@ -18,4 +19,11 @@ const updateAttendance = async (data, _id, res, next) => {
   }
 };
 
-module.exports = { updateAttendance };
+const attendedClass = async (_class) => {
+  return await Class.findOne({ _id: _class }).select('name').populate({
+    path: 'staff',
+    select: 'first_name last_name',
+  });
+};
+
+module.exports = { updateAttendance, attendedClass };

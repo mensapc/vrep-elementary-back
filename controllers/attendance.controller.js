@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Attendance = require('../models/attendance');
 const Student = require('../models/student');
 const CustomError = require('../utils/CustomError');
-const { updateAttendance } = require('../utils/utils.attendance');
+const { updateAttendance, attendedClass } = require('../utils/utils.attendance');
 
 class AttendanceController {
   createAttendance = async (req, res, next) => {
@@ -28,7 +28,9 @@ class AttendanceController {
   getClassAttendance = async (req, res, next) => {
     const { _class } = req.body;
     try {
-      const attendance = await Student.aggregate([
+      const classAttended = await attendedClass(_class);
+      if (!classAttended) throw new CustomError('Class not found', 404);
+      const attendances = await Student.aggregate([
         { $match: { _class: new mongoose.Types.ObjectId(_class) } },
         { $sort: { first_name: 1 } },
         {
@@ -65,8 +67,11 @@ class AttendanceController {
         },
         { $sort: { _id: 1 } },
       ]);
-      if (!attendance) throw new CustomError('Attendance not found', 404);
-      res.status(200).json(attendance);
+
+      res.status(200).json({
+        _class: classAttended,
+        attendances,
+      });
     } catch (error) {
       console.error(`Error getting attendance: ${error}`);
       next(error);
