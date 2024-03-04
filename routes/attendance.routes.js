@@ -13,11 +13,12 @@ router.post(
   attendanceController.createAttendance
 );
 router.post('/attendance/search', validateToken, attendanceController.getAttendanceBySearch);
-router.put(
-  '/attendance/:id',
+
+router.post(
+  '/attendance/class',
   validateToken,
-  authorize(['updateAttendance']),
-  attendanceController.updateAttendance
+  authorize(['readAttendance']),
+  attendanceController.getClassAttendance
 );
 
 module.exports = router;

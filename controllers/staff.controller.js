@@ -1,16 +1,18 @@
-const Staff = require('../models/staff');
-const CustomError = require('../utils/CustomError');
-const generateToken = require('../utils/utils.token');
-const BcryptPassword = require('../utils/utils.bcrypt.password');
-const registrationUtils = require('../utils/utils.registration');
-const { uploadImage } = require('../services/cloudinary');
-const { sortActions } = require('../utils/utils.common');
-const { createActivity } = require('./activity.controller');
+const Staff = require("../models/staff");
+const CustomError = require("../utils/CustomError");
+const generateToken = require("../utils/utils.token");
+const BcryptPassword = require("../utils/utils.bcrypt.password");
+const registrationUtils = require("../utils/utils.registration");
+const { uploadImage } = require("../services/cloudinary");
+const { sortActions } = require("../utils/utils.common");
+const { createActivity } = require("./activity.controller");
 const {
   generateRandomPassword,
   validatePassword,
-} = require('../utils/utils.password');
-const { sendMail } = require('../utils/utils.mailer');
+} = require("../utils/utils.password");
+const { sendMail } = require("../utils/utils.mailer");
+const { updateClassStaff } = require("../utils/utils.class");
+const { generateTimetable } = require("../utils/utils.timetable");
 
 class StaffController {
   constructor() {
@@ -22,9 +24,9 @@ class StaffController {
     const userData = req.body;
 
     try {
-      this.registrationUtils.validateData(userData, 'staff');
+      this.registrationUtils.validateData(userData, "staff");
       const staff = await Staff.findOne({ email: userData.email });
-      if (staff) throw new CustomError('staff already exists', 400);
+      if (staff) throw new CustomError("staff already exists", 400);
       const hashedPassword = await this.bcryptPassword.HashPassword(
         userData.password
       );
@@ -47,6 +49,10 @@ class StaffController {
         last_name: newStaff.last_name,
         role: newStaff.role,
       });
+
+      await updateClassStaff(newStaff._class, newStaff._id);
+      await generateTimetable(newStaff._id);
+
       await createActivity(
         `New Teacher ${newStaff.first_name} ${newStaff.last_name} registered by ${req.user.first_name} ${req.user.last_name}`
       );
@@ -63,12 +69,12 @@ class StaffController {
 
     try {
       const staff = await Staff.findOne({ email });
-      if (!staff) throw new CustomError('Invalid credentials', 404);
+      if (!staff) throw new CustomError("Invalid credentials", 404);
       const comparedPassword = await this.bcryptPassword.PasswordCompare(
         password,
         staff.password
       );
-      if (!comparedPassword) throw new CustomError('Invalid credentials', 400);
+      if (!comparedPassword) throw new CustomError("Invalid credentials", 400);
       delete staff._doc.password;
 
       const token = generateToken({
@@ -80,7 +86,7 @@ class StaffController {
       });
       res.status(200).json({ ...staff._doc, token });
     } catch (error) {
-      console.error('Error logging in staff:', error);
+      console.error("Error logging in staff:", error);
       next(error);
     }
   };
@@ -89,8 +95,8 @@ class StaffController {
   getAll = async (req, res, next) => {
     try {
       const staff = await Staff.find()
-        .populate({ path: '_class', select: 'name' })
-        .select('-password');
+        .populate({ path: "_class", select: "name" })
+        .select("-password");
       res.status(200).json(staff);
     } catch (error) {
       console.error(`Error retrieving all staff `, error);
@@ -102,11 +108,11 @@ class StaffController {
   getById = async (req, res, next) => {
     const { id } = req.params;
     try {
-      const staff = await Staff.findOne({ _id: id }).select('-password');
-      if (!staff) throw new CustomError('Staff not found', 404);
+      const staff = await Staff.findOne({ _id: id }).select("-password");
+      if (!staff) throw new CustomError("Staff not found", 404);
       res.status(200).json(staff);
     } catch (error) {
-      console.error('Fail to retrieve Staff:', error);
+      console.error("Fail to retrieve Staff:", error);
       next(error);
     }
   };
@@ -118,8 +124,8 @@ class StaffController {
 
     try {
       const staff = await Staff.find()
-        .populate({ path: '_class', select: 'name' })
-        .select('-password')
+        .populate({ path: "_class", select: "name" })
+        .select("-password")
         .sort(sortAction);
       res.status(200).json(staff);
     } catch (error) {
@@ -133,10 +139,13 @@ class StaffController {
     const { id } = req.params;
     try {
       const deletedStaff = await Staff.findByIdAndDelete({ _id: id });
+      if (!deletedStaff) throw new CustomError("Staff not found", 404);
+
+      await updateClassStaff(deletedStaff._class, null);
       await createActivity(
         `Teacher ${deletedStaff.first_name} ${deletedStaff.last_name} deleted by ${req.user.first_name} ${req.user.last_name}`
       );
-      res.status(200).json({ message: 'Staff deleted successfully' });
+      res.status(200).json({ message: "Staff deleted successfully" });
     } catch (error) {
       console.error(`Error deleting Staff: ${error}`);
       next(error);
@@ -173,7 +182,7 @@ class StaffController {
 
     try {
       const staff = await Staff.findOne({ email });
-      if (!staff) throw new CustomError('Account does not exist', 404);
+      if (!staff) throw new CustomError("Account does not exist", 404);
 
       const tempPassword = generateRandomPassword(8);
       const hashedPassword = await this.bcryptPassword.HashPassword(
@@ -184,19 +193,19 @@ class StaffController {
 
       const mailDetails = {
         to: email,
-        subject: 'Forgot Password',
+        subject: "Forgot Password",
         htmlText: `<p>This is a temporary passoword. Please login with passowrd: <strong>${tempPassword}</strong>. Don't forget to update this password after successful login.</p>`,
       };
       const { error } = await sendMail(mailDetails);
 
-      if (error) throw new CustomError('Error sending mail', 400);
+      if (error) throw new CustomError("Error sending mail", 400);
 
       await staff.save();
 
       res.status(200).json({
         status: true,
         message:
-          'Success!!!. Please follow directives of mail sent to your email address',
+          "Success!!!. Please follow directives of mail sent to your email address",
       });
     } catch (error) {
       next(error);
@@ -225,7 +234,7 @@ class StaffController {
 
       return res.status(200).json({
         status: true,
-        message: 'Password successfully updated',
+        message: "Password successfully updated",
       });
     } catch (error) {
       next(error);

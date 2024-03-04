@@ -1,21 +1,29 @@
-const calculateAttendance = (data) => {
-  const attendance = {
-    present_days: 0,
-    total_days: 0,
-    percentage: 100,
-  };
+const Attendance = require('../models/attendance');
+const Class = require('../models/class');
 
-  data.forEach((item) => {
-    if (item.attendance_status === 'Present') {
-      attendance.present_days += 1;
-    }
-    attendance.total_days += 1;
-  });
-
-  if (attendance.total_days > 0) {
-    attendance.percentage = (attendance.present_days / attendance.total_days) * 100;
+const updateAttendance = async (data, _id, res, next) => {
+  try {
+    const updatedAttendance = await Attendance.findByIdAndUpdate(
+      _id,
+      {
+        score: data.score,
+        total: data.total,
+        percentage: data.percentage,
+      },
+      { new: true }
+    );
+    return res.status(200).json(updatedAttendance);
+  } catch (error) {
+    console.error(`Error updating attendance: ${error}`);
+    next(error);
   }
-  return attendance;
 };
 
-module.exports = { calculateAttendance };
+const attendedClass = async (_class) => {
+  return await Class.findOne({ _id: _class }).select('name').populate({
+    path: 'staff',
+    select: 'first_name last_name',
+  });
+};
+
+module.exports = { updateAttendance, attendedClass };

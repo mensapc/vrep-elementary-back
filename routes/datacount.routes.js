@@ -5,6 +5,7 @@ const {
   dataCountController,
   graphDataController,
   staffDatacountController,
+  studentDatacountController,
 } = require('../controllers/datacount.controller');
 
 const router = express.Router();
@@ -16,6 +17,13 @@ router.post(
   validateToken,
   authorize(['teacherData']),
   staffDatacountController
+);
+
+router.post(
+  '/datacount/student',
+  validateToken,
+  authorize(['studentData']),
+  studentDatacountController
 );
 
 module.exports = router;

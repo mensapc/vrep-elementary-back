@@ -33,6 +33,7 @@ const userRoles = {
     'searchGrade',
     'updateGrade',
     'createAttendance',
+    'readAttendance',
     'updateAttendance',
     'createTimetable',
     'getAllTimetables',
@@ -46,6 +47,7 @@ const userRoles = {
     'activities',
     'teacherData',
     'getTimetable',
+    'studentData',
   ],
   staff: [
     'searchStudent',
@@ -68,6 +70,7 @@ const userRoles = {
     'updateOption',
     'deleteOption',
     'createAttendance',
+    'readAttendance',
     'createUserRole',
     'getExamSummary',
     'searchGrade',
@@ -82,7 +85,7 @@ const userRoles = {
     'getTimetable',
     'deletecourse',
   ],
-  pupil: ['readStudent', 'createAnswer', 'updateAnswer'],
+  pupil: ['readStudent', 'createAnswer', 'updateAnswer', 'studentData'],
 };
 
 module.exports = userRoles;

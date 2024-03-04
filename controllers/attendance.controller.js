@@ -1,17 +1,85 @@
+const mongoose = require('mongoose');
 const Attendance = require('../models/attendance');
+const Student = require('../models/student');
 const CustomError = require('../utils/CustomError');
-const { calculateAttendance } = require('../utils/utils.attendance');
+const { updateAttendance, attendedClass } = require('../utils/utils.attendance');
 
 class AttendanceController {
   createAttendance = async (req, res, next) => {
     const attendanceData = req.body;
 
     try {
-      const newAttendance = await Attendance.create(attendanceData);
-      if (!newAttendance) throw new CustomError('Attendance not created', 400);
-      res.status(200).json(newAttendance);
+      const attendance = await Attendance.find({
+        _class: attendanceData._class,
+        student: attendanceData.student,
+      });
+      if (attendance.length > 0) {
+        return await updateAttendance(attendanceData, attendance[0]._id, res, next);
+      } else {
+        const newAttendance = await Attendance.create(attendanceData);
+        res.status(201).json(newAttendance);
+      }
     } catch (error) {
       console.error(`Error creating attendance: ${error}`);
+      next(error);
+    }
+  };
+
+  getClassAttendance = async (req, res, next) => {
+    const { _class } = req.body;
+    try {
+      const classAttended = await attendedClass(_class);
+      if (!classAttended) throw new CustomError('Class not found', 404);
+      const attendances = await Student.aggregate([
+        { $match: { _class: new mongoose.Types.ObjectId(_class) } },
+        { $sort: { first_name: 1 } },
+        {
+          $lookup: {
+            from: 'attendances',
+            localField: '_id',
+            foreignField: 'student',
+            as: 'attendance',
+          },
+        },
+        {
+          $project: {
+            _id: 1,
+            first_name: 1,
+            last_name: 1,
+            reg_number: 1,
+            created_at: 1,
+            attendance: 1,
+          },
+        },
+        {
+          $addFields: {
+            first_name_initial: { $substr: ['$first_name', 0, 1] },
+          },
+        },
+        {
+          $group: {
+            _id: '$first_name_initial',
+            students: {
+              $push: {
+                _id: '$_id',
+                first_name: '$first_name',
+                last_name: '$last_name',
+                reg_number: '$reg_number',
+                created_at: '$created_at',
+                attendance: '$attendance',
+              },
+            },
+          },
+        },
+        { $sort: { _id: 1 } },
+      ]);
+
+      res.status(200).json({
+        _class: classAttended,
+        attendances,
+      });
+    } catch (error) {
+      console.error(`Error getting attendance: ${error}`);
       next(error);
     }
   };
@@ -27,22 +95,6 @@ class AttendanceController {
         ...attendanceCount,
         details: attendance,
       });
-    } catch (error) {
-      console.error(`Error getting attendance: ${error}`);
-      next(error);
-    }
-  };
-
-  updateAttendance = async (req, res, next) => {
-    const { id } = req.params;
-    const { attendance_status, comments, reason } = req.body;
-    try {
-      const updatedAttendance = await Attendance.findByIdAndUpdate(
-        id,
-        { attendance_status, comments, reason },
-        { new: true }
-      );
-      res.status(200).json(updatedAttendance);
     } catch (error) {
       console.error(`Error getting attendance: ${error}`);
       next(error);

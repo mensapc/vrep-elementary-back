@@ -66,7 +66,10 @@ class CourseController {
   getCoursesBySearch = async (req, res, next) => {
     const data = req.query;
     try {
-      const courses = await Course.find(data);
+      const courses = await Course.find(data).populate([
+        { path: '_class', select: 'name' },
+        { path: 'staff', select: 'first_name last_name' },
+      ]);
       if (!courses) {
         throw new CustomError('No Course found .', 404);
       }
