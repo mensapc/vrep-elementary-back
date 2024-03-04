@@ -43,8 +43,11 @@ class AttendanceController {
         },
         {
           $project: {
+            _id: 1,
             first_name: 1,
             last_name: 1,
+            reg_number: 1,
+            created_at: 1,
             attendance: 1,
           },
         },
@@ -58,8 +61,11 @@ class AttendanceController {
             _id: '$first_name_initial',
             students: {
               $push: {
+                _id: '$_id',
                 first_name: '$first_name',
                 last_name: '$last_name',
+                reg_number: '$reg_number',
+                created_at: '$created_at',
                 attendance: '$attendance',
               },
             },
