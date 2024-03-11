@@ -40,7 +40,6 @@ app.use(
       'https://rpms-admin-dev.vercel.app',
       'https://rpms-teachers-dev.vercel.app',
       'https://rpms-pupil-dev.vercel.app'
-
     ],
   })
 );
