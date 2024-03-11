@@ -37,10 +37,15 @@ app.use(
       'https://rpms-pupil.vercel.app',
       'https://rpms-teachers.vercel.app',
       'https://rpmsteachersaccess.rulerspalacemontessori.com.ng',
+      'https://rpms-admin-dev.vercel.app',
+      'https://rpms-teachers-dev.vercel.app',
+      'https://rpms-pupil-dev.vercel.app'
+
     ],
   })
 );
 
+// stevnsigel~
 const PORT = process.env.PORT || 8080;
 
 app.use('/', adminRoutes);
