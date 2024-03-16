@@ -167,7 +167,7 @@ class ExamController {
   getTeachersExams = async (req, res, next) => {
     const { id } = req.params;
     try {
-      const exams = await Exam.find({ id });
+      const exams = await Exam.find({ staff: id });
       res.status(200).json(exams);
     } catch (error) {
       console.error(`Error getting exams: ${error}`);
