@@ -163,6 +163,17 @@ class ExamController {
       next(error);
     }
   };
+
+  getTeachersExams = async (req, res, next) => {
+    const { id } = req.params;
+    try {
+      const exams = await Exam.find({ id });
+      res.status(200).json(exams);
+    } catch (error) {
+      console.error(`Error getting exams: ${error}`);
+      next(error);
+    }
+  };
 }
 
 module.exports = ExamController;

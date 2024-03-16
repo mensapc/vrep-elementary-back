@@ -48,6 +48,7 @@ const userRoles = {
     'teacherData',
     'getTimetable',
     'studentData',
+    'getTeachersExam',
   ],
   staff: [
     'searchStudent',
@@ -84,6 +85,7 @@ const userRoles = {
     'teacherData',
     'getTimetable',
     'deletecourse',
+    'getTeachersExam',
   ],
   pupil: ['readStudent', 'createAnswer', 'updateAnswer', 'studentData'],
 };
