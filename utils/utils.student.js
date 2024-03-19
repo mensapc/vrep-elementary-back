@@ -29,8 +29,11 @@ async function checkStudentRegNumber(reg_number) {
 }
 
 const perfomStudentDeletion = async (id, session) => {
-  const student = await Student.findOne({ _id: id }).session(session);
-  await Class.updateOne({ _id: student._class }, { $pull: { students: id } }).session(session);
+  const student = await Student.find({ _id: id }).session(session);
+  const classExist = await Class.find({ _id: student._class }).session(session);
+  if (classExist.length > 0) {
+    await Class.updateOne({ _id: student._class }, { $pull: { students: id } }).session(session);
+  }
   await Student.findByIdAndDelete({ _id: id }).session(session);
   return student;
 };
