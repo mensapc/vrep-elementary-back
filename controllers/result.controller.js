@@ -100,6 +100,41 @@ class ResultController {
       next(error);
     }
   };
+  
+  getStudentOverAllExamResults = async (req, res, next) => {
+    const { student_id } = req.params;
+    try {
+      const results = await Result.find({ student: student_id }).populate([
+        { path: 'student' },
+        { path: '_class', select: 'name' },
+        { path: 'course', select: 'name' },
+        { path: 'staff', select: 'first_name last_name' },
+      ]);
+      if (!results.length) throw new CustomError('No results found', 404);
+  
+      // Calculate overall total score
+      let overallTotalScore = 0;
+      results.forEach(result => {
+        // Assuming each result object has a 'score' field representing the score obtained
+        overallTotalScore += result.total;
+      });
+      const uniqueCourses = uniqueResultsCourses(results);
+      const { pass_count, fail_count } = findFailedAndPassExams(results);
+  
+      res.status(200).json({
+        total_courses: uniqueCourses,
+        attempt: results.length,
+        overall_total_score: overallTotalScore, // Add overall total score to response
+        results,
+        pass_count,
+        fail_count,
+      });
+    } catch (error) {
+      console.error(`Error getting student results: ${error}`);
+      next(error);
+    }
+  };
+  
   updateResults = async (req, res, next) => {
     const { id } = req.params;
     const updatedData = req.body;
