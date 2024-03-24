@@ -6,10 +6,10 @@ class RegistrationUtils {
     this.bcryptPassword = new BcryptPassword();
   }
   validateData = (data, userType) => {
-    const { email, password, first_name, last_name, age } = data;
+    const { email, password, first_name, last_name, } = data;
     try {
       if (!first_name || !last_name) {
-        throw new CustomError('First name, last name, and age are required', 400);
+        throw new CustomError('First name, last name, and are required', 400);
       }
 
       if (userType === 'staff' || userType === 'admin') {

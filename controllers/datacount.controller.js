@@ -50,7 +50,7 @@ const staffDatacountController = async (req, res, next) => {
 const studentDatacountController = async (req, res, next) => {
   const { _class, student } = req.body;
   try {
-    const courses = await Course.find({ _class: _class }).countDocuments();
+    const courses = await Course.find({ _class }).countDsocuments();
     const exams = await Result.find({ _class: _class, student: student }).countDocuments();
     res.json({
       courses,
