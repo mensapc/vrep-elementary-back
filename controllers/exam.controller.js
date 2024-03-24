@@ -6,6 +6,7 @@ const {
   checkExamAvailability,
   examDuration,
   validateExamDuration,
+  getTimeRangePupilTookExam
 } = require('../utils/utils.exam');
 const CustomError = require('../utils/CustomError');
 const { sortActions } = require('../utils/utils.common');
@@ -65,15 +66,20 @@ class ExamController {
       const exam = await Exam.findOne({ _id: id })
         .populate({ path: 'questions', populate: { path: 'options' } })
         .session(session);
-
+  
       if (req.user.role === 'pupil') {
         // check if exam is available
         const examAvailability = checkExamAvailability(exam);
         if (!examAvailability.is_available) throw new CustomError(examAvailability.message, 403);
+        
+        // Calculate the time range the pupil took the exam
+        const timeRange = getTimeRangePupilTookExam(exam);
+        // Add time range to the exam object
+        exam.timeRange = timeRange;
       }
-
+  
       await session.commitTransaction();
-
+  
       return res.status(200).json(exam);
     } catch (error) {
       await session.abortTransaction();

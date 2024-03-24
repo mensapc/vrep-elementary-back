@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const Grade = require('../models/grade');
-const { ExamDetailsAndAnswers, CalculateResults } = require('../utils/utils.exam');
+const { ExamDetailsAndAnswers, CalculateResults, passMark } = require('../utils/utils.exam');
 const { checkGradeExistence } = require('../utils/utils.grade');
 const CustomError = require('../utils/CustomError');
 
@@ -57,6 +57,32 @@ class GradeController {
       next(error);
     }
   };
-}
 
-module.exports = GradeController;
+  passMark = () => {
+    return passed = 50
+  }
+
+  getGradeStatistics = async (req, res, next) => {
+    try {
+      // Find all grades
+      const grades = await Grade.find();
+  
+      // Filter grades below and above pass mark
+      const belowPassMarkGrades = grades.filter(grade => grade.score < passMark());
+      const abovePassMarkGrades = grades.filter(grade => grade.score >= passMark());
+  
+      // Sort grades by score in ascending order to get the lowest grade
+      const lowestGrade = belowPassMarkGrades.sort((a, b) => a.score - b.score)[0];
+  
+      // Sort grades by score in descending order to get the highest grade
+      const highestGrade = abovePassMarkGrades.sort((a, b) => b.score - a.score)[0];
+  
+      // Send the lowest and highest grades in the response
+      res.status(200).json({ lowestGrade, highestGrade });
+    } catch (error) {
+      console.error(`Error getting grade statistics: ${error}`);
+      next(error);
+    }
+  };
+
+}

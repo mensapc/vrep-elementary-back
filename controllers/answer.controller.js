@@ -40,6 +40,7 @@ class AnswerController {
   getAnswers = async (req, res, next) => {
     try {
       const answers = await Answer.find();
+      
       return res.status(200).json(answers);
     } catch (error) {
       console.error(`Error getting answers: ${error}`);
