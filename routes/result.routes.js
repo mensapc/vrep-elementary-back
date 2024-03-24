@@ -27,5 +27,9 @@ router.get(
   validateToken,
   resultController.getStudentExamResults
 );
-
+router.get(
+  '/result/student-exam-over-all-results/:student_id',
+  validateToken,
+  resultController.getStudentOverAllExamResults
+);
 module.exports = router;

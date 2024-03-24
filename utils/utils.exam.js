@@ -129,7 +129,41 @@ const checkExamAvailability = (exam) => {
   }
 };
 
+const getTimeRangePupilTookExam = (exam) => {
+  const { currentTime } = ExamTimeInMilliseconds(exam);
+  const examStartTime = new Date(exam.start_date);
+  const examEndTime = new Date(exam.end_date);
+
+  let startTime = '';
+  let endTime = '';
+
+  // If the current time is before the exam start time, set start time as exam start time
+  if (currentTime < examStartTime) {
+    startTime = examStartTime;
+  } else {
+    startTime = currentTime;
+  }
+
+  // If the current time is after the exam end time, set end time as exam end time
+  if (currentTime > examEndTime) {
+    endTime = examEndTime;
+  } else {
+    endTime = currentTime;
+  }
+
+  // Calculate the duration
+  const { hours: startHours, minutes: startMinutes, seconds: startSeconds } = timeConverter(startTime - examStartTime);
+  const { hours: endHours, minutes: endMinutes, seconds: endSeconds } = timeConverter(examEndTime - endTime);
+
+  const startDuration = `${startHours} hr ${startMinutes} min ${startSeconds} sec`;
+  const endDuration = `${endHours} hr ${endMinutes} min ${endSeconds} sec`;
+
+  return { startDuration, endDuration };
+};
+
+
 module.exports = {
+  getTimeRangePupilTookExam,
   CalculateResults,
   checkExamAvailability,
   examDuration,

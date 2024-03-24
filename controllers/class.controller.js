@@ -14,8 +14,8 @@ class ClassController {
       const ClassExist = await Class.findOne({ name: classData.name });
       if (ClassExist) throw new CustomError('Class with the same name already exist', 400);
 
-      const newClass = await Class.create(classData);
-      res.status(200).json(newClass);
+      const newClass = (await Class.create(classData));
+      res.status(200).json(newClass , newClass.length);
     } catch (error) {
       console.error(`Error creating class: ${error}`);
       next(error);
@@ -123,7 +123,26 @@ class ClassController {
       next(error);
     }
   };
-}
 
+
+  getNumberOfStudents = async (req, res, next) => {
+    try {
+      const classes = await Class.find().populate([
+        { path: 'students', select: 'first_name last_name' },
+      ]);
+      const numberOfStudentsPerClass = [];
+
+       // Iterate over each class to count the number of students
+      for (const _class of classes) {
+      const numberOfStudents = _class.students.length;
+      numberOfStudentsPerClass.push({ class: _class._id, numberOfStudents });
+    }
+      res.status(200).json(numberOfStudentsPerClass);
+    } catch (error) {
+      console.error(`Error getting classes: ${error}`);
+      next(error);
+    }
+  };
+}
 module.exports = ClassController;
 
