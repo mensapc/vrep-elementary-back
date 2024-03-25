@@ -126,8 +126,6 @@ class ResultController {
         attempt: results.length,
         overall_total_score: overallTotalScore, // Add overall total score to response
         results,
-        pass_count,
-        fail_count,
       });
     } catch (error) {
       console.error(`Error getting student results: ${error}`);

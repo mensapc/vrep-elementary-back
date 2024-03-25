@@ -7,7 +7,7 @@ const router = express.Router();
 const gradeController = new GradeController();
 
 router.post('/grade', validateToken, gradeController.createGrade);
-router.post('/getgradestat', validateToken, gradeController.getGradeStatistics);
+router.get('/getgradestat', validateToken, gradeController.getGradeStatistics);
 router.get(
   '/grades/search',
   validateToken,
