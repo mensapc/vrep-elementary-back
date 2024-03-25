@@ -86,3 +86,5 @@ class GradeController {
   };
 
 }
+
+module.exports = GradeController;
