@@ -60,7 +60,6 @@ const studentSchema = new mongoose.Schema({
   father_relationship: {
     type: String,
     trim: true,
-    required: true,
   },
   mother_name: {
     type: String,
@@ -73,7 +72,6 @@ const studentSchema = new mongoose.Schema({
   },
   mother_nationality: {
     type: String,
-    required: true,
     trim: true,
   },
   mother_place_of_birth: {
@@ -83,7 +81,6 @@ const studentSchema = new mongoose.Schema({
   mother_relationship: {
     type: String,
     trim: true,
-    required: true,
   },
   parent_phone: {
     type: String,
