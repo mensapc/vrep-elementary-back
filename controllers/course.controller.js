@@ -1,5 +1,5 @@
-const Course = require('../models/course');
-const CustomError = require('../utils/CustomError');
+const Course = require("../models/course");
+const CustomError = require("../utils/CustomError");
 
 class CourseController {
   createCourse = async (req, res, next) => {
@@ -18,13 +18,14 @@ class CourseController {
       const { course, staff } = req.body;
 
       const staffExists = await Course.find({ staff: staff });
-      if (staffExists.length) throw new CustomError('this teacher already exists in course', 400);
+      if (staffExists.length)
+        throw new CustomError("this teacher already exists in course", 400);
       const newCourse = await Course.findByIdAndUpdate(
         course,
         { $push: { staff: staff } },
         { new: true }
       );
-      if (!newCourse) throw new CustomError('course not found', 404);
+      if (!newCourse) throw new CustomError("course not found", 404);
       res.status(200).json(newCourse);
     } catch (error) {
       console.error(`Error adding teacher to course: ${error}`);
@@ -40,7 +41,7 @@ class CourseController {
         { $pull: { staff: staff } },
         { new: true }
       );
-      if (!newCourse) throw new CustomError('course not found', 404);
+      if (!newCourse) throw new CustomError("course not found", 404);
       res.status(200).json(newCourse);
     } catch (error) {
       console.error(`Error removing teacher from course: ${error}`);
@@ -53,11 +54,11 @@ class CourseController {
     try {
       const courses = await Course.find();
       if (!courses) {
-        throw new CustomError('No Course found .', 404);
+        throw new CustomError("No Course found .", 404);
       }
       res.status(200).json(courses);
     } catch (error) {
-      console.error('Error getting courses:', error);
+      console.error("Error getting courses:", error);
       next(error);
     }
   };
@@ -67,15 +68,15 @@ class CourseController {
     const data = req.query;
     try {
       const courses = await Course.find(data).populate([
-        { path: '_class', select: 'name' },
-        { path: 'staff', select: 'first_name last_name' },
+        { path: "_class", select: "name" },
+        { path: "staff", select: "first_name last_name" },
       ]);
       if (!courses) {
-        throw new CustomError('No Course found .', 404);
+        throw new CustomError("No Course found .", 404);
       }
       res.status(200).json(courses);
     } catch (error) {
-      console.error('Error getting courses:', error);
+      console.error("Error getting courses:", error);
       next(error);
     }
   };
@@ -87,7 +88,7 @@ class CourseController {
     try {
       const course = await Course.findById(id);
       if (!course) {
-        throw new CustomError('Course not found', 404);
+        throw new CustomError("Course not found", 404);
       }
       res.status(200).json(course);
     } catch (error) {
@@ -101,11 +102,13 @@ class CourseController {
     try {
       const courseToDelete = await Course.findByIdAndDelete(id);
       if (!courseToDelete) {
-        throw new CustomError('Course not found', 404);
+        throw new CustomError("Course not found", 404);
       }
-      res.status(200).json({ message: 'Course deleted successfully' });
+      res.status(200).json({ message: "Course deleted successfully" });
     } catch (error) {
-      console.error(`Error deleting course with ID ${req.params.courseID}: ${error}`);
+      console.error(
+        `Error deleting course with ID ${req.params.courseID}: ${error}`
+      );
       next(error);
     }
   };
@@ -125,7 +128,25 @@ class CourseController {
       next(error);
     }
   };
+
+  // Get courses added by a staff/teacher
+  getCoursesByStaff = async (req, res, next) => {
+    const { staffId } = req.params;
+
+    try {
+      const courses = await Course.find({ staff: staffId }).populate([
+        { path: "_class", select: "name" },
+        { path: "staff", select: "first_name last_name" },
+      ]);
+      if (!courses) {
+        throw new CustomError("Courses not available", 404);
+      }
+      res.status(200).json({ courses });
+    } catch (error) {
+      console.error(`Error staffId number ${id}: ${error}`);
+      next(error);
+    }
+  };
 }
 
 module.exports = CourseController;
-
