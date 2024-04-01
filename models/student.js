@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const studentSchema = new mongoose.Schema({
   reg_number: {
@@ -9,7 +9,7 @@ const studentSchema = new mongoose.Schema({
   role: {
     type: String,
     required: true,
-    default: 'pupil',
+    default: "pupil",
   },
   first_name: {
     type: String,
@@ -44,23 +44,46 @@ const studentSchema = new mongoose.Schema({
     required: true,
     trim: true,
   },
+  father_phone: {
+    type: String,
+    trim: true,
+  },
   father_nationality: {
     type: String,
     required: true,
     trim: true,
   },
-  father_gender: {
+  father_place_of_birth: {
     type: String,
-    required: true,
+    trim: true,
+  },
+  father_relationship: {
+    type: String,
+    trim: true,
   },
   mother_name: {
     type: String,
     required: true,
     trim: true,
   },
+  mother_phone: {
+    type: String,
+    trim: true,
+  },
+  mother_nationality: {
+    type: String,
+    trim: true,
+  },
+  mother_place_of_birth: {
+    type: String,
+    trim: true,
+  },
+  mother_relationship: {
+    type: String,
+    trim: true,
+  },
   parent_phone: {
     type: String,
-    required: true,
     trim: true,
   },
   mother_address: {
@@ -69,7 +92,7 @@ const studentSchema = new mongoose.Schema({
   },
   _class: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Class',
+    ref: "Class",
     required: true,
   },
   photo: {
@@ -77,5 +100,5 @@ const studentSchema = new mongoose.Schema({
   },
 });
 
-const StudentModel = mongoose.model('Student', studentSchema);
+const StudentModel = mongoose.model("Student", studentSchema);
 module.exports = StudentModel;
