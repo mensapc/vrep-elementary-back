@@ -18,11 +18,11 @@ class StudentController {
   register = async (req, res, next) => {
     const userData = req.body;
     try {
-      this.registrationUtils.validateData(userData, 'pupil');
+      this.registrationUtils.validateData(userData, 'student');
       const regNumber = await generateUniqueRegNumber();
 
-      const _class = await Class.findOne({ _id: userData._class });
-      if (!_class) throw new CustomError('Class with provided id not found', 404);
+      // const _class = await Class.findOne({ _id: userData._class });
+      // if (!_class) throw new CustomError('Class with provided id not found', 404);
 
       if (req.file?.path) {
         const url = await uploadImage(req.file.path);
@@ -30,8 +30,7 @@ class StudentController {
       }
 
       const newStudent = await Student.create({ ...userData, reg_number: regNumber });
-      _class.students.push(newStudent._id);
-      await _class.save();
+      // await _class.save();
       const token = generateToken({
         id: newStudent.id,
         email: newStudent.email,
@@ -41,7 +40,7 @@ class StudentController {
       });
 
       await createActivity(
-        `New student ${newStudent.first_name} ${newStudent.last_name} registered by ${req.user.first_name} ${req.user.last_name}`
+        `New student ${newStudent.first_name} ${newStudent.last_name} registered by ${req.user.first_name}  ${req.user.first_name} `
       );
       res.status(201).json({ ...newStudent._doc, token });
     } catch (error) {
@@ -131,7 +130,7 @@ class StudentController {
       await createActivity(
         `Student ${deletedUser.first_name} ${deletedUser.last_name} deleted by ${req.user.first_name} ${req.user.last_name}`
       );
-      res.status(200).json({ message: 'Student deleted successfully' });
+      res.status(204).json({ message: 'Student deleted successfully' });
       await session.commitTransaction();
     } catch (error) {
       console.error(`Error deleting student: ${error}`);
@@ -171,11 +170,11 @@ class StudentController {
       await session.abortTransaction();
       next(error);
     } finally {
-      session.endSession();
+      session.endSession(); 
     }
   };
 
-  updateStudentClass = async (id, data, session, res) => {
+  updateStudentClass  = async (id, data, session, res) => {
     const student = await Student.findById(id).session(session);
     const _class = await Class.findOne({ _id: data._class }).session(session);
     if (!_class) throw new CustomError('Class with provided id not found', 404);

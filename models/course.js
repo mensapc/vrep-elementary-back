@@ -1,12 +1,12 @@
 const mongoose = require('mongoose');
 
 const courseSchema = new mongoose.Schema({
-  name: {
+  course_name: {
     type: String,
     required: true,
   },
-  staff: { type: mongoose.Schema.Types.ObjectId, ref: 'Staff' },
-  _class: { type: mongoose.Schema.Types.ObjectId, ref: 'Class' },
+  staff: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Staff' }],
+  student: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Student' }],
 });
 
 const Course = mongoose.model('Course', courseSchema);

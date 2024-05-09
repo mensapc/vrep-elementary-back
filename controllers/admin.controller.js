@@ -1,10 +1,15 @@
 const Admin = require('../models/admin');
 const CustomError = require('../utils/CustomError');
+const { sendRegistrationEmail , validateEmail } = require('../utils/utils.mailer');
 const generateToken = require('../utils/utils.token');
+const crypto = require('crypto');
+const PreRegistrationModel = require('../models/pregistration')
+
 const BcryptPassword = require('../utils/utils.bcrypt.password');
 const registrationUtils = require('../utils/utils.registration');
 const { uploadImage } = require('../services/cloudinary');
 const { createActivity } = require('./activity.controller');
+
 
 class AdminController {
   constructor() {
@@ -30,6 +35,8 @@ class AdminController {
       const newAdmin = await Admin.create({ ...userData, password: hashedPassword });
       delete newAdmin._doc.password;
 
+
+
       const token = generateToken({
         id: newAdmin._id,
         email: newAdmin.email,
@@ -37,6 +44,7 @@ class AdminController {
         last_name: newAdmin.last_name,
         role: newAdmin.role,
       });
+
 
       createActivity(
         `New Admin ${newAdmin.first_name} ${newAdmin.last_name} registered successfully`
@@ -72,6 +80,42 @@ class AdminController {
       next(error);
     }
   };
+
+regLinkForStaff = async (req, res, next) => {
+    try {
+      const { email }  = req.body;
+
+      const check = validateEmail(email)
+
+      if(check){
+        console.log("Proceeding to send email with token and save to database");
+      }
+        const  preToken = {
+          token : crypto.randomBytes(32).toString('hex'),
+          expires : new Date(Date.now() + 24 * 3600 * 1000)
+        }
+  
+      const create =  await PreRegistrationModel.create({
+        email, 
+        token: preToken.token ,
+        expires :preToken.expires
+      });
+
+      await create.save()
+
+      await sendRegistrationEmail(email , create.token);
+
+      if(!sendRegistrationEmail){
+        throw new CustomError("Unable to create and send staff email", 550);
+      } else {
+        res.status(200).json({ message: 'Teacher created and email sent.'});
+      }
+    } catch (error) {
+      console.error(`Error sending registration link to staff : ${error}`);
+      next(error);
+    }
+  }
+
 }
 
 module.exports = AdminController;

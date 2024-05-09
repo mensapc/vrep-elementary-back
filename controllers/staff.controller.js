@@ -1,6 +1,9 @@
 const Staff = require('../models/staff');
+const Course = require('../models/course')
+const Class = require('../models/class')
 const CustomError = require('../utils/CustomError');
 const generateToken = require('../utils/utils.token');
+const PreRegistrationModel = require('../models/pregistration')
 const BcryptPassword = require('../utils/utils.bcrypt.password');
 const registrationUtils = require('../utils/utils.registration');
 const { uploadImage } = require('../services/cloudinary');
@@ -17,22 +20,36 @@ class StaffController {
 
   register = async (req, res, next) => {
     const userData = req.body;
+    const { token } = req.params
 
     try {
+
+    const preRegistration = await PreRegistrationModel.findOne({ tokens : token });
+    if (!preRegistration || preRegistration.expires < new Date()) {
+        throw new CustomError('Invalid or expired token', 400);
+    }
+  
+      if (preRegistration.email !== userData.email) {
+        throw new CustomError('Email does not match invitation', 400);
+      }
+
       this.registrationUtils.validateData(userData, 'staff');
       const staff = await Staff.findOne({ email: userData.email });
-      if (staff) throw new CustomError('staff already exists', 400);
-      const hashedPassword = await this.bcryptPassword.HashPassword(userData.password);
 
-      if (req.file?.path) {
-        const url = await uploadImage(req.file.path);
-        userData.photo = url;
-      }
+    if (staff) throw new CustomError('staff already exists', 400);
+    const hashedPassword = await this.bcryptPassword.HashPassword(userData.password);
+
+    
+
+    if (req.file?.path) {
+      const url = await uploadImage(req.file.path);
+      userData.photo = url;
+    }
 
       const newStaff = await Staff.create({ ...userData, password: hashedPassword });
       delete newStaff._doc.password;
 
-      const token = generateToken({
+      const Authtoken = generateToken({
         id: newStaff._id,
         email: newStaff.email,
         first_name: newStaff.first_name,
@@ -43,11 +60,11 @@ class StaffController {
       await updateClassStaff(newStaff._class, newStaff._id);
       await generateTimetable(newStaff._id);
 
-      await createActivity(
-        `New Teacher ${newStaff.first_name} ${newStaff.last_name} registered by ${req.user.first_name} ${req.user.last_name}`
-      );
+      // await createActivity(
+      //   `New Teacher ${newStaff.first_name} ${newStaff.last_name} registered by ${req.user.first_name} ${req.user.last_name}`
+      // );
 
-      res.status(200).json({ ...newStaff._doc, token });
+      res.status(200).json({ ...newStaff._doc, Authtoken });
     } catch (error) {
       console.error(`Error registering staff: ${error}`);
       next(error);
@@ -132,7 +149,7 @@ class StaffController {
       await createActivity(
         `Teacher ${deletedStaff.first_name} ${deletedStaff.last_name} deleted by ${req.user.first_name} ${req.user.last_name}`
       );
-      res.status(200).json({ message: 'Staff deleted successfully' });
+      res.status(204).json({ message: 'Staff deleted successfully' });
     } catch (error) {
       console.error(`Error deleting Staff: ${error}`);
       next(error);
@@ -151,7 +168,8 @@ class StaffController {
         data.photo = url;
       }
 
-      const updatedStaff = await Staff.findByIdAndUpdate(req.params.id, data, { new: true });
+      const updatedStaff = await Staff.findByIdAndUpdate(req.params.id, data, { new: true })
+      .select('-_id');
       await createActivity(
         `Teacher ${updatedStaff.first_name} ${updatedStaff.last_name} details updated by ${req.user.first_name} ${req.user.last_name}`
       );
@@ -161,6 +179,74 @@ class StaffController {
       next(error);
     }
   };
+
+  addStaffToCourse = async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const { first_name , last_name} = req.body;
+
+      // Check if the student exists
+      const isStaff = await Staff.findOne({ first_name, last_name });
+      if (!isStaff) {
+        throw new CustomError("Staff not found", 404);
+      }
+
+      // Check if the staff is already assigned to a course
+      const course = await Course.findById(id);
+
+      
+      if (!course) {
+        throw new CustomError("Course not found", 404);
+      }
+
+      // Add the staff to the course
+      const newStaffToCourse = await Course.findByIdAndUpdate(
+        course,
+        { $push: { staff: isStaff._id} },
+        { new: true }
+      ).populate('staff');
+      
+      await newStaffToCourse.save();
+
+      res.status(200).json(newStaffToCourse);
+    } catch (error) {
+      console.error(`Error adding student to course: ${error}`);
+      next(error);
+    }
+  }
+
+  addStaffToClass = async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const { first_name} = req.body;
+
+      // Check if the student exists
+      const isStaff = await Staff.findOne({ first_name});
+      if (!isStaff) {
+        throw new CustomError("Staff not found", 404);
+      }
+
+      // Check if the staff is already assigned to a class
+      const assignedStaff = await Class.findById(id)
+      if (!assignedStaff) {
+        throw new CustomError("Course not found", 404);
+      }
+
+      // Add the staff to the course
+      const newStaffToClass = await Class.findByIdAndUpdate(
+        assignedStaff,
+        { $push: { staff: isStaff._id ,} },
+        { new: true }
+      ).populate('staff');
+      
+      await newStaffToClass.save();
+
+      res.status(200).json(newStaffToClass);
+    } catch (error) {
+      console.error(`Error adding student to course: ${error}`);
+      next(error);
+    }
+  }
 }
 
 module.exports = StaffController;

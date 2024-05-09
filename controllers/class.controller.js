@@ -14,8 +14,8 @@ class ClassController {
       const ClassExist = await Class.findOne({ name: classData.name });
       if (ClassExist) throw new CustomError('Class with the same name already exist', 400);
 
-      const newClass = (await Class.create(classData));
-      res.status(200).json(newClass , newClass.length);
+      const newClass = await Class.create(classData);
+      res.status(200).json({ class :newClass});
     } catch (error) {
       console.error(`Error creating class: ${error}`);
       next(error);
@@ -74,7 +74,7 @@ class ClassController {
     try {
       const _class = await Class.findByIdAndDelete(id);
       if (!_class) throw new CustomError('Class not found', 404);
-      res.status(200).json({ message: 'Class deleted successfully' });
+      res.status(204).json({ message: 'Class deleted successfully' });
     } catch (error) {
       console.error(`Error deleting class: ${error}`);
       next(error);
@@ -105,6 +105,41 @@ class ClassController {
       session.endSession();
     }
   };
+
+  addStaffToCourse = async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const { reg_number} = req.body;
+
+      // Check if the student exists
+      const isStudent = await Student.findOne({ reg_number });
+      if (!isStudent) {
+        throw new CustomError("Student not found", 404);
+      }
+
+      // Check if the student is already enrolled in the course
+      const course = await Course.findById(id);
+
+      
+      if (!course) {
+        throw new CustomError("Course not found", 404);
+      }
+
+      // Add the student to the course
+      const newCourse = await Course.findByIdAndUpdate(
+        course,
+        { $push: { student: isStudent._id} },
+        { new: true }
+      );
+      
+      await newCourse.save();
+
+      res.status(200).json(newCourse);
+    } catch (error) {
+      console.error(`Error adding student to course: ${error}`);
+      next(error);
+    }
+  }
 
   removeCourseFromClass = async (req, res, next) => {
     const { _class, course } = req.body;

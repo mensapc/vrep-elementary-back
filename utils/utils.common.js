@@ -4,7 +4,7 @@ const sortActions = (sortby) => {
       return { age: 1 };
     case 'date':
       return { created_at: -1 };
-    case 'name':
+    case 'first_name':
       return { first_name: 1 };
     default:
       return { created_at: 1 };
