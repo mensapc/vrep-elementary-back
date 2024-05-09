@@ -1,6 +1,7 @@
 const userRoles = {
   admin: [
     'searchStudent',
+    'studentCourse',
     'createStudent',
     'createStaff',
     'createAdmin',
@@ -12,6 +13,7 @@ const userRoles = {
     'deleteStaff',
     'updateStaff',
     'createCourse',
+    'staffToCourse',
     'readCourse',
     'deletecourse',
     'updateCourse',
@@ -49,6 +51,8 @@ const userRoles = {
     'getTimetable',
     'studentData',
     'getTeachersExam',
+    'sendlink',
+    'staffToClass'
   ],
   staff: [
     'searchStudent',
@@ -56,6 +60,9 @@ const userRoles = {
     'readStudents',
     'updateCourse',
     'createClass',
+    'deleteClass',
+    'staffToCourse',
+    'updateClass',
     'teacherCourse',
     'createCourse',
     'readClass',
@@ -86,6 +93,8 @@ const userRoles = {
     'getTimetable',
     'deletecourse',
     'getTeachersExam',
+    'studentCourse'
+
   ],
   pupil: ['readStudent', 'createAnswer', 'updateAnswer', 'studentData'],
 };

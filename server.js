@@ -43,13 +43,11 @@ app.use(
     ],
   })
 );
-
-// stevnsigel~
 const PORT = process.env.PORT || 8080;
 
-app.use('/', adminRoutes);
-app.use('/', studentRoutes);
-app.use('/', staffRoutes);
+app.use('/api/v1', adminRoutes);
+app.use('/api/v1', studentRoutes);
+app.use('/api/v1', staffRoutes);
 app.use('/api/v1', courseRoutes);
 app.use('/api/v1', classRoutes);
 app.use('/api/v1', examRoutes);
@@ -69,4 +67,4 @@ app.use(errorMiddleware);
 app.get('/', (req, res) => res.status(200).send('Welcome to the RPMS API'));
 
 connectDB(process.env.MONGODB_URL);
-app.listen(PORT, '0.0.0.0', () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

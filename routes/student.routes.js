@@ -10,7 +10,7 @@ router.post(
   '/student/register',
   validateToken,
   authorize(['createStudent']),
-  multerMiddleware,
+  // multerMiddleware,
   studentController.register
 );
 
