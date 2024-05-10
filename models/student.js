@@ -35,11 +35,11 @@ const studentSchema = new mongoose.Schema({
     required: true,
     trim: true,
   },
-  _class: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Class",
-    required: true,
-  },
+  // _class: {
+  // //   type: mongoose.Schema.Types.ObjectId,
+  // //   ref: "Class",
+  // //   required: true,
+  // // },
   phone_number:{
     type: String,
     required: true,
