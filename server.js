@@ -24,25 +24,7 @@ const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(
-  cors({
-    credentials: true,
-    origin: [
-      'http://localhost:3000',
-      'http://localhost:3001',
-      'http://127.0.0.1:5500',
-      'https://rpsad.rulerspalacemontessori.com.ng',
-      'https://rpms-admin.vercel.app',
-      'https://pupils.rulerspalacemontessori.com.ng',
-      'https://rpms-pupil.vercel.app',
-      'https://rpms-teachers.vercel.app',
-      'https://rpmsteachersaccess.rulerspalacemontessori.com.ng',
-      'https://rpms-admin-dev.vercel.app',
-      'https://rpms-teachers-dev.vercel.app',
-      'https://rpms-pupil-dev.vercel.app'
-    ],
-  })
-);
+app.use(cors());
 const PORT = process.env.PORT || 8080;
 
 app.use('/api/v1', adminRoutes);
