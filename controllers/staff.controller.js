@@ -29,8 +29,10 @@ class StaffController {
         throw new CustomError('Invalid or expired token', 400);
     }
   
-      if (preRegistration.email !== userData.email) {
-        throw new CustomError('Email does not match invitation', 400);
+
+    const verifyEmail = await PreRegistrationModel.findOne({ email : userData.email});
+      if (userData.email !== verifyEmail.email  ) {
+        throw new CustomError('Email does not match invitation66', 400);
       }
 
       this.registrationUtils.validateData(userData, 'staff');
@@ -64,7 +66,7 @@ class StaffController {
       //   `New Teacher ${newStaff.first_name} ${newStaff.last_name} registered by ${req.user.first_name} ${req.user.last_name}`
       // );
 
-      res.status(200).json({ ...newStaff._doc, Authtoken });
+      res.status(201).json({ ...newStaff._doc, Authtoken });
     } catch (error) {
       console.error(`Error registering staff: ${error}`);
       next(error);
