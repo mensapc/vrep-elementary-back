@@ -2,6 +2,7 @@ const Admin = require('../models/admin');
 const CustomError = require('../utils/CustomError');
 const { sendRegistrationEmail , validateEmail } = require('../utils/utils.mailer');
 const generateToken = require('../utils/utils.token');
+const { updateClassStaff } = require('../utils/utils.class');
 const crypto = require('crypto');
 const PreRegistrationModel = require('../models/pregistration')
 
@@ -99,8 +100,7 @@ regLinkForStaff = async (req, res, next) => {
         email, 
         token: preToken.token ,
         expires :preToken.expires
-      });
-
+      })
       await create.save()
 
       await sendRegistrationEmail(email , create.token);
