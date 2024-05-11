@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const examSchema = new mongoose.Schema({
   name: {
@@ -20,7 +20,7 @@ const examSchema = new mongoose.Schema({
   school_term: {
     type: String,
     required: true,
-    enum: ['1stterm', '2ndterm', '3rdterm'],
+    enum: ["1stterm", "2ndterm", "3rdterm"],
   },
   time_limit: {
     type: String,
@@ -34,12 +34,16 @@ const examSchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
-  staff: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Staff', required: true }],
-  course: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course', required: true }],
-  _class: { type: mongoose.Schema.Types.ObjectId, ref: 'Class' },
-  questions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Question' }],
+  staff: [
+    { type: mongoose.Schema.Types.ObjectId, ref: "Staff", required: true },
+  ],
+  course: [
+    { type: mongoose.Schema.Types.ObjectId, ref: "Course", required: true },
+  ],
+  _class: { type: mongoose.Schema.Types.ObjectId, ref: "Class" },
+  questions: [{ type: mongoose.Schema.Types.ObjectId, ref: "Question" }],
 });
 
-const ExamModel = mongoose.model('Exam', examSchema);
+const ExamModel = mongoose.model("Exam", examSchema);
 
 module.exports = ExamModel;

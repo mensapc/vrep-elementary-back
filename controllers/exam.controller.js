@@ -1,16 +1,16 @@
-const mongoose = require('mongoose');
-const Exam = require('../models/exam');
-const Option = require('../models/option');
-const Question = require('../models/question');
+const mongoose = require("mongoose");
+const Exam = require("../models/exam");
+const Option = require("../models/option");
+const Question = require("../models/question");
 const {
   checkExamAvailability,
   examDuration,
   validateExamDuration,
-  getTimeRangePupilTookExam
-} = require('../utils/utils.exam');
-const CustomError = require('../utils/CustomError');
-const { sortActions } = require('../utils/utils.common');
-const { createActivity } = require('./activity.controller');
+  getTimeRangePupilTookExam,
+} = require("../utils/utils.exam");
+const CustomError = require("../utils/CustomError");
+const { sortActions } = require("../utils/utils.common");
+const { createActivity } = require("./activity.controller");
 
 class ExamController {
   createExam = async (req, res, next) => {
@@ -19,7 +19,8 @@ class ExamController {
     try {
       // validate exam duration
       const durationValidate = validateExamDuration(examData);
-      if (!durationValidate.is_valid) throw new CustomError(durationValidate.message, 400);
+      if (!durationValidate.is_valid)
+        throw new CustomError(durationValidate.message, 400);
 
       // calculate exam duration
       const duration = examDuration(examData);
@@ -64,22 +65,23 @@ class ExamController {
     try {
       await session.startTransaction();
       const exam = await Exam.findOne({ _id: id })
-        .populate({ path: 'questions', populate: { path: 'options' } })
+        .populate({ path: "questions", populate: { path: "options" } })
         .session(session);
-  
-      if (req.user.role === 'pupil') {
+
+      if (req.user.role === "pupil") {
         // check if exam is available
         const examAvailability = checkExamAvailability(exam);
-        if (!examAvailability.is_available) throw new CustomError(examAvailability.message, 403);
-        
+        if (!examAvailability.is_available)
+          throw new CustomError(examAvailability.message, 403);
+
         // Calculate the time range the pupil took the exam
         const timeRange = getTimeRangePupilTookExam(exam);
         // Add time range to the exam object
         exam.timeRange = timeRange;
       }
-  
+
       await session.commitTransaction();
-  
+
       return res.status(200).json(exam);
     } catch (error) {
       await session.abortTransaction();
@@ -98,13 +100,17 @@ class ExamController {
 
     try {
       if (examData.time_limit) {
-        throw new CustomError('Exam duration can be updated via start date and end date', 400);
+        throw new CustomError(
+          "Exam duration can be updated via start date and end date",
+          400
+        );
       }
 
       if (examData.start_date || examData.end_date) {
         // validate exam duration
         const durationValidate = validateExamDuration(examData);
-        if (!durationValidate.is_valid) throw new CustomError(durationValidate.message, 400);
+        if (!durationValidate.is_valid)
+          throw new CustomError(durationValidate.message, 400);
 
         // calculate exam duration
         const duration = examDuration(examData);
@@ -112,7 +118,9 @@ class ExamController {
         examData.time_limit = duration.duration;
       }
 
-      const updatedExam = await Exam.findByIdAndUpdate(id, examData, { new: true });
+      const updatedExam = await Exam.findByIdAndUpdate(id, examData, {
+        new: true,
+      });
 
       createActivity(
         `Exam ${updatedExam.name} updated by ${req.user.first_name} ${req.user.last_name}`
@@ -130,23 +138,29 @@ class ExamController {
     try {
       await session.startTransaction();
       const examToDelete = await Exam.findById(id)
-        .populate({ path: 'questions', populate: { path: 'options' } })
+        .populate({ path: "questions", populate: { path: "options" } })
         .session(session);
 
-      if (!examToDelete) throw new CustomError('Exam not found', 404);
+      if (!examToDelete) throw new CustomError("Exam not found", 404);
 
       for (const question of examToDelete.questions) {
-        await Option.deleteMany({ _id: { $in: question.options } }, { session });
+        await Option.deleteMany(
+          { _id: { $in: question.options } },
+          { session }
+        );
       }
 
-      await Question.deleteMany({ _id: { $in: examToDelete.questions } }, { session });
+      await Question.deleteMany(
+        { _id: { $in: examToDelete.questions } },
+        { session }
+      );
       await examToDelete.deleteOne({ session });
       await session.commitTransaction();
 
       createActivity(
         `Exam ${examToDelete.name} deleted by ${req.user.first_name} ${req.user.last_name}`
       );
-      return res.status(200).json({ message: 'Exam deleted successfully' });
+      return res.status(200).json({ message: "Exam deleted successfully" });
     } catch (error) {
       await session.abortTransaction();
       console.error(`Error deleting exam: ${error}`);
@@ -162,7 +176,7 @@ class ExamController {
     try {
       const exams = await Exam.find().sort(sortAction);
       res.status(200).json(exams).populate({
-        path: '_class',
+        path: "_class",
       });
     } catch (error) {
       console.error(`Error getting exams: ${error}`);
