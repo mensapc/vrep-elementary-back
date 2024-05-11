@@ -1,4 +1,5 @@
 const Staff = require('../models/staff');
+const HeadTeacher = require("../models/headteacher")
 const Course = require('../models/course')
 const Class = require('../models/class')
 const CustomError = require('../utils/CustomError');
@@ -9,7 +10,6 @@ const registrationUtils = require('../utils/utils.registration');
 const { uploadImage } = require('../services/cloudinary');
 const { sortActions } = require('../utils/utils.common');
 const { createActivity } = require('./activity.controller');
-const { updateClassStaff } = require('../utils/utils.class');
 const { generateTimetable } = require('../utils/utils.timetable');
 
 class StaffController {
@@ -20,55 +20,131 @@ class StaffController {
 
   register = async (req, res, next) => {
     const userData = req.body;
-    const { token } = req.params
-
-    try {
-
-    const preRegistration = await PreRegistrationModel.findOne({ tokens : token });
-    if (!preRegistration || preRegistration.expires < new Date()) {
-        throw new CustomError('Invalid or expired token', 400);
-    }
+    const { token } = req.params;
   
-
-    const verifyEmail = await PreRegistrationModel.findOne({ email : userData.email});
-      if (userData.email !== verifyEmail.email  ) {
-        throw new CustomError('Email does not match invitation66', 400);
+    try {
+      const preRegistration = await PreRegistrationModel.findOne({ tokens: token });
+      if (!preRegistration || preRegistration.expires < new Date()) {
+        throw new CustomError('Invalid or expired token', 400);
       }
-
+  
+      const verifyEmail = await PreRegistrationModel.findOne({ email: userData.email });
+      if (userData.email !== verifyEmail.email) {
+        throw new CustomError('Email does not match invitation', 400);
+      }
+  
       this.registrationUtils.validateData(userData, 'staff');
-      const staff = await Staff.findOne({ email: userData.email });
-
-    if (staff) throw new CustomError('staff already exists', 400);
-    const hashedPassword = await this.bcryptPassword.HashPassword(userData.password);
-
-    
-
-    if (req.file?.path) {
-      const url = await uploadImage(req.file.path);
-      userData.photo = url;
-    }
-
+      const staffExists = await Staff.findOne({ email: userData.email });
+      if (staffExists) {
+        throw new CustomError('Staff already exists', 400);
+      }
+  
+      const className = userData.className; // Assuming class name is passed in userData
+      const assignedClass = await Class.findOne({ name: className });
+      if (!assignedClass) {
+        throw new CustomError("Class not found", 404);
+      }
+  
+      const hashedPassword = await this.bcryptPassword.HashPassword(userData.password);
+  
+      if (req.file?.path) {
+        const url = await uploadImage(req.file.path);
+        userData.photo = url;
+      }
+  
       const newStaff = await Staff.create({ ...userData, password: hashedPassword });
       delete newStaff._doc.password;
-
-      const Authtoken = generateToken({
+  
+      // Add the staff to the class
+      await Class.findByIdAndUpdate(
+        assignedClass._id,
+        { $push: { staff: newStaff._id } },
+        { new: true }
+      ).populate('staff');
+  
+      const authToken = generateToken({
         id: newStaff._id,
         email: newStaff.email,
         first_name: newStaff.first_name,
         last_name: newStaff.last_name,
         role: newStaff.role,
       });
-
-      await updateClassStaff(newStaff._class, newStaff._id);
-      await generateTimetable(newStaff._id);
-
-      // await createActivity(
-      //   `New Teacher ${newStaff.first_name} ${newStaff.last_name} registered by ${req.user.first_name} ${req.user.last_name}`
-      // );
-
-      res.status(201).json({ ...newStaff._doc, Authtoken });
+  
+      // await generateTimetable(newStaff._id);
+  
+      res.status(201).json({ ...newStaff._doc, authToken });
     } catch (error) {
       console.error(`Error registering staff: ${error}`);
+      next(error);
+    }
+  };
+  
+  registerHeadTeacher = async (req, res, next) => {
+    const userData = req.body;
+    const { token } = req.params;
+  
+    try {
+      const preRegistration = await PreRegistrationModel.findOne({ tokens: token });
+      if (!preRegistration || preRegistration.expires < new Date()) {
+        throw new CustomError('Invalid or expired token', 400);
+      }
+  
+      const verifyEmail = await PreRegistrationModel.findOne({ email: userData.email });
+      if (userData.email !== verifyEmail.email) {
+        throw new CustomError('Email does not match invitation', 400);
+      }
+  
+      this.registrationUtils.validateData(userData, 'headTeacher');
+      const staffExists = await HeadTeacher.findOne({ email: userData.email });
+      if (staffExists) {
+        throw new CustomError('Staff already exists', 400);
+      }
+  
+      const hashedPassword = await this.bcryptPassword.HashPassword(userData.password);
+  
+      if (req.file?.path) {
+        const url = await uploadImage(req.file.path);
+        userData.photo = url;
+      }
+  
+      const newHeadTeacher = await HeadTeacher.create({ ...userData, password: hashedPassword });
+      delete newHeadTeacher._doc.password;
+  
+      const authToken = generateToken({
+        id: newHeadTeacher._id,
+        email: newHeadTeacher.email,
+        first_name: newHeadTeacher.first_name,
+        last_name: newHeadTeacher.last_name,
+        role: newHeadTeacher.role,
+      });
+
+      res.status(201).json({ ...newHeadTeacher._doc, authToken });
+    } catch (error) {
+      console.error(`Error registering Head teacher: ${error}`);
+      next(error);
+    }
+  };
+
+  loginAsHeadteacher = async (req, res, next) => {
+    const { email, password } = req.body;
+
+    try {
+      const newHeadTeacher = await HeadTeacher.findOne({ email });
+      if (!staff) throw new CustomError('Invalid credentials', 404);
+      const comparedPassword = await this.bcryptPassword.PasswordCompare(password, newHeadTeacher.password);
+      if (!comparedPassword) throw new CustomError('Invalid credentials', 400);
+      delete newHeadTeacher._doc.password;
+
+      const token = generateToken({
+        id: newHeadTeacher._id,
+        email: newHeadTeacher.email,
+        first_name: newHeadTeacher.first_name,
+        last_name: newHeadTeacher.last_name,
+        role: newHeadTeacher.role,
+      });
+      res.status(200).json({ ...newHeadTeacher._doc, token });
+    } catch (error) {
+      console.error('Error logging in Head teacher:', error);
       next(error);
     }
   };
