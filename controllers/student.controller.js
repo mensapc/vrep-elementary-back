@@ -93,7 +93,7 @@ class StudentController {
     const query = req.query;
 
     try {
-      let student = await Student.find(query).populate({
+      let student = await Student.findOne(query).populate({
         path: '_class',
         select: 'name',
       });
