@@ -21,8 +21,8 @@ class StudentController {
       this.registrationUtils.validateData(userData, 'student');
       const regNumber = await generateUniqueRegNumber();
 
-      // const _class = await Class.findOne({ _id: userData._class });
-      // if (!_class) throw new CustomError('Class with provided id not found', 404);
+      const _class = await Class.findOne({ _id: userData._class });
+      if (!_class) throw new CustomError('Class with provided id not found', 404);
 
       if (req.file?.path) {
         const url = await uploadImage(req.file.path);
@@ -30,7 +30,9 @@ class StudentController {
       }
 
       const newStudent = await Student.create({ ...userData, reg_number: regNumber });
-      // await _class.save();
+      _class.students.push(newStudent._id);
+      await _class.save();
+
       const token = generateToken({
         id: newStudent.id,
         email: newStudent.email,
@@ -88,12 +90,20 @@ class StudentController {
     }
   };
 
-  // Get student by search
+  // Get student by first_name and last_name search
   getBySearch = async (req, res, next) => {
     const query = req.query;
+    const searchConditions = [];
+  if (query.last_name) {
+    searchConditions.push({ last_name: { $regex: new RegExp(query.last_name, 'i') } });
+  }
+  if (query.first_name) {
+    searchConditions.push({ first_name: { $regex: new RegExp(query.first_name, 'i') } });
+  }
+  const finalQuery = searchConditions.length > 0 ? { $or: searchConditions } : {};
 
     try {
-      let student = await Student.findOne(query).populate({
+      let student = await Student.find(finalQuery).populate({
         path: '_class',
         select: 'name',
       });
@@ -104,6 +114,42 @@ class StudentController {
       next(error);
     }
   };
+
+  // Get students by class name search
+  getStudentsByClassSearch = async(req, res, next) => {
+    const query = req.query;
+    if(!query.class){
+      throw new CustomError('Class parameter is required for filtering',404)
+    }
+    try {
+      let students = await Student.aggregate([
+        {
+          $lookup: {
+            from: 'classes',
+            localField: '_class',
+            foreignField: '_id',
+            as: 'classInfo',
+          },
+        },
+        {
+          $match: {
+            'classInfo.name': { $regex: new RegExp(query.class, 'i') },
+          }, 
+        },
+        {
+          $project: {
+            _id: 1,
+            first_name: 1,
+            last_name: 1,
+          },
+        },
+      ]);
+      res.status(200).json(students);
+    } catch (error) {
+      console.error('Failed to retrieve students:', error);
+      next(error);
+    }
+  }
 
   // Get All students controller
   getAll = async (req, res, next) => {
