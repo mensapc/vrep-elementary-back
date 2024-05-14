@@ -4,6 +4,9 @@ const Student = require('../models/student');
 const CustomError = require('../utils/CustomError');
 const { updateAttendance, attendedClass } = require('../utils/utils.attendance');
 
+
+
+
 class AttendanceController {
   createAttendance = async (req, res, next) => {
     const attendanceData = req.body;

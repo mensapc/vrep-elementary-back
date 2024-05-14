@@ -34,8 +34,8 @@ const examSchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
-  staff: { type: mongoose.Schema.Types.ObjectId, ref: 'Staff', required: true },
-  course: { type: mongoose.Schema.Types.ObjectId, ref: 'Course', required: true },
+  staff: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Staff', required: true }],
+  course: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course', required: true }],
   _class: { type: mongoose.Schema.Types.ObjectId, ref: 'Class' },
   questions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Question' }],
 });

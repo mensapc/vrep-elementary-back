@@ -10,7 +10,7 @@ router.post(
   '/student/register',
   validateToken,
   authorize(['createStudent']),
-  multerMiddleware,
+  // multerMiddleware,
   studentController.register
 );
 
@@ -22,6 +22,13 @@ router.post(
   validateToken,
   authorize(['searchStudent']),
   studentController.getBySearch
+);
+
+router.post(
+  '/students/search/byclass',
+  validateToken,
+  authorize(['searchStudent']),
+  studentController.getStudentsByClassSearch
 );
 
 router.post(
