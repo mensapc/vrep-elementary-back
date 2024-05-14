@@ -1,6 +1,6 @@
 const multer = require('multer');
 
-const allowedImageTypes = ['imagejpeg', 'image/png', 'image/jpg', 'image/gif','image/svg+xml' ];
+const allowedImageTypes = ['image/jpeg', 'image/png', 'image/jpg'];
 const imageFilter = (req, file, cb) => {
   if (allowedImageTypes.includes(file.mimetype)) cb(null, true);
   else cb(null, false);

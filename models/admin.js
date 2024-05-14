@@ -47,6 +47,7 @@ const adminSchema = new mongoose.Schema({
     required: true,
     trim: true,
   },
+
   photo: {
     type: String,
   },

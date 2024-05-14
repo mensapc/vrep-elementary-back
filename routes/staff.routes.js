@@ -7,12 +7,13 @@ const staffController = new StaffController();
 const router = express.Router();
 
 router.post(
-  '/staff/register/:id',
+  '/staff/register',
+  validateToken,
+  authorize(['createStaff']),
   multerMiddleware,
   staffController.register
 );
-router.put('/staff/course/:id', validateToken, authorize(['staffToCourse']), staffController.addStaffToCourse);
-router.put('/staff/class/:id', validateToken, authorize(['staffToClass']), staffController.addStaffToClass);
+
 router.post('/staff/login', staffController.login);
 
 router.get('/staff', validateToken, authorize(['readStaff']), staffController.getAll);

@@ -8,7 +8,7 @@ const classSchema = new mongoose.Schema({
   description: {
     type: String,
   },
-  staff: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Staff', default: null }],
+  staff: { type: mongoose.Schema.Types.ObjectId, ref: 'Staff', default: null },
   students: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Student' }],
   courses: [
     {

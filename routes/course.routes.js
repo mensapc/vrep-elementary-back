@@ -13,7 +13,12 @@ router.post(
 );
 router.get("/courses", validateToken, courseController.getCourses);
 router.get("/courses/:id", validateToken, courseController.getCourse);
-router.put( "/course/teacher/assign", validateToken,authorize(["teacherCourse"]), courseController.addTeacherToCourse );
+router.put(
+  "/course/teacher/assign",
+  validateToken,
+  authorize(["teacherCourse"]),
+  courseController.addTeacherToCourse
+);
 router.put(
   "/course/teacher/remove",
   validateToken,
@@ -43,25 +48,6 @@ router.get(
   "/courses/staff/:staffId",
   validateToken,
   courseController.getCoursesByStaff
-);
-
-router.get(
-  "/course/student/:reg_number",
-  validateToken,
-  courseController.StudentInaCourses
-);
-
-router.put(
-  "/course/student/:id/assign",
-  validateToken,
-  authorize(["studentCourse"]),
-  courseController.addStudentToCourse
-);
-
-router.get(
-  "/courses/student/:id",
-  validateToken,
-  courseController. getAllStudentInAcourse
 );
 
 module.exports = router;

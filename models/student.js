@@ -9,7 +9,7 @@ const studentSchema = new mongoose.Schema({
   role: {
     type: String,
     required: true,
-    default: "student",
+    default: "pupil",
   },
   first_name: {
     type: String,
@@ -25,6 +25,10 @@ const studentSchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
+  place_of_birth: {
+    type: String,
+    required: true,
+  },
   gender: {
     type: String,
     required: true,
@@ -35,15 +39,61 @@ const studentSchema = new mongoose.Schema({
     required: true,
     trim: true,
   },
+  father_name: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+  father_phone: {
+    type: String,
+    trim: true,
+  },
+  father_nationality: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+  father_place_of_birth: {
+    type: String,
+    trim: true,
+  },
+  father_relationship: {
+    type: String,
+    trim: true,
+  },
+  mother_name: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+  mother_phone: {
+    type: String,
+    trim: true,
+  },
+  mother_nationality: {
+    type: String,
+    trim: true,
+  },
+  mother_place_of_birth: {
+    type: String,
+    trim: true,
+  },
+  mother_relationship: {
+    type: String,
+    trim: true,
+  },
+  parent_phone: {
+    type: String,
+    trim: true,
+  },
+  mother_address: {
+    type: String,
+    required: true,
+  },
   _class: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Class",
     required: true,
-  },
-  phone_number:{
-    type: String,
-    required: true,
-    trim: true
   },
   photo: {
     type: String,

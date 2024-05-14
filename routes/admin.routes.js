@@ -16,6 +16,4 @@ router.post(
 );
 router.post('/admin/login', adminController.login);
 
-router.post('/register-teacher', validateToken, authorize(['sendlink']),adminController.regLinkForStaff);
-
 module.exports = router;
