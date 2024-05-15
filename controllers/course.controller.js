@@ -52,8 +52,12 @@ class CourseController {
 
   // Get All Courses
   getCourses = async (req, res, next) => {
+    let {page,per_page} = req.query;
+    if (page) {page--}  else {page = 0}; 
+    if (!per_page) {per_page = 12};
     try {
-      const courses = await Course.find();
+      const courses = await Course.find().sort('desc').skip(page*per_page)
+      .limit(per_page);
       if (!courses) {
         throw new CustomError("No Course found .", 404);
       }
@@ -67,6 +71,7 @@ class CourseController {
   // Get courses by search
   getCoursesBySearch = async (req, res, next) => {
     const data = req.query;
+    console.log(data);
     try {
       const courses = await Course.find(data).populate([
         { path: "_class", select: "name" },
@@ -116,11 +121,11 @@ class CourseController {
 
   updateCourse = async (req, res, next) => {
     const { id } = req.params;
-    const { name, description } = req.body;
+    const { course_name } = req.body;
     try {
       const updatedCourse = await Course.findByIdAndUpdate(
         id,
-        { name, description },
+        { course_name},
         { new: true }
       );
       res.status(200).json(updatedCourse);
@@ -136,7 +141,6 @@ class CourseController {
 
     try {
       const courses = await Course.find({ staff: staffId }).populate([
-        { path: "_class", select: "name" },
         { path: "staff", select: "first_name last_name" },
       ]);
       if (!courses) {

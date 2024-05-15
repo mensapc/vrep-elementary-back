@@ -52,7 +52,7 @@ router.get(
 );
 
 router.put(
-  "/course/student/:id/assign",
+  "/course/student/:id",
   validateToken,
   authorize(["studentCourse"]),
   courseController.addStudentToCourse

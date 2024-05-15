@@ -25,7 +25,7 @@ class ClassController {
   getClasses = async (req, res, next) => {
     try {
       const classes = await Class.find();
-      res.status(200).json(classes);
+      res.status(200).json({numOfClasses: classes.length, classes});
     } catch (error) {
       console.error(`Error getting classes: ${error}`);
       next(error);
@@ -55,6 +55,22 @@ class ClassController {
       next(error);
     }
   };
+
+  getClassBySearch = async (req, res, next) => {
+    if(!query.name){
+      throw new CustomError('Missing name parameter');
+    }
+    const query = req.query;
+    query.name = { $regex: new RegExp(query.name, 'i') };
+    try {
+      const _class = await Class.find(query);
+      if (!_class) throw new CustomError('Class not found', 404);
+      res.status(200).json(_class);
+    } catch (error) {
+      console.error(`Error getting class by staff id: ${error}`);
+      next(error);
+    }
+  }
 
   updateClass = async (req, res, next) => {
     const { id } = req.params;

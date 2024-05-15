@@ -28,6 +28,7 @@ router.put(
 );
 
 router.post('/staff/sort', validateToken, authorize(['readStaff']), staffController.staffBySort);
+router.post('/staff/search/',validateToken, authorize(['searchStaff']), staffController.getStaffBySearch)
 
 router.delete('/staff/:id', validateToken, authorize(['deleteStaff']), staffController.deleteStaff);
 

@@ -173,13 +173,14 @@ class StaffController {
     }
   };
 
+
   //get all staff
   getAll = async (req, res, next) => {
-    try {
+    try {  
       const staff = await Staff.find()
         .populate({ path: '_class', select: 'name' })
         .select('-password');
-      res.status(200).json(staff);
+      res.status(200).json({ numOfStaff: staff.length ,staff});
     } catch (error) {
       console.error(`Error retrieving all staff `, error);
       next(error);
@@ -198,6 +199,23 @@ class StaffController {
       next(error);
     }
   };
+
+  //get staff by search
+  getStaffBySearch = async (req, res, next) => {
+    const query = req.query;
+    if(!query.first_name){
+      throw new CustomError('Missing first_name parameter');
+    }
+    query.first_name = {$regex: new RegExp(query.first_name, 'i')};
+    try {
+      const _staff = await Staff.find(query,{password:0,created_at:0,updated_at:0,_id:0});
+      if (!_staff) throw new CustomError('Staff not found', 404);
+      return res.status(200).json(_staff);
+    } catch (error) {
+      console.error(`${error}`);
+      next(error);
+    }
+  }
 
   // get staff by sort
   staffBySort = async (req, res, next) => {
@@ -328,4 +346,3 @@ class StaffController {
 }
 
 module.exports = StaffController;
-
