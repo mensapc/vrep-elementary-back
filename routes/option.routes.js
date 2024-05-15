@@ -18,6 +18,12 @@ router.get(
   authorize(["getAllOptions"]),
   optionController.getAllOptions
 );
+router.get(
+  "/options/question/:id",
+  validateToken,
+  authorize(["readOptionsPerQuestion"]),
+optionController.getOptionsByQuestion
+);
 router.get("/options/:id", validateToken, optionController.getOption);
 router.put(
   "/options/:id",

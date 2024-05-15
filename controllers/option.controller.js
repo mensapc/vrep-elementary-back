@@ -55,6 +55,23 @@ class OptionController {
     }
   };
 
+  getOptionsByQuestion = async (req, res, next) => {
+    try {
+      const questionId = req.params;
+      if (!questionId) {
+        return res.status(400).json({ message: "Missing question ID" });
+      }
+      const allOptions = await Option.find();
+      const filteredOptions = allOptions.filter(
+        (option) => option.question == questionId.id
+      );
+      res.status(200).json(filteredOptions);
+    } catch (error) {
+      console.error(`Error getting options by question ID: ${error}`);
+      next(error);
+    }
+  };
+
   updateOption = async (req, res, next) => {
     const { id } = req.params;
     const optionData = req.body;

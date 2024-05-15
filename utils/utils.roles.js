@@ -55,6 +55,7 @@ const userRoles = {
     "sendlink",
     "staffToClass",
     "getAllOptions",
+    "readOptionsPerQuestion",
   ],
   headTeacher: [
     "getCoursesScheme",
@@ -88,6 +89,7 @@ const userRoles = {
     "sendlink",
     "staffToClass",
     "getAllOptions",
+    "readOptionsPerQuestion",
   ],
   staff: [
     "searchStudent",
@@ -130,8 +132,15 @@ const userRoles = {
     "getTeachersExam",
     "studentCourse",
     "getAllOptions",
+    "readOptionsPerQuestion",
   ],
-  pupil: ["readStudent", "createAnswer", "updateAnswer", "studentData"],
+  pupil: [
+    "readStudent",
+    "createAnswer",
+    "updateAnswer",
+    "studentData",
+    "readOptionsPerQuestion",
+  ],
 };
 
 module.exports = userRoles;
