@@ -25,6 +25,13 @@ router.post(
 );
 
 router.post(
+  '/students/search/byclass',
+  validateToken,
+  authorize(['searchStudent']),
+  studentController.getStudentsByClassSearch
+);
+
+router.post(
   '/students/sort',
   validateToken,
   authorize(['readStudents']),
