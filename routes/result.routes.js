@@ -33,5 +33,6 @@ const resultController = new ResultController();
 //   resultController.getStudentOverAllExamResults
 // );
 
-router.post('/result2', validateToken, resultController.addResult);
+router.post('/result', validateToken, resultController.addResult);
+router.put('/result/:id',validateToken, resultController.updateResult)
 module.exports = router;

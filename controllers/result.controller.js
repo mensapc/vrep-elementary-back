@@ -191,6 +191,7 @@ class ResultController {
 
       const{test_score ,course_name , first_name} = req.body;
  
+     try {
       const foundStudentName = await Student.findOne({ first_name: { $regex: new RegExp(first_name, 'i') } })
   
       if (!foundStudentName) {
@@ -208,8 +209,25 @@ class ResultController {
         test_score: test_score
       });
       res.status(201).json(marks)
+     } catch (error) {
+      console.log(error);
+      next(error);
+     }
   }
 
+  updateResult = async(req, res, next) => {
+    const {id} = req.params;
+    const data = req.body;
+    try{
+      const _testScore = await TestScore.findByIdAndUpdate(id,data,{new:true})
+      if(!_testScore) throw new CustomError("Test score not found", 404);
+      res.status(201).json(_testScore);
+    }
+    catch(error){
+      console.log(error);
+      next(error);
+    }
+  }
 }
 
 
