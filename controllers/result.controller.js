@@ -186,35 +186,42 @@ class ResultController {
       next(error);
     }
   };
-
+  // adding test result
   addResult = async (req, res, next) => {
-
-      const{test_score ,course_name , first_name} = req.body;
- 
-     try {
-      const foundStudentName = await Student.findOne({ first_name: { $regex: new RegExp(first_name, 'i') } })
+      const{welcome_test ,course_name , _first_name, _last_name, mid_term_test} = req.body;
+      const obj = {
+        first_name : { $regex: new RegExp(_first_name, 'i') },
+        last_name: { $regex: new RegExp(_last_name, 'i') },
+      }
+     try { 
+      const foundStudentName = await Student.findOne(obj)
   
       if (!foundStudentName) {
         throw new CustomError("student name not found", 404);
       }
-  
-      const courseExist = await Course.findOne({ course_name: { $regex: new RegExp(course_name, 'i') } })
-      
+      const courseExist = await Course.findOne({
+        course_name: { $regex: new RegExp(course_name, 'i') },
+        student: foundStudentName._id
+      }).populate('student');
+
       if (!courseExist) {
-        throw new CustomError("Course name not found", 404);
+        throw new CustomError("Course not found", 404);
       }
       const marks =  await new TestScore({
-        student : foundStudentName.first_name,
+        student : foundStudentName.first_name + ' ' + foundStudentName.last_name,
         course_name : courseExist.course_name,
-        test_score: test_score
+        welcome_test: welcome_test,
+        mid_term_test: mid_term_test || null,
+        overall: (mid_term_test || 0) + welcome_test
       });
+      await marks.save();
       res.status(201).json(marks)
      } catch (error) {
       console.log(error);
       next(error);
      }
   }
-
+  // update test result
   updateResult = async(req, res, next) => {
     const {id} = req.params;
     const data = req.body;
@@ -228,7 +235,24 @@ class ResultController {
       next(error);
     }
   }
+
+  //delete test result
+  deleteResult = async(req, res, next) => {
+    const {id} = req.params;
+    try {
+      const _testScore = await TestScore.findByIdAndDelete(id)
+      if(!_testScore) throw new CustomError("Test score not found", 404);
+      res.status(201).json(_testScore);
+    } catch (error) {
+      console.log(error);
+      next(error);
+    }
+  }
 }
 
-
 module.exports = ResultController;
+
+
+//result Schema - 
+//testResult scheam - we storing the result of the test
+//exam Schema

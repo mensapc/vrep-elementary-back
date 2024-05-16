@@ -19,5 +19,5 @@ router.post(
   authorize(['getTeachersExam']),
   examController.getTeachersExams
 );
-
+router.put('/exams/update-result/:id',validateToken,examController.updateExamResult)
 module.exports = router;

@@ -15,7 +15,6 @@ const { createActivity } = require('./activity.controller');
 class ExamController {
   createExam = async (req, res, next) => {
     const examData = req.body;
-
     try {
       // validate exam duration
       const durationValidate = validateExamDuration(examData);
@@ -180,6 +179,20 @@ class ExamController {
       next(error);
     }
   };
+
+  updateExamResult = async(req, res, next) => {
+      const { id } = req.params; 
+      const {exam_result} = req.body;
+      console.log(exam_result);
+      try {
+        const exam = await Exam.findByIdAndUpdate(id,{exam_result},{ new: true });
+        if(!exam) throw new CustomError("Exam not found",404);
+        res.status(201).json(exam);
+      } catch (error) {
+        console.log(error);
+        next(error);
+      }
+  }
 }
 
 module.exports = ExamController;
