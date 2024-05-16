@@ -21,9 +21,12 @@ class StaffController {
   register = async (req, res, next) => {
     const userData = req.body;
     const { token } = req.params;
-  
+
+    // console.log(userData);
+    console.log(token);
+
     try {
-      const preRegistration = await PreRegistrationModel.findOne({ tokens: token });
+      const preRegistration = await PreRegistrationModel.findOne({ token: token });
       if (!preRegistration || preRegistration.expires < new Date()) {
         throw new CustomError('Invalid or expired token', 400);
       }
