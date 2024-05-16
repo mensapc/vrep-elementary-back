@@ -1,4 +1,7 @@
 const Result = require('../models/result');
+const Student = require("../models/student")
+const TestScore = require('../models/testscore')
+const Course  = require("../models/course")
 const CustomError = require('../utils/CustomError');
 const { convertSchoolTerms } = require('../utils/utils.common');
 const { ExamDetailsAndAnswers, CalculateResults } = require('../utils/utils.exam');
@@ -183,6 +186,31 @@ class ResultController {
       next(error);
     }
   };
+
+  addResult = async (req, res, next) => {
+
+      const{test_score ,course_name , first_name} = req.body;
+ 
+      const foundStudentName = await Student.findOne({ first_name: { $regex: new RegExp(first_name, 'i') } })
+  
+      if (!foundStudentName) {
+        throw new CustomError("student name not found", 404);
+      }
+  
+      const courseExist = await Course.findOne({ course_name: { $regex: new RegExp(course_name, 'i') } })
+      
+      if (!courseExist) {
+        throw new CustomError("Course name not found", 404);
+      }
+      const marks =  await new TestScore({
+        student : foundStudentName.first_name,
+        course_name : courseExist.course_name,
+        test_score: test_score
+      });
+      res.status(201).json(marks)
+  }
+
 }
+
 
 module.exports = ResultController;

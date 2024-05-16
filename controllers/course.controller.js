@@ -136,7 +136,6 @@ class CourseController {
 
     try {
       const courses = await Course.find({ staff: staffId }).populate([
-        { path: "_class", select: "name" },
         { path: "staff", select: "first_name last_name" },
       ]);
       if (!courses) {
