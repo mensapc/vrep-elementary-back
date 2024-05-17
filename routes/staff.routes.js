@@ -7,7 +7,7 @@ const staffController = new StaffController();
 const router = express.Router();
 
 router.post(
-  '/staff/register/:id',
+  '/staff/register/:token',
   multerMiddleware,
   staffController.register
 );

@@ -1,7 +1,7 @@
-const mongoose = require('mongoose');
-const Option = require('../models/option');
-const Question = require('../models/question');
-const CustomError = require('../utils/CustomError');
+const mongoose = require("mongoose");
+const Option = require("../models/option");
+const Question = require("../models/question");
+const CustomError = require("../utils/CustomError");
 
 class OptionController {
   createOption = async (req, res, next) => {
@@ -10,10 +10,16 @@ class OptionController {
 
     try {
       await session.startTransaction();
-      const question = await Question.findById(optionData.question_id).session(session);
-      if (!question) throw new CustomError('Question id you provided not found', 404);
+      const question = await Question.findById(optionData.question_id).session(
+        session
+      );
+      if (!question)
+        throw new CustomError("Question id you provided not found", 404);
 
-      const newOption = await Option.create({ ...optionData, question: question._id });
+      const newOption = await Option.create({
+        ...optionData,
+        question: question._id,
+      });
       question.options.push(newOption._id);
 
       await question.save({ session });
@@ -39,6 +45,33 @@ class OptionController {
     }
   };
 
+  getAllOptions = async (req, res, next) => {
+    try {
+      const options = await Option.find();
+      res.status(200).json(options);
+    } catch (error) {
+      console.error(`Error getting options: ${error}`);
+      next(error);
+    }
+  };
+
+  getOptionsByQuestion = async (req, res, next) => {
+    try {
+      const questionId = req.params;
+      if (!questionId) {
+        return res.status(400).json({ message: "Missing question ID" });
+      }
+      const allOptions = await Option.find();
+      const filteredOptions = allOptions.filter(
+        (option) => option.question == questionId.id
+      );
+      res.status(200).json(filteredOptions);
+    } catch (error) {
+      console.error(`Error getting options by question ID: ${error}`);
+      next(error);
+    }
+  };
+
   updateOption = async (req, res, next) => {
     const { id } = req.params;
     const optionData = req.body;
@@ -46,7 +79,9 @@ class OptionController {
     delete optionData.question;
 
     try {
-      const updatedOption = await Option.findByIdAndUpdate(id, optionData, { new: true });
+      const updatedOption = await Option.findByIdAndUpdate(id, optionData, {
+        new: true,
+      });
       res.status(200).json(updatedOption);
     } catch (error) {
       console.error(`Error updating option: ${error}`);
@@ -58,8 +93,9 @@ class OptionController {
     const { id } = req.params;
     try {
       const optionToDelete = await Option.findByIdAndDelete({ _id: id });
-      if (!optionToDelete) throw new CustomError('Option id you provided not found', 404);
-      res.status(200).json({ message: 'Option deleted successfully' });
+      if (!optionToDelete)
+        throw new CustomError("Option id you provided not found", 404);
+      res.status(200).json({ message: "Option deleted successfully" });
     } catch (error) {
       console.error(`Error deleting option: ${error}`);
       next(error);

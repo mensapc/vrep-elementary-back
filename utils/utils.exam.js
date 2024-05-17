@@ -1,6 +1,6 @@
-const Answer = require('../models/answer');
-const Exam = require('../models/exam');
-const CustomError = require('./CustomError');
+const Answer = require("../models/answer");
+const Exam = require("../models/exam");
+const CustomError = require("./CustomError");
 
 const CalculateResults = (exam, answers) => {
   const questionMap = new Map();
@@ -47,19 +47,19 @@ const CalculateResults = (exam, answers) => {
 
 const ExamDetailsAndAnswers = async (examId, studentId) => {
   const exam = await Exam.findById(examId).populate({
-    path: 'questions',
-    populate: { path: 'options' },
+    path: "questions",
+    populate: { path: "options" },
   });
 
   if (!exam) {
-    throw new CustomError('Exam not found', 404);
+    throw new CustomError("Exam not found", 404);
   }
 
   const answers = await Answer.find({ student: studentId, exam: examId })
-    .populate({ path: 'question', select: '_id points' })
-    .populate('chosen_option');
+    .populate({ path: "question", select: "_id points" })
+    .populate("chosen_option");
   if (!answers.length) {
-    throw new CustomError('No answers found for this exam', 404);
+    throw new CustomError("No answers found for this exam", 404);
   }
   return { exam, answers };
 };
@@ -82,17 +82,27 @@ const timeConverter = (time) => {
 const validateExamDuration = (exam) => {
   const { start_date, end_date } = exam;
   if (!start_date || !end_date) {
-    return { is_valid: false, message: 'Exam start time and exam end time must be provided.' };
+    return {
+      is_valid: false,
+      message: "Exam start time and exam end time must be provided.",
+    };
   }
 
-  const { examStartTime, examEndTime, currentTime } = ExamTimeInMilliseconds(exam);
+  const { examStartTime, examEndTime, currentTime } =
+    ExamTimeInMilliseconds(exam);
 
   if (examStartTime < currentTime || examEndTime < currentTime) {
-    return { is_valid: false, message: 'Exam start time and exam end time must be in the future.' };
+    return {
+      is_valid: false,
+      message: "Exam start time and exam end time must be in the future.",
+    };
   }
 
   if (examStartTime >= examEndTime) {
-    return { is_valid: false, message: 'Exam start time must be before exam end time.' };
+    return {
+      is_valid: false,
+      message: "Exam start time must be before exam end time.",
+    };
   }
   return { is_valid: true };
 };
@@ -100,8 +110,10 @@ const validateExamDuration = (exam) => {
 const examDuration = (exam) => {
   const { examStartTime, examEndTime } = ExamTimeInMilliseconds(exam);
 
-  const { hours, minutes, seconds } = timeConverter(examEndTime - examStartTime);
-  let duration = '';
+  const { hours, minutes, seconds } = timeConverter(
+    examEndTime - examStartTime
+  );
+  let duration = "";
   if (hours > 0) duration += `${hours} hr `;
   if (minutes > 0) duration += `${minutes} min `;
   if (seconds > 0) duration += `${seconds} sec`;
@@ -110,20 +122,26 @@ const examDuration = (exam) => {
 };
 
 const checkExamAvailability = (exam) => {
-  const { currentTime, examStartTime, examEndTime } = ExamTimeInMilliseconds(exam);
+  const { currentTime, examStartTime, examEndTime } =
+    ExamTimeInMilliseconds(exam);
   if (currentTime < examStartTime) {
-    const { days, hours, minutes, seconds } = timeConverter(examStartTime - currentTime);
+    const { days, hours, minutes, seconds } = timeConverter(
+      examStartTime - currentTime
+    );
 
-    let message = '';
+    let message = "";
 
     if (days > 1) message += `${days} days `;
     if (hours > 0 && hours < 24) message += `${hours} hours `;
     if (minutes > 0) message += `${minutes} minutes `;
     if (seconds > 0) message += `${seconds} seconds `;
 
-    return { is_available: false, message: `The exam will be available in ${message.trim()}.` };
+    return {
+      is_available: false,
+      message: `The exam will be available in ${message.trim()}.`,
+    };
   } else if (currentTime > examEndTime) {
-    return { is_available: false, message: 'The exam is no longer available.' };
+    return { is_available: false, message: "The exam is no longer available." };
   } else {
     return { is_available: true };
   }
@@ -134,8 +152,8 @@ const getTimeRangePupilTookExam = (exam) => {
   const examStartTime = new Date(exam.start_date);
   const examEndTime = new Date(exam.end_date);
 
-  let startTime = '';
-  let endTime = '';
+  let startTime = "";
+  let endTime = "";
 
   // If the current time is before the exam start time, set start time as exam start time
   if (currentTime < examStartTime) {
@@ -152,15 +170,22 @@ const getTimeRangePupilTookExam = (exam) => {
   }
 
   // Calculate the duration
-  const { hours: startHours, minutes: startMinutes, seconds: startSeconds } = timeConverter(startTime - examStartTime);
-  const { hours: endHours, minutes: endMinutes, seconds: endSeconds } = timeConverter(examEndTime - endTime);
+  const {
+    hours: startHours,
+    minutes: startMinutes,
+    seconds: startSeconds,
+  } = timeConverter(startTime - examStartTime);
+  const {
+    hours: endHours,
+    minutes: endMinutes,
+    seconds: endSeconds,
+  } = timeConverter(examEndTime - endTime);
 
   const startDuration = `${startHours} hr ${startMinutes} min ${startSeconds} sec`;
   const endDuration = `${endHours} hr ${endMinutes} min ${endSeconds} sec`;
 
   return { startDuration, endDuration };
 };
-
 
 module.exports = {
   getTimeRangePupilTookExam,
