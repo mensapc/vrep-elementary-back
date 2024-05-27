@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const errorMiddleware = require("./middlewares/error.middleware");
 require("dotenv").config();
+const cronJob = require('./utils/utils.mailer.js');
 const connectDB = require("./config/db.js");
 const adminRoutes = require("./routes/admin.routes");
 const studentRoutes = require("./routes/student.routes");
@@ -47,6 +48,8 @@ app.use("/api/v1", activityRoutes);
 app.use(errorMiddleware);
 
 app.get("/", (req, res) => res.status(200).send("Welcome to the RPMS API"));
+
+cronJob.job.start();
 
 connectDB(process.env.MONGODB_URL);
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

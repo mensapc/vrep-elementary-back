@@ -1,6 +1,9 @@
 const crypto = require('crypto');
 require('dotenv').config();
 const { Resend } = require('resend');
+const cron = require('node-cron');
+const PreRegistrationModel = require('../models/pregistration');
+
 
 
 const generateOtp = () => {
@@ -49,4 +52,27 @@ function validateEmail(email) {
     }
 }
 
-module.exports = { sendRegistrationEmail , validateEmail};
+const  job = cron.schedule('0 0 * * *', async () => {
+  try {
+    // Get the current date and time
+    const currentDate = new Date();
+
+    // Find and delete expired tokens
+    const deletedTokens = await PreRegistrationModel.deleteMany({ expires: { $lt: currentDate } }, { projection: { _id: 1 } });
+
+    console.log(`Deleted ${deletedTokens.deletedCount} expired tokens.`);
+
+    // Check if there are any more expired tokens
+    const remainingTokens = await PreRegistrationModel.countDocuments({ expires: { $lt: currentDate } });
+
+    if (remainingTokens === 0) {
+      // Stop the cron job if there are no more expired tokens
+      job.stop();
+      console.log('Cron job stopped.');
+    }
+  } catch (error) {
+    console.error(`Error deleting expired tokens: ${error}`);
+  }
+});
+
+module.exports = { sendRegistrationEmail , validateEmail , job };
