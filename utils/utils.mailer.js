@@ -75,4 +75,4 @@ const  job = cron.schedule('0 0 * * *', async () => {
   }
 });
 
-module.exports = { sendRegistrationEmail , validateEmail , job };
+module.exports = { sendRegistrationEmail , validateEmail , job};
