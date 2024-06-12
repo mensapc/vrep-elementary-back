@@ -1,4 +1,4 @@
-import UserRole from '../interface/roles.interface'
+import { UserRole } from '../interface/roles.interface'
 
 export const userRoles: UserRole = {
     admin: [
