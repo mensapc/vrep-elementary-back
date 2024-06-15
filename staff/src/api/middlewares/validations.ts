@@ -1,10 +1,11 @@
 import jwt from "jsonwebtoken";
 import CustomError from "../../utils/CustomError";
-import { Request, Response, NextFunction } from "express";
+import { Response, NextFunction, Request } from "express";
+import { IUserRequest } from "../../interfaces/common";
 // Middleware to validate a JWT token
 
 export const validateToken = (
-  req: Request,
+  req: IUserRequest,
   res: Response,
   next: NextFunction
 ) => {
@@ -13,14 +14,16 @@ export const validateToken = (
   try {
     if (!token) throw new CustomError("Unauthorized", 401);
     // Verify the token and decode its payload
-    //@ts-ignore
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    //@ts-ignore
-    req.user = decoded;
-    next();
+    if (process.env.JWT_SECRET) {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+      req.user = decoded;
+      next();
+    } else {
+      res.status(500).json({ error: "Error validating token" });
+    }
   } catch (error) {
     if (error instanceof CustomError) throw error;
-    //@ts-ignore
-    throw new Error("Invalid credentials", 401);
+    throw new Error("Invalid credentials");
   }
 };

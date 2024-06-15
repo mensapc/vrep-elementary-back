@@ -1,4 +1,6 @@
-const userRoles = {
+import { UserRoles } from "../interfaces/authorization";
+
+const userRoles: UserRoles = {
   admin: [
     "searchStudent",
     "createHeadTeacher",

@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 import TimeStampMiddleware from "../api/middlewares/timestamp";
 
 const connectDB = (url: string) => {
@@ -11,7 +11,7 @@ const connectDB = (url: string) => {
     );
 };
 
-mongoose.plugin((schema: any) => {
+mongoose.plugin((schema: Schema) => {
   TimeStampMiddleware(schema);
 });
 

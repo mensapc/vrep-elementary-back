@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
+import { IHeadTeacher } from "../../interfaces/staff";
 
-const HeadTeacherSchema = new mongoose.Schema(
+const HeadTeacherSchema = new mongoose.Schema<IHeadTeacher>(
   {
     role: {
       type: String,

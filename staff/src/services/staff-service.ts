@@ -11,6 +11,7 @@ import registrationUtils from "../utils/utils.registration";
 import { sortActions } from "../utils/utils.common";
 import { createActivity } from "./activity-service";
 import { Request, Response, NextFunction } from "express";
+import { IUserRequest } from "../interfaces/common";
 
 interface StaffInterface {
   bcryptPassword: BcryptPassword;
@@ -69,7 +70,7 @@ class StaffController implements StaffInterface {
         ...userData,
         password: hashedPassword,
       });
-      //@ts-ignore
+
       delete newStaff._doc.password;
 
       // Add the staff to the class
@@ -89,7 +90,6 @@ class StaffController implements StaffInterface {
 
       // await generateTimetable(newStaff._id);
 
-      //@ts-ignore
       res.status(201).json({ ...newStaff._doc, authToken });
     } catch (error) {
       console.error(`Error registering staff: ${error}`);
@@ -139,7 +139,7 @@ class StaffController implements StaffInterface {
         ...userData,
         password: hashedPassword,
       });
-      //@ts-ignore
+
       delete newHeadTeacher._doc.password;
 
       const authToken = generateToken({
@@ -150,7 +150,6 @@ class StaffController implements StaffInterface {
         role: newHeadTeacher.role,
       });
 
-      //@ts-ignore
       res.status(201).json({ ...newHeadTeacher._doc, authToken });
     } catch (error) {
       console.error(`Error registering Head teacher: ${error}`);
@@ -170,10 +169,10 @@ class StaffController implements StaffInterface {
       if (!newHeadTeacher) throw new CustomError("Invalid credentials", 404);
       const comparedPassword = await this.bcryptPassword.PasswordCompare(
         password,
-        newHeadTeacher.password
+        newHeadTeacher.password ?? ""
       );
       if (!comparedPassword) throw new CustomError("Invalid credentials", 400);
-      //@ts-ignore
+
       delete newHeadTeacher._doc.password;
 
       const token = generateToken({
@@ -183,7 +182,7 @@ class StaffController implements StaffInterface {
         last_name: newHeadTeacher.last_name,
         role: newHeadTeacher.role,
       });
-      //@ts-ignore
+
       res.status(200).json({ ...newHeadTeacher._doc, token });
     } catch (error) {
       console.error("Error logging in Head teacher:", error);
@@ -199,10 +198,10 @@ class StaffController implements StaffInterface {
       if (!staff) throw new CustomError("Invalid credentials", 404);
       const comparedPassword = await this.bcryptPassword.PasswordCompare(
         password,
-        staff.password
+        staff.password ?? ""
       );
       if (!comparedPassword) throw new CustomError("Invalid credentials", 400);
-      //@ts-ignore
+
       delete staff._doc.password;
 
       const token = generateToken({
@@ -212,7 +211,7 @@ class StaffController implements StaffInterface {
         last_name: staff.last_name,
         role: staff.role,
       });
-      //@ts-ignore
+
       res.status(200).json({ ...staff._doc, token });
     } catch (error) {
       console.error("Error logging in staff:", error);
@@ -249,14 +248,13 @@ class StaffController implements StaffInterface {
   // get staff by sort
   staffBySort = async (req: Request, res: Response, next: NextFunction) => {
     const { sortby } = req.query;
-    //@ts-ignore
-    const sortAction = sortActions(sortby);
+
+    const sortAction = sortActions(sortby as string);
 
     try {
       const staff = await Staff.find()
         .populate({ path: "_class", select: "name" })
         .select("-password")
-        //@ts-ignore
         .sort(sortAction);
       res.status(200).json(staff);
     } catch (error) {
@@ -266,16 +264,18 @@ class StaffController implements StaffInterface {
   };
 
   // deleting staff by id
-  deleteStaff = async (req: Request, res: Response, next: NextFunction) => {
+  deleteStaff = async (
+    req: IUserRequest,
+    res: Response,
+    next: NextFunction
+  ) => {
     const { id } = req.params;
     try {
       const deletedStaff = await Staff.findByIdAndDelete({ _id: id });
       if (!deletedStaff) throw new CustomError("Staff not found", 404);
 
-      //@ts-ignore
-      await updateClassStaff(deletedStaff._class, null);
+      //await updateClassStaff(deletedStaff._class, null);
       await createActivity(
-        //@ts-ignore
         `Teacher ${deletedStaff.first_name} ${deletedStaff.last_name} deleted by ${req.user.first_name} ${req.user.last_name}`
       );
       res.status(204).json({ message: "Staff deleted successfully" });
@@ -286,7 +286,11 @@ class StaffController implements StaffInterface {
   };
 
   // updating staff details by id
-  updateStaff = async (req: Request, res: Response, next: NextFunction) => {
+  updateStaff = async (
+    req: IUserRequest,
+    res: Response,
+    next: NextFunction
+  ) => {
     try {
       const data = req.body;
       delete data.password;
@@ -301,7 +305,6 @@ class StaffController implements StaffInterface {
         new: true,
       }).select("-_id");
       await createActivity(
-        //@ts-ignore
         `Teacher ${updatedStaff?.first_name} ${updatedStaff?.last_name} details updated by ${req.user.first_name} ${req.user.last_name}`
       );
       res.status(201).json(updatedStaff);

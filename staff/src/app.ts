@@ -7,8 +7,8 @@ import cors from "cors";
 const app = express();
 const port = 8080;
 
-//@ts-ignore
-connectDB(process.env.MONGODB_URL);
+if (process.env.MONGODB_URL) connectDB(process.env.MONGODB_URL);
+else console.error("MONGODB_URL environment variable is not defined.");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
