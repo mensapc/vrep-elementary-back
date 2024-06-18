@@ -4,11 +4,13 @@ import staffRoutes from "./api/staff";
 import connectDB from "./config/db";
 import cors from "cors";
 
-const app = express();
+export const app = express();
 const port = 8080;
 
-if (process.env.MONGODB_URL) connectDB(process.env.MONGODB_URL);
-else console.error("MONGODB_URL environment variable is not defined.");
+if (process.env.NODE_ENV !== "test") {
+  if (process.env.MONGODB_URL) connectDB(process.env.MONGODB_URL);
+  else console.error("MONGODB_URL environment variable is not defined.");
+}
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -20,6 +22,8 @@ app.get("/", (req, res) => {
 
 app.use("/api/v2/", staffRoutes);
 
-app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
-});
+if (process.env.NODE_ENV !== "test") {
+  app.listen(port, () => {
+    console.log(`Server is running on http://localhost:${port}`);
+  });
+}

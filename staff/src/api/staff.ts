@@ -6,7 +6,11 @@ import multerMiddleware from "./middlewares/multer.middleware";
 const staffController = new StaffController();
 const router = express.Router();
 
-router.post("/staff/register/:id", multerMiddleware, staffController.register);
+router.post(
+  "/staff/register/:token",
+  multerMiddleware,
+  staffController.register
+);
 router.put(
   "/staff/course/:id",
   validateToken,
